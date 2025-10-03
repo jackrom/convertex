@@ -1,0 +1,1892 @@
+﻿[
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Dividendos - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Dividendos - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Dividendos - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Dividendos - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Dividendos - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Dividendos - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Dividendos - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Dividendos - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Dividendos - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Dividendos - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Dividendos - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Dividendos - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Dividendos - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Dividendos - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Dividendos - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Dividendos - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Dividendos - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Dividendos - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - TOTAL PATRIMONIO"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "301",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - CAPITAL SOCIAL"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "302",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "303",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30401",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA LEGAL"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30402",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30501",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30502",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30503",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - ACTIVOS INTANGIBLES"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30504",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30601",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - GANANCIAS ACUMULADAS"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30602",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30603",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30604",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA DE CAPITAL"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30605",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA POR DONACIONES"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30606",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA POR VALUACIÓN"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30607",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30701",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - GANANCIA NETA DEL PERIODO"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30702",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - TOTAL PATRIMONIO"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "301",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - CAPITAL SOCIAL"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "302",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "303",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30401",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA LEGAL"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30402",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30501",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30502",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30503",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - ACTIVOS INTANGIBLES"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30504",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30601",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - GANANCIAS ACUMULADAS"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30602",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30603",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30604",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA DE CAPITAL"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30605",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA POR DONACIONES"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30606",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA POR VALUACIÓN"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30607",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30701",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - GANANCIA NETA DEL PERIODO"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30702",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar) - TOTAL PATRIMONIO"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "301",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - CAPITAL SOCIAL"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "302",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "303",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - PRIMA EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - ACTIVOS FINANCIEROS DISPONIBLES PARA LA VENTA"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - OTROS SUPERAVIT POR REVALUACIÓN"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - (-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - RESULTADOS ACUMULADOS POR APLICACIÓN PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - RESERVA POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio) - TOTAL PATRIMONIO"
+    },
+    {
+      "CODIGO": "9901",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990101",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990102",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990103",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "9902",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990201",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990202",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990203",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990204",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990205",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990206",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990207",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990208",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990209",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "990210",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+      "CODIGO": "99",
+      "SUBCODIGO": "Total",
+      "NOMBRE DE LA CUENTA": "Total"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO"
+    },
+    {
+        "CODIGO": "99",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "SALDO AL FINAL DEL PERÍODO"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR"
+    },
+    {
+        "CODIGO": "9901",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "SALDO REEXPRESADO DEL PERIODO INMEDIATO ANTERIOR"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO:"
+    },
+    {
+        "CODIGO": "9902",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "CAMBIOS DEL AÑO EN EL PATRIMONIO:"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR"
+    },
+    {
+        "CODIGO": "990101",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "SALDO DEL PERÍODO INMEDIATO ANTERIOR"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES:"
+    },
+    {
+        "CODIGO": "990102",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN POLITICAS CONTABLES:"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES"
+    },
+    {
+        "CODIGO": "990103",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "CORRECCION DE ERRORES"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social"
+    },
+    {
+        "CODIGO": "990201",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Aumento (disminución) de capital social"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones"
+    },
+    {
+        "CODIGO": "990202",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Aportes para futuras capitalizaciones"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones"
+    },
+    {
+        "CODIGO": "990203",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Prima por emisión primaria de acciones"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Dividendos"
+    },
+    {
+        "CODIGO": "990204",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Dividendos"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales"
+    },
+    {
+        "CODIGO": "990205",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Transferencia de Resultados a otras cuentas patrimoniales"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta"
+    },
+    {
+        "CODIGO": "990206",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Financieros Disponibles para la venta"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo"
+    },
+    {
+        "CODIGO": "990207",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Propiedades, planta y equipo"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles"
+    },
+    {
+        "CODIGO": "990208",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Realización de la Reserva por Valuación de Activos Intangibles"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar)"
+    },
+    {
+        "CODIGO": "990209",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Otros cambios (detallar)"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "30",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar)"
+    },
+    {
+      "CODIGO": "99020901",
+      "SUBCODIGO": "31",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar)"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "30",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar)"
+    },
+    {
+      "CODIGO": "99020902",
+      "SUBCODIGO": "31",
+      "NOMBRE DE LA CUENTA": "Otros cambios (detallar)"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "30",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio)"
+    },
+    {
+        "CODIGO": "990210",
+        "SUBCODIGO": "31",
+        "NOMBRE DE LA CUENTA": "Resultado Integral Total del Año (Ganancia o pérdida del ejercicio)"
+    }
+]

@@ -2261,564 +2261,56 @@ export const calcular_95 = () => {
 
 export const calcular_9501 = () => {
   const reportStore = useReportStore()
-  const ingresos = reportStore.getReportData("ingresosifluc")
-  const movperdidasacumuladascuentasincobrablesydeterioro = reportStore.getReportData("movperdidasacumuladascuentasincobrablesydeterioro")
-  const activoscorrientes = reportStore.getReportData("activoscorrientesifluc")
-  const actividadesdeoperacion = reportStore.getReportData("actividadesdeoperacionifluc")
-  const costos = reportStore.getReportData("costosifluc")
-  const movperdidasacumuladasvalornetorealizacion = reportStore.getReportData("movperdidasacumuladasvalornetorealizacion")
-  const gastosdeventas = reportStore.getReportData("gastosdeventasifluc")
-  const gastosadministrativos = reportStore.getReportData("gastosadministrativosifluc")
-  const gastosfinancieros = reportStore.getReportData("gastosfinancierosifluc")
-  const pasivoscorrientes = reportStore.getReportData("pasivoscorrientesifluc")
-  const resultados = reportStore.getReportData("resultadosifluc")
-  const otros = reportStore.getReportData("otros")
-  const movpropiedadesplantasyequipos = reportStore.getReportData("movpropiedadesplantasyequipos")
-  const movintangibles = reportStore.getReportData("movintangibles")
-  const activosfinancieroslargoplazo = reportStore.getReportData("activosfinancieroslargoplazo")
-  const movpropiedadesdeinversion = reportStore.getReportData("movpropiedadesdeinversion")
-  const movactivosbiologicos = reportStore.getReportData("movactivosbiologicos")
-  const movjubilacionpatronal = reportStore.getReportData("movjubilacionpatronal")
-  const deshaucio = reportStore.getReportData("movjubilacionpatronal")
-  const otrosgastos = reportStore.getReportData("otrosgastosifluc")
-  const conciliacionganancianeta = reportStore.getReportData("conciliacionganancianetaifluc")
 
-  const activoscorrientes_ant = reportStore.getReportData("activoscorrientesifluc_ant", true)
-  const pasivoscorrientes_ant = reportStore.getReportData("pasivoscorrientesifluc_ant", true)
-
-  const efe_md_950101 = ref(0)
-  const efe_md_950105 = ref(0)
-  const efe_md_950102 = ref(0)
+  const efe_md_95010105 = ref(0)
+  const efe_md_95010104 = ref(0)
+  const efe_md_95010103 = ref(0)
   const efe_md_95010102 = ref(0)
   const efe_md_95010101 = ref(0)
+  const efe_md_95010202 = ref(0)
   const efe_md_95010201 = ref(0)
   const efe_md_95010203 = ref(0)
-  const efe_md_950107 = ref(0)
-  const efe_md_950108 = ref(0)
+  const efe_md_95010204 = ref(0)
+  const efe_md_95010205 = ref(0)
 
-  const efe_md_9501010101 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40101")).toFixed(2)
-  })
+  efe_md_95010101.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010101")).toFixed(2)
+  efe_md_95010102.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010102")).toFixed(2)
+  efe_md_95010103.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010103")).toFixed(2)
+  efe_md_95010104.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010104")).toFixed(2)
+  efe_md_95010105.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010105")).toFixed(2)
 
-  const efe_md_9501010102 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40102")).toFixed(2)
-  })
+  const efe_md_950101 = computed(() => (Number(efe_md_95010101.value) + Number(efe_md_95010102.value) + Number(efe_md_95010103.value) + Number(efe_md_95010104.value) + Number(efe_md_95010105.value)).toFixed(2))
 
-  const efe_md_9501010103 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40103")).toFixed(2)
-  })
+  efe_md_95010201.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010201")).toFixed(2)
+  efe_md_95010202.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010202")).toFixed(2)
+  efe_md_95010203.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010203")).toFixed(2)
+  efe_md_95010204.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010204")).toFixed(2)
+  efe_md_95010205.value = Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_95010205")).toFixed(2)
 
-  const efe_md_9501010104 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40112")).toFixed(2)
-  })
+  const efe_md_950102 = computed(() => ((Number(efe_md_95010201.value) + Number(efe_md_95010202.value) + Number(efe_md_95010203.value) + Number(efe_md_95010204.value) + Number(efe_md_95010205.value)).toFixed(2)))
 
-  const efe_md_9501010105 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40113")).toFixed(2)
-  })
+  const efe_md_950103 = computed(() => (Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_950103")).toFixed(2)))
 
-  const efe_md_9501010106 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40114")).toFixed(2)
-  })
+  const efe_md_950104 = computed(() => (Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_950104")).toFixed(2)))
 
-  const efe_md_9501010107 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40115")).toFixed(2)
-  })
+  const efe_md_950105 = computed(() => (Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_950105")).toFixed(2)))
 
-  const efe_md_9501010108 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40116")).toFixed(2)
-  })
+  const efe_md_950106 = computed(() => (Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_950106")).toFixed(2)))
 
-  const efe_md_9501010109 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010205")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010205_ant", true)
+  const efe_md_950107 = computed(() => (Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_950107")).toFixed(2)))
 
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
+  const efe_md_950108 = computed(() => (Number(reportStore.getSingleReportValue("actividadesdeoperacionifluc", "efe_md_950108")).toFixed(2)))
 
-  const efe_md_9501010110 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010204")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010204_ant", true)
+  console.log('efe_md_950101: ', efe_md_950101.value)
+  console.log('efe_md_950102: ', efe_md_950102.value)
+  console.log('efe_md_950103: ', efe_md_950103.value)
+  console.log('efe_md_950104: ', efe_md_950104.value)
+  console.log('efe_md_950105: ', efe_md_950105.value)
+  console.log('efe_md_950106: ', efe_md_950106.value)
+  console.log('efe_md_950107: ', efe_md_950107.value)
+  console.log('efe_md_950108: ', efe_md_950108.value)
 
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  const efe_md_9501010111 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010207")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010207_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  const efe_md_9501010112 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "provisionesanio")).toFixed(2)
-  })
-
-  const efe_md_9501010113 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "bajasoreversiones")).toFixed(2)
-  })
-
-  const efe_md_9501010114 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "ajustes")).toFixed(2)
-  })
-
-  const efe_md_9501010115 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010201")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010201_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  const efe_md_9501010116 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010202")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010202_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  const efe_md_9501010117 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010203")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010203_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-
-  const efe_md_9501010118 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10105")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10105_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  const efe_md_9501010119 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10106")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10106_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  const efe_md_9501010120 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10107")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10107_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  const efe_md_9501010121 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10108")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10108_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  efe_md_95010101.value = (Number(efe_md_9501010101.value) + Number(efe_md_9501010102.value) + Number(efe_md_9501010103.value) + Number(efe_md_9501010104.value) + Number(efe_md_9501010105.value) + Number(efe_md_9501010106.value) + Number(efe_md_9501010107.value) + Number(efe_md_9501010108.value) + Number(efe_md_9501010109.value) + Number(efe_md_9501010110.value) + Number(efe_md_9501010111.value) + Number(efe_md_9501010112.value) + Number(efe_md_9501010113.value) + Number(efe_md_9501010114.value) + Number(efe_md_9501010115.value) + Number(efe_md_9501010116.value) + Number(efe_md_9501010117.value) + Number(efe_md_9501010118.value) + Number(efe_md_9501010119.value) + Number(efe_md_9501010120.value) + Number(efe_md_9501010121.value)).toFixed(2)
-
-  const efe_md_9501010201 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40104")).toFixed(2)
-  })
-
-  const efe_md_9501010202 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40105")).toFixed(2)
-  })
-
-  const efe_md_9501010203 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40106")).toFixed(2)
-  })
-
-  const efe_md_9501010204 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40108")).toFixed(2)
-  })
-
-  const efe_md_9501010205 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40109")).toFixed(2)
-  })
-
-  const efe_md_9501010206 = computed(() => {
-    return Number(reportStore.getSingleReportValue("ingresosifluc", "eri_40110")).toFixed(2)
-  })
-
-  const efe_md_9501010207 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010206")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010206_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  efe_md_95010102.value = (Number(efe_md_9501010201.value) + Number(efe_md_9501010202.value) + Number(efe_md_9501010203.value) + Number(efe_md_9501010204.value) + Number(efe_md_9501010205.value) + Number(efe_md_9501010206.value) + Number(efe_md_9501010207.value)).toFixed(2)
-
-  const efe_md_95010103 = computed(() => {
-    return Number(actividadesdeoperacion?.efe_md_95010103).toFixed(2)
-  })
-
-  const efe_md_95010104 = computed(() => {
-    return Number(actividadesdeoperacion?.efe_md_95010104).toFixed(2)
-  })
-
-  const efe_md_95010105 = computed(() => {
-    return Number(actividadesdeoperacion?.efe_md_95010105).toFixed(2)
-  })
-
-  efe_md_950101.value = (Number(efe_md_95010101.value) + Number(efe_md_95010102.value) + Number(efe_md_95010103.value) + Number(efe_md_95010104.value) + Number(efe_md_95010105.value)).toFixed(2)
-
-  const efe_md_9501020101 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("costosifluc", "eri_501")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020102 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10103")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10103_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020103 = computed(() => {
-    const value = reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "provisionesdelanio")
-
-    return Number(value).toFixed(2)
-  })
-
-  const efe_md_9501020104 = computed(() => {
-    const value = reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "bajasoreversiones")
-
-    return Number(value).toFixed(2)
-  })
-
-  const efe_md_9501020105 = computed(() => {
-    const value = reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "ajustes")
-
-    return Number(value).toFixed(2)
-  })
-
-  const efe_md_9501020106 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("gastosdeventasifluc", "eri_50201")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020107 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("gastosadministrativosifluc", "eri_50202")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020108 = computed(() => {
-    const value = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10104")
-    const valueAnt = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10104_ant", true)
-
-    return ((Number(value) - Number(valueAnt)) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020109 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20103")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20103_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020110 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_201120202")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_201120202_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020111 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20101")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20101_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020112 = computed(() => {
-    return (0).toFixed(2)
-  })
-
-  const efe_md_9501020113 = computed(() => {
-    return (0).toFixed(2)
-  })
-
-  const efe_md_9501020114 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20105")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20105_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020115 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20106")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20106_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020116 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20107")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20107_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020117 = computed(() => {
-    return Number(reportStore.getSingleReportValue("resultadosifluc", "eri_601")).toFixed(2)
-  })
-
-  const efe_md_9501020118 = computed(() => {
-    return Number(reportStore.getSingleReportValue("resultadosifluc", "eri_603")).toFixed(2)
-  })
-
-  const efe_md_9501020119 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20108")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20108_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020120 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20109")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20109_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020121 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20110")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20110_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020122 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20111")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20111_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020123 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20113")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20113_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020124 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20114")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20114_ant", true)
-
-    return (Number(value) - Number(valueAnt)).toFixed(2)
-  })
-
-  const efe_md_9501020125 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("otros", "mov_islr_pagos")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020126 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("otros", "mov_pt_pagos")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020127 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesplantasyequipos", "mov_total_gdd")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020128 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_gastosdedepreciacion_edificios")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020129 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movintangibles", "mov_gastosdeamortizacion")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020130 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "provisionesanio")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020131 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "bajasoreversiones")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020132 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "ajustes")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020133 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "provisionesdelanio")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020134 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "bajasoreversiones")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020135 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "ajustes")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020136 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("activosfinancieroslargoplazo", "mov_provisionpordeterioro")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020137 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_valorrazonable_terrenos")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020138 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_valorrazonable_edificios")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020139 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesplantasyequipos", "mov_total_bilddb")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020140 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesplantasyequipos", "mov_total_sida")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020141 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_bajasincluida_terrenos")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020142 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_bajasincluida_edificios")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020143 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_otros_terrenos")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020144 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_otros_edificios")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020145 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movintangibles", "mov_bajasincluida")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020146 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movintangibles", "mov_otros")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020147 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movactivosbiologicos", "mov_bajasoventas_total")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020148 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movactivosbiologicos", "mov_incrementodisminuciondevalor_total")) * -1).toFixed(2)
-  })
-
-  const efe_md_9501020149 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movjubilacionpatronal", "mov_costosporservicios")).toFixed(2)
-  })
-
-  const efe_md_9501020150 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movjubilacionpatronal", "mov_costofinanciero")).toFixed(2)
-  })
-
-  const efe_md_9501020151 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movjubilacionpatronal", "mov_otros")).toFixed(2)
-  })
-
-  const efe_md_9501020152 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movjubilacionpatronal", "mov_efectodeliquidaciones")).toFixed(2)
-  })
-
-  const efe_md_9501020153 = computed(() => {
-    return Number(reportStore.getSingleReportValue("deshaucio", "mov_costosporservicios")).toFixed(2)
-  })
-
-  const efe_md_9501020154 = computed(() => {
-    return Number(reportStore.getSingleReportValue("deshaucio", "mov_costofinanciero")).toFixed(2)
-  })
-
-  const efe_md_9501020155 = computed(() => {
-    return Number(reportStore.getSingleReportValue("deshaucio", "mov_otros")).toFixed(2)
-  })
-
-  const efe_md_9501020156 = computed(() => {
-    return Number(reportStore.getSingleReportValue("deshaucio", "mov_efectodeliquidaciones")).toFixed(2)
-  })
-
-  efe_md_95010201.value = (Number(efe_md_9501020101.value) + Number(efe_md_9501020102.value) + Number(efe_md_9501020103.value) + Number(efe_md_9501020104.value) + Number(efe_md_9501020105.value) + Number(efe_md_9501020106.value) + Number(efe_md_9501020107.value) + Number(efe_md_9501020108.value) + Number(efe_md_9501020109.value) + Number(efe_md_9501020110.value) + Number(efe_md_9501020111.value) + Number(efe_md_9501020112.value) + Number(efe_md_9501020113.value) + Number(efe_md_9501020114.value) + Number(efe_md_9501020115.value) + Number(efe_md_9501020116.value) + Number(efe_md_9501020117.value) + Number(efe_md_9501020118.value) + Number(efe_md_9501020119.value) + Number(efe_md_9501020120.value) + Number(efe_md_9501020121.value) + Number(efe_md_9501020122.value) + Number(efe_md_9501020123.value) + Number(efe_md_9501020124.value) + Number(efe_md_9501020125.value) + Number(efe_md_9501020126.value) + Number(efe_md_9501020127.value) + Number(efe_md_9501020128.value) + Number(efe_md_9501020129.value) + Number(efe_md_9501020130.value) + Number(efe_md_9501020131.value) + Number(efe_md_9501020132.value) + Number(efe_md_9501020133.value) + Number(efe_md_9501020134.value) + Number(efe_md_9501020135.value) + Number(efe_md_9501020136.value) + Number(efe_md_9501020137.value) + Number(efe_md_9501020138.value) + Number(efe_md_9501020139.value) + Number(efe_md_9501020140.value) + Number(efe_md_9501020141.value) + Number(efe_md_9501020142.value) + Number(efe_md_9501020143.value) + Number(efe_md_9501020144.value) + Number(efe_md_9501020145.value) + Number(efe_md_9501020146.value) + Number(efe_md_9501020147.value) + Number(efe_md_9501020148.value) + Number(efe_md_9501020149.value) + Number(efe_md_9501020150.value) + Number(efe_md_9501020151.value) + Number(efe_md_9501020152.value) + Number(efe_md_9501020153.value) + Number(efe_md_9501020154.value) + Number(efe_md_9501020155.value) + Number(efe_md_9501020156.value)).toFixed(2)
-
-  const efe_md_95010202 = computed(() => {
-    return Number(actividadesdeoperacion?.efe_md_95010202)
-  })
-
-  const efe_md_9501020301 = computed(() => {
-    return Number(resultados?.eri_601)
-  })
-
-  const efe_md_9501020302 = computed(() => {
-    return Number(resultados?.eri_601) * -1
-  })
-
-  const efe_md_9501020303 = computed(() => {
-    return Number(otros?.mov_pt_pagos)
-  })
-
-  efe_md_95010203.value = (Number(efe_md_9501020301.value) + Number(efe_md_9501020302.value) + Number(efe_md_9501020303.value)).toFixed(2)
-
-  const efe_md_95010204 = computed(() => {
-    return Number(actividadesdeoperacion?.efe_md_95010204)
-  })
-
-  const efe_md_95010205 = computed(() => {
-    return Number(actividadesdeoperacion?.efe_md_95010205)
-  })
-
-  efe_md_950102.value = (Number(efe_md_95010201.value) + Number(efe_md_95010202.value) + Number(efe_md_95010203.value) + Number(efe_md_95010204.value) + Number(efe_md_95010205.value)).toFixed(2)
-
-  const efe_md_950103 = computed(() => {
-    return Number(actividadesdeoperacion?.efe_md_950103)
-  })
-
-  const efe_md_950104 = computed(() => {
-    return Number(ingresos?.eri_40107)
-  })
-
-  const efe_md_95010501 = computed(() => {
-    return Number(gastosfinancieros?.eri_50203) * -1
-  })
-
-  const efe_md_95010502 = computed(() => {
-    return Number(activosfinancieroslargoplazo?.mov_interesactualizacionantiguasinv) * -1
-  })
-
-  const efe_md_95010503 = computed(() => {
-    return Number(activosfinancieroslargoplazo?.mov_ajustes) * -1
-  })
-
-  efe_md_950105.value = (Number(efe_md_95010501.value) + Number(efe_md_95010502.value) + Number(efe_md_95010503.value)).toFixed(2)
-
-  const efe_md_950106 = computed(() => {
-    return Number(actividadesdeoperacion?.efe_md_950106)
-  })
-
-  const efe_md_95010701 = computed(() => {
-    return Number(resultados?.eri_603)
-  })
-
-  const efe_md_95010702 =  computed(() => {
-    return Number(resultados?.eri_603) * -1
-  })
-
-  const efe_md_95010703 = computed(() => {
-    return Number(otros?.mov_islr_pagos)
-  })
-
-  efe_md_950107.value = (Number(efe_md_95010701.value) + Number(efe_md_95010702.value) + Number(efe_md_95010703.value)).toFixed(2)
-
-  const efe_md_95010801  =  computed(() => {
-    return Number(otrosgastos?.eri_50204) * -1
-  })
-
-  const efe_md_95010802 = computed(() => {
-    return calcular_eri_403()
-  })
-
-  const efe_md_95010809 = computed(() => {
-    return Number(conciliacionganancianeta?.efe_md_9703)
-  })
-
-  const efe_md_95010810 = computed(() => {
-    return Number(conciliacionganancianeta?.efe_md_9704)
-  })
-
-  efe_md_950108.value = (Number(efe_md_95010801.value) + Number(efe_md_95010802.value) + Number(efe_md_95010809.value) + Number(efe_md_95010810.value)).toFixed(2)
+  console.log((Number(efe_md_950101.value) + Number(efe_md_950102.value) + Number(efe_md_950103.value) + Number(efe_md_950104.value) + Number(efe_md_950105.value) + Number(efe_md_950106.value) + Number(efe_md_950107.value) + Number(efe_md_950108.value)).toFixed(2))
 
   return (Number(efe_md_950101.value) + Number(efe_md_950102.value) + Number(efe_md_950103.value) + Number(efe_md_950104.value) + Number(efe_md_950105.value) + Number(efe_md_950106.value) + Number(efe_md_950107.value) + Number(efe_md_950108.value)).toFixed(2)
 
@@ -3035,16 +2527,6 @@ export const calcular_950221 = () => {
 export const calcular_9502 = () => {
   const reportStore = useReportStore()
   const actividadesdeinversion = reportStore.getReportData("actividadesdeinversionifluc")
-  const activosfinancieroslargoplazo = reportStore.getReportData("activosfinancieroslargoplazo")
-  const movpropiedadesplantasyequipos = reportStore.getReportData("movpropiedadesplantasyequipos")
-  const movintangibles = reportStore.getReportData("movintangibles")
-  const movpropiedadesdeinversion = reportStore.getReportData("movpropiedadesdeinversion")
-  const movactivosbiologicos = reportStore.getReportData("movactivosbiologicos")
-  const activosnocorrientes = reportStore.getReportData("activosnocorrientesifluc")
-  const pasivosnocorrientes = reportStore.getReportData("pasivosnocorrientesifluc")
-
-  const activosnocorrientes_ant = reportStore.getReportData("activosnocorrientesifluc_ant", true)
-  const pasivosnocorrientes_ant = reportStore.getReportData("pasivosnocorrientesifluc_ant", true)
 
   const efe_md_950201 = computed(() => Number(actividadesdeinversion?.efe_md_950201).toFixed(2))
 
@@ -3054,9 +2536,7 @@ export const calcular_9502 = () => {
 
   const efe_md_950204 = computed(() => Number(actividadesdeinversion?.efe_md_950204).toFixed(2))
 
-  const efe_md_950205 = computed(() => {
-    return Number((activosfinancieroslargoplazo?.mov_nuevasinversiones) * -1).toFixed(2)
-  })
+  const efe_md_950205 = computed(() => Number(actividadesdeinversion?.efe_md_950205).toFixed(2))
 
   const efe_md_950206 = computed(() => Number(actividadesdeinversion?.efe_md_950206).toFixed(2))
 
@@ -3064,33 +2544,15 @@ export const calcular_9502 = () => {
 
   const efe_md_950208 = computed(() => Number(actividadesdeinversion?.efe_md_950208).toFixed(2))
 
-  const efe_md_950209 = computed(() => {
-    return (Number(movpropiedadesplantasyequipos?.mov_total_compras) * -1).toFixed(2)
-  })
+  const efe_md_950209 = computed(() => Number(actividadesdeinversion?.efe_md_950209).toFixed(2))
 
   const efe_md_950210 = computed(() => Number(actividadesdeinversion?.efe_md_950210).toFixed(2))
 
-  const efe_md_950211 = computed(() => {
-    return (Number(movintangibles?.mov_compras) * -1).toFixed(2)
-  })
+  const efe_md_950211 = computed(() => Number(actividadesdeinversion?.efe_md_950211).toFixed(2))
 
   const efe_md_950212 = computed(() => Number(actividadesdeinversion?.efe_md_950212).toFixed(2))
 
-  const efe_md_95021301 = computed(() => {
-    return (Number(movpropiedadesdeinversion?.mov_compras_terrenos) * -1).toFixed(2)
-  })
-
-  const efe_md_95021302 = computed(() => {
-    return (Number(movpropiedadesdeinversion?.mov_compras_edificios) * -1).toFixed(2)
-  })
-
-  const efe_md_95021303 = computed(() => {
-    return (Number(movactivosbiologicos?.mov_compras_total) * -1).toFixed(2)
-  })
-
-  const efe_md_950213 = computed(() => {
-    return (Number(efe_md_95021301.value) + Number(efe_md_95021302.value) + Number(efe_md_95021303.value)).toFixed(2)
-  })
+  const efe_md_950213 = computed(() => Number(actividadesdeinversion?.efe_md_950213).toFixed(2))
 
   const efe_md_950214 = computed(() => Number(actividadesdeinversion?.efe_md_950214).toFixed(2))
 
@@ -3106,47 +2568,7 @@ export const calcular_9502 = () => {
 
   const efe_md_950220 = computed(() => Number(actividadesdeinversion?.efe_md_950220).toFixed(2))
 
-  const efe_md_95022101 = computed(() => {
-    return ((Number(activosnocorrientes?.esf_10207) - Number(activosnocorrientes_ant?.esf_10207_ant))  * -1).toFixed(2)
-  })
-
-  const efe_md_95022102 = computed(() => {
-    return ((Number(activosnocorrientes?.esf_10208) - Number(activosnocorrientes_ant?.esf_10208_ant))  * -1).toFixed(2)
-  })
-
-  const efe_md_95022103 = computed(() => {
-    return ((Number(activosnocorrientes?.esf_10209) - Number(activosnocorrientes_ant?.esf_10209_ant))  * -1).toFixed(2)
-  })
-
-  const efe_md_95022104 = computed(() => {
-    return ((Number(activosnocorrientes?.esf_10210) - Number(activosnocorrientes_ant?.esf_10210_ant))  * -1).toFixed(2)
-  })
-
-  const efe_md_95022105 = computed(() => {
-    return (Number(pasivosnocorrientes?.esf_20202) - Number(pasivosnocorrientes_ant?.esf_20202_ant)).toFixed(2)
-  })
-
-  const efe_md_95022106 = computed(() => {
-    return (Number(pasivosnocorrientes?.esf_20204) - Number(pasivosnocorrientes_ant?.esf_20204_ant)).toFixed(2)
-  })
-
-  const efe_md_95022107 = computed(() => {
-    return (Number(pasivosnocorrientes?.esf_20206) - Number(pasivosnocorrientes_ant?.esf_20206_ant)).toFixed(2)
-  })
-
-  const efe_md_95022108 = computed(() => {
-    return (Number(pasivosnocorrientes?.esf_20208) - Number(pasivosnocorrientes_ant?.esf_20208_ant)).toFixed(2)
-  })
-
-  const efe_md_95022109 = computed(() => {
-    return ((Number(pasivosnocorrientes?.esf_20209) - Number(pasivosnocorrientes_ant?.esf_20209_ant)) - (Number(pasivosnocorrientes?.esf_2020902) - Number(pasivosnocorrientes_ant?.esf_2020902_ant))).toFixed(2)
-  })
-
-  const efe_md_95022110 = computed(() => {
-    return (Number(pasivosnocorrientes?.esf_20210) - Number(pasivosnocorrientes_ant?.esf_20210_ant)).toFixed(2)
-  })
-
-  const efe_md_950221 = ref((Number(efe_md_95022101.value) + Number(efe_md_95022102.value) + Number(efe_md_95022103.value) + Number(efe_md_95022104.value) + Number(efe_md_95022105.value) + Number(efe_md_95022106.value) + Number(efe_md_95022107.value) + Number(efe_md_95022108.value) + Number(efe_md_95022109.value) + Number(efe_md_95022110.value)).toFixed(2))
+  const efe_md_950221 = computed(() => Number(actividadesdeinversion?.efe_md_950221).toFixed(2))
 
   return (Number(efe_md_950201.value) + Number(efe_md_950202.value) + Number(efe_md_950203.value) + Number(efe_md_950204.value) + Number(efe_md_950205.value) + Number(efe_md_950206.value) + Number(efe_md_950207.value) + Number(efe_md_950208.value) + Number(efe_md_950209.value) + Number(efe_md_950210.value) + Number(efe_md_950211.value) + Number(efe_md_950212.value) + Number(efe_md_950213.value) + Number(efe_md_950214.value) + Number(efe_md_950215.value) + Number(efe_md_950216.value) + Number(efe_md_950217.value) + Number(efe_md_950218.value) + Number(efe_md_950219.value) + Number(efe_md_950220.value) + Number(efe_md_950221.value)).toFixed(2)
 }
@@ -3276,116 +2698,26 @@ export const calcular_950310 = () => {
 
 export const calcular_9503 = () => {
   const reportStore = useReportStore()
-  const ecp = reportStore.getReportData("ecpifluc")
-  const actividadesdefinanciamiento = reportStore.getReportData("actividadesdefinanciamientoifluc")
-  const otros = reportStore.getReportData("otros")
-  const pasivosnocorrientes = reportStore.getReportData("pasivosnocorrientesifluc")
-  const movjubilacionpatronal = reportStore.getReportData("movjubilacionpatronal")
-  const deshaucio = reportStore.getReportData("deshaucio")
 
-  const pasivosnocorrientes_ant = reportStore.getReportData("pasivosnocorrientesifluc_ant", true)
+  const efe_md_950301 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950301"))
 
-  const efe_md_95030101 = computed(() => {
-    return Number(ecp?.ecp_990201_301)
-  })
+  const efe_md_950302 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950302"))
 
-  const efe_md_95030102 = computed(() => {
-    return Number(ecp?.ecp_990201_302)
-  })
+  const efe_md_950303 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950303"))
 
-  const efe_md_95030103 = computed(() => {
-    return Number(ecp?.ecp_990202_301)
-  })
+  const efe_md_950304 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950304"))
 
-  const efe_md_95030104 = computed(() => {
-    return Number(ecp?.ecp_990202_302)
-  })
+  const efe_md_950305 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950305"))
 
-  const efe_md_950301 = computed(() => {
-    return (Number(efe_md_95030101.value) + Number(efe_md_95030102.value) + Number(efe_md_95030103.value) + Number(efe_md_95030104.value)).toFixed(2)
-  })
+  const efe_md_950306 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950306"))
 
-  const efe_md_950302 = computed(()  => {
-    return actividadesdefinanciamiento?.efe_md_950302
-  })
+  const efe_md_950307 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950307"))
 
-  const efe_md_950303 = computed(() => {
-    return actividadesdefinanciamiento?.efe_md_950303
-  })
+  const efe_md_950308 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950308"))
 
-  const efe_md_950304 = computed(() => {
-    return actividadesdefinanciamiento?.efe_md_950304
-  })
+  const efe_md_950309 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950309"))
 
-  const efe_md_950305 = computed(() => {
-    return actividadesdefinanciamiento?.efe_md_950305
-  })
-
-  const efe_md_950306 = computed(() => {
-    return actividadesdefinanciamiento?.efe_md_950306
-  })
-
-  const efe_md_950307 = computed(() => {
-    return actividadesdefinanciamiento?.efe_md_950307
-  })
-
-  const efe_md_950308 = computed(() => {
-    return otros?.mov_dividendos_dividendospagados
-  })
-
-  const efe_md_950309 = computed(() => {
-    return actividadesdefinanciamiento?.efe_md_950309
-  })
-
-  const efe_md_95031001 = computed(() => {
-    return Number(pasivosnocorrientes?.esf_20205) - Number(pasivosnocorrientes_ant?.esf_20205_ant)
-  })
-
-  const efe_md_95031002 = computed(() => {
-    return Number(pasivosnocorrientes?.esf_202070202) - Number(pasivosnocorrientes_ant?.esf_202070202_ant)
-  })
-
-  const efe_md_95031003 = computed(() => {
-    return Number(pasivosnocorrientes?.esf_20201) - Number(pasivosnocorrientes_ant?.esf_20201_ant)
-  })
-
-  const efe_md_95031004 = computed(() => {
-    return Number(pasivosnocorrientes?.esf_20203) - Number(pasivosnocorrientes_ant?.esf_20203_ant)
-  })
-
-  const efe_md_95031005 = computed(() => {
-    return Number(movjubilacionpatronal?.mov_beneficiospagados)
-  })
-
-  const efe_md_95031006 = computed(() => {
-    return Number(deshaucio?.mov_beneficiospagados)
-  })
-
-  const efe_md_95031007 = computed(() => {
-    return Number(actividadesdefinanciamiento?.efe_md_95031007)
-  })
-
-  const efe_md_95031008 = computed(() => {
-    return ecp?.ecp_99020901_Total
-  })
-
-  const efe_md_95031009 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20102")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20102_ant", true)
-
-    return value && valueAnt ? (Number(value) - Number(valueAnt)).toFixed(2) : "0.00"
-  })
-
-  const efe_md_95031010 = computed(() => {
-    const value = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20104")
-    const valueAnt = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20104_ant", true)
-
-    return value && valueAnt ? (Number(value) - Number(valueAnt)).toFixed(2) : "0.00"
-  })
-
-  const efe_md_950310 = computed(() => {
-    return (Number(efe_md_95031001.value) + Number(efe_md_95031002.value) + Number(efe_md_95031003.value) + Number(efe_md_95031004.value) + Number(efe_md_95031005.value) + Number(efe_md_95031006.value) + Number(efe_md_95031007.value) + Number(efe_md_95031008.value) + Number(efe_md_95031009.value) + Number(efe_md_95031010.value)).toFixed(2)
-  })
+  const efe_md_950310 = computed(() => reportStore.getSingleReportValue("actividadesdefinanciamientoifluc", "efe_md_950310"))
 
   return (Number(efe_md_950301.value) + Number(efe_md_950302.value) + Number(efe_md_950303.value) + Number(efe_md_950304.value) + Number(efe_md_950305.value) + Number(efe_md_950306.value) + Number(efe_md_950307.value) + Number(efe_md_950308.value) + Number(efe_md_950309.value) + Number(efe_md_950310.value)).toFixed(2)
 }
@@ -4682,13 +4014,13 @@ export const calcular_98 = () => {
     return ((Number(current) - Number(previous)) * -1).toFixed(2)
   })
 
-  console.log('efe_md_980501: ', efe_md_980501.value)
-  console.log('efe_md_980502: ', efe_md_980502.value)
-  console.log('efe_md_980503: ', efe_md_980503.value)
-  console.log('efe_md_980504: ', efe_md_980504.value)
-  console.log('efe_md_980505: ', efe_md_980505.value)
-  console.log('efe_md_980506: ', efe_md_980506.value)
-  console.log('efe_md_980507: ', efe_md_980507.value)
+  // console.log('efe_md_980501: ', efe_md_980501.value)
+  // console.log('efe_md_980502: ', efe_md_980502.value)
+  // console.log('efe_md_980503: ', efe_md_980503.value)
+  // console.log('efe_md_980504: ', efe_md_980504.value)
+  // console.log('efe_md_980505: ', efe_md_980505.value)
+  // console.log('efe_md_980506: ', efe_md_980506.value)
+  // console.log('efe_md_980507: ', efe_md_980507.value)
 
   const efe_md_9805 = (Number(efe_md_980501.value) + Number(efe_md_980502.value) + Number(efe_md_980503.value) + Number(efe_md_980504.value) + Number(efe_md_980505.value) + Number(efe_md_980506.value) + Number(efe_md_980507.value)).toFixed(2)
 
@@ -4708,16 +4040,16 @@ export const calcular_98 = () => {
     return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9809")).toFixed(2)
   })
 
-  console.log('efe_md_9801: ', efe_md_9801.value)
-  console.log('efe_md_9802: ', efe_md_9802.value)
-  console.log('efe_md_9803: ', efe_md_9803.value)
-  console.log('efe_md_9804: ', efe_md_9804.value)
-  console.log('efe_md_9805: ', efe_md_9805)
-  console.log('efe_md_9806: ', efe_md_9806.value)
-  console.log('efe_md_9807: ', efe_md_9807.value)
-  console.log('efe_md_9808: ', efe_md_9808.value)
-  console.log('efe_md_9809: ', efe_md_9809.value)
-  console.log('efe_md_9810: ', efe_md_9810.value)
+  // console.log('efe_md_9801: ', efe_md_9801.value)
+  // console.log('efe_md_9802: ', efe_md_9802.value)
+  // console.log('efe_md_9803: ', efe_md_9803.value)
+  // console.log('efe_md_9804: ', efe_md_9804.value)
+  // console.log('efe_md_9805: ', efe_md_9805)
+  // console.log('efe_md_9806: ', efe_md_9806.value)
+  // console.log('efe_md_9807: ', efe_md_9807.value)
+  // console.log('efe_md_9808: ', efe_md_9808.value)
+  // console.log('efe_md_9809: ', efe_md_9809.value)
+  // console.log('efe_md_9810: ', efe_md_9810.value)
 
   return (
     Number(efe_md_9801.value) +
@@ -4897,485 +4229,132 @@ export const calcular_9820 = () => {
     return calcular_eri_607()
   })
 
-  console.log('comprobación: efe_md_96', efe_md_96.value)
+  // console.log('comprobación: efe_md_96', efe_md_96.value)
 
-  const efe_md_970101 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesplantasyequipos", "mov_total_gdd")) * -1).toFixed(2)
+  const efe_md_9701 = computed(() => {
+    return (Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9701"))).toFixed(2)
   })
 
-  const efe_md_970102 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_gastosdedepreciacion_edificios")) * -1).toFixed(2)
+  // console.log('comprobación: efe_md_9701', efe_md_9701.value)
+
+  const efe_md_9702 = computed(() => {
+    return (Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9702"))).toFixed(2)
   })
 
-  const efe_md_970103 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movintangibles", "mov_gastosdeamortizacion")) * -1).toFixed(2)
-  })
-
-  const efe_md_9701 = ref((Number(efe_md_970101.value) + Number(efe_md_970102.value) + Number(efe_md_970103.value)).toFixed(2))
-
-  console.log('comprobación: efe_md_9701', efe_md_9701.value)
-
-  const efe_md_970201 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "provisionesanio")) * -1).toFixed(2)
-  })
-
-  const efe_md_970202 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "bajasoreversiones")) * -1).toFixed(2)
-  })
-
-  const efe_md_970203 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "ajustes")) * -1).toFixed(2)
-  })
-
-  const efe_md_970204 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "provisionesdelanio")) * -1).toFixed(2)
-  })
-
-  const efe_md_970205 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "bajasoreversiones")) * -1).toFixed(2)
-  })
-
-  const efe_md_970206 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "ajustes")) * -1).toFixed(2)
-  })
-
-  const efe_md_970207 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("activosfinancieroslargoplazo", "mov_provisionpordeterioro")) * -1).toFixed(2)
-  })
-
-  const efe_md_9702 = ref((Number(efe_md_970201.value) + Number(efe_md_970202.value) + Number(efe_md_970203.value) + Number(efe_md_970204.value) + Number(efe_md_970205.value) + Number(efe_md_970206.value) + Number(efe_md_970207.value)).toFixed(2))
-
-  console.log('comprobación: efe_md_9702', efe_md_9702.value)
+  // console.log('comprobación: efe_md_9702', efe_md_9702.value)
 
   const efe_md_9703 = computed(() => {
     return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9703")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9703', efe_md_9703.value)
+  // console.log('comprobación: efe_md_9703', efe_md_9703.value)
 
   const efe_md_9704 = computed(() => {
     return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9704")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9704', efe_md_9704.value)
+  // console.log('comprobación: efe_md_9704', efe_md_9704.value)
 
   const efe_md_9705 = computed(() => {
     return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9705")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9705', efe_md_9705.value)
+  // console.log('comprobación: efe_md_9705', efe_md_9705.value)
 
   const efe_md_9706 = computed(() => {
     return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9706")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9706', efe_md_9706.value)
+  // console.log('comprobación: efe_md_9706', efe_md_9706.value)
 
   const efe_md_9707 = computed(() => {
     return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9707")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9707', efe_md_9707.value)
-
-  const efe_md_970801 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_valorrazonable_terrenos")) * -1).toFixed(2)
-  })
-
-  const efe_md_970802 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_valorrazonable_edificios")) * -1).toFixed(2)
-  })
+  // console.log('comprobación: efe_md_9707', efe_md_9707.value)
 
   const efe_md_9708 = computed(() => {
-    return Number(efe_md_970801.value) + Number(efe_md_970802.value)
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9708")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9708', efe_md_9708.value)
+  // console.log('comprobación: efe_md_9710', efe_md_9710.value)
 
-  const efe_md_9709 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("resultadosifluc", "eri_603")) * -1).toFixed(2)
+  const efe_md_9711 = computed(() => {
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9711")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9709', efe_md_9709.value)
+  // console.log('comprobación: efe_md_9711', efe_md_9711.value)
 
-  const efe_md_9710 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("resultadosifluc", "eri_601")) * -1).toFixed(2)
+  const efe_md_97 = ref((Number(efe_md_9701.value) + Number(efe_md_9702.value) + Number(efe_md_9703.value) + Number(efe_md_9704.value) + Number(efe_md_9705.value) + Number(efe_md_9706.value) + Number(efe_md_9707.value) + Number(efe_md_9708.value) + Number(efe_md_9711.value)).toFixed(2))
+
+  // console.log('comprobación: efe_md_97', efe_md_97.value)
+
+  const efe_md_9801 = computed(() => {
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9801")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9710', efe_md_9710.value)
-
-  const efe_md_971101 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesplantasyequipos", "mov_total_bilddb")) * -1).toFixed(2)
-  })
-
-  const efe_md_971102 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesplantasyequipos", "mov_total_sida")) * -1).toFixed(2)
-  })
-
-  const efe_md_971103 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_bajasincluida_terrenos")) * -1).toFixed(2)
-  })
-
-  const efe_md_971104 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_bajasincluida_edificios")) * -1).toFixed(2)
-  })
-
-  const efe_md_971105 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_otros_terrenos")) * -1).toFixed(2)
-  })
-
-  const efe_md_971106 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movpropiedadesdeinversion", "mov_otros_edificios")) * -1).toFixed(2)
-  })
-
-  const efe_md_971107 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movintangibles", "mov_bajasincluida")) * -1).toFixed(2)
-  })
-
-  const efe_md_971108 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movintangibles", "mov_otros")) * -1).toFixed(2)
-  })
-
-  const efe_md_971109 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movactivosbiologicos", "mov_bajasoventas_total")) * -1).toFixed(2)
-  })
-
-  const efe_md_971110 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movactivosbiologicos", "mov_incrementodisminuciondevalor_total")) * -1).toFixed(2)
-  })
-
-  const efe_md_971111 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movimpuestosdiferidos", "mov_apid_generacionenrevision")) * -1).toFixed(2)
-  })
-
-  const efe_md_971112 = computed(() => {
-    return (Number(reportStore.getSingleReportValue("movimpuestosdiferidos", "mov_apid_ajustesresultadospyg")) * -1).toFixed(2)
-  })
-
-  const efe_md_971113 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movimpuestosdiferidos", "mov_ppid_generacionenrevision")).toFixed(2)
-  })
-
-  const efe_md_971114 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movimpuestosdiferidos", "mov_ppid_ajustesresultadospyg")).toFixed(2)
-  })
-
-  const efe_md_971115 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movjubilacionpatronal", "mov_costosporservicios")).toFixed(2)
-  })
-
-  const efe_md_971116 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movjubilacionpatronal", "mov_costofinanciero")).toFixed(2)
-  })
-
-  const efe_md_971117 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movjubilacionpatronal", "mov_otros")).toFixed(2)
-  })
-
-  const efe_md_971118 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movjubilacionpatronal", "mov_efectodeliquidaciones")).toFixed(2)
-  })
-
-  const efe_md_971119 = computed(() => {
-    return Number(reportStore.getSingleReportValue("deshaucio", "mov_costosporservicios")).toFixed(2)
-  })
-
-  const efe_md_971120 = computed(() => {
-    return Number(reportStore.getSingleReportValue("deshaucio", "mov_costofinanciero")).toFixed(2)
-  })
-
-  const efe_md_971121 = computed(() => {
-    return Number(reportStore.getSingleReportValue("deshaucio", "mov_otros")).toFixed(2)
-  })
-
-  const efe_md_971122 = computed(() => {
-    return Number(reportStore.getSingleReportValue("deshaucio", "mov_efectodeliquidaciones")).toFixed(2)
-  })
-
-  const efe_md_971123 = computed(() => {
-    const value = reportStore.getSingleReportValue("activosfinancieroslargoplazo", "mov_interesactualizacionantiguasinv")
-
-    return (Number(value) * -1).toFixed(2)
-  })
-
-  const efe_md_971124 = computed(() => {
-    const value = reportStore.getSingleReportValue("activosfinancieroslargoplazo", "mov_ajustes")
-
-    return (Number(value) * -1).toFixed(2)
-  })
-
-  const efe_md_9711 = ref((Number(efe_md_971101.value) + Number(efe_md_971102.value) + Number(efe_md_971103.value) + Number(efe_md_971104.value) + Number(efe_md_971105.value) + Number(efe_md_971106.value) + Number(efe_md_971107.value) + Number(efe_md_971108.value) + Number(efe_md_971109.value) + Number(efe_md_971110.value) + Number(efe_md_971111.value) + Number(efe_md_971112.value) + Number(efe_md_971113.value) + Number(efe_md_971114.value) + Number(efe_md_971115.value) + Number(efe_md_971116.value) + Number(efe_md_971117.value) + Number(efe_md_971118.value) + Number(efe_md_971119.value) + Number(efe_md_971120.value) + Number(efe_md_971121.value) + Number(efe_md_971122.value) + Number(efe_md_971123.value) + Number(efe_md_971124.value)).toFixed(2))
-
-  console.log('comprobación: efe_md_9711', efe_md_9711.value)
-
-  const efe_md_97 = ref((Number(efe_md_9701.value) + Number(efe_md_9702.value) + Number(efe_md_9703.value) + Number(efe_md_9704.value) + Number(efe_md_9705.value) + Number(efe_md_9706.value) + Number(efe_md_9707.value) + Number(efe_md_9708.value) + Number(efe_md_9709.value) + Number(efe_md_9710.value) + Number(efe_md_9711.value)).toFixed(2))
-
-  console.log('comprobación: efe_md_97', efe_md_97.value)
-
-  const efe_md_980101 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010205")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010205_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_980102 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010204")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010204_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_980103 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010207")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010207_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_980104 = computed(() => {
-    return (reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "provisionesanio"))
-  })
-
-  const efe_md_980105 = computed(() => {
-    return (reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "bajasoreversiones"))
-  })
-
-  const efe_md_980106 = computed(() => {
-    return (reportStore.getSingleReportValue("movperdidasacumuladascuentasincobrablesydeterioro", "ajustes"))
-  })
-
-  const efe_md_9801 = ref((Number(efe_md_980101.value) + Number(efe_md_980102.value) + Number(efe_md_980103.value) + Number(efe_md_980104.value) + Number(efe_md_980105.value) + Number(efe_md_980106.value)).toFixed(2))
-
-  console.log('comprobación: efe_md_9801', efe_md_9801.value)
-
-  console.log('comprobación: suma efe_md_9801', (Number(efe_md_980101.value) + Number(efe_md_980102.value) + Number(efe_md_980103.value) + Number(efe_md_980104.value) + Number(efe_md_980105.value) + Number(efe_md_980106.value)))
-
-  console.log('comprobación: efe_md_980101', efe_md_980101.value)
-  console.log('comprobación: efe_md_980102', efe_md_980102.value)
-  console.log('comprobación: efe_md_980103', efe_md_980103.value)
-  console.log('comprobación: efe_md_980104', efe_md_980104.value)
-  console.log('comprobación: efe_md_980105', efe_md_980105.value)
-  console.log('comprobación: efe_md_980106', efe_md_980106.value)
+  // console.log('comprobación: efe_md_9801', efe_md_9801.value)
 
 
   const efe_md_9802 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010206")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010206_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9802")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9802', efe_md_9802.value)
+  // console.log('comprobación: efe_md_9802', efe_md_9802.value)
 
   const efe_md_9803 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10104")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10104_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9803")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9803', efe_md_9803.value)
+  // console.log('comprobación: efe_md_9803', efe_md_9803.value)
 
-  const efe_md_980401 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10103")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10103_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
+  const efe_md_9804 = computed(() => {
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9804")).toFixed(2)
   })
 
-  // TODO corregir reactividad en estos casos
-  const efe_md_980402 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "provisionesdelanio")).toFixed(2)
+  // console.log('comprobación: efe_md_9804', efe_md_9804.value)
+
+  const efe_md_9805 = computed(() => {
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9805")).toFixed(2)
   })
 
-  const efe_md_980403 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "bajasoreversiones")).toFixed(2)
-  })
-
-  const efe_md_980404 = computed(() => {
-    return Number(reportStore.getSingleReportValue("movperdidasacumuladasvalornetorealizacion", "ajustes")).toFixed(2)
-  })
-
-  const efe_md_9804 = ref((Number(efe_md_980401.value) + Number(efe_md_980402.value) + Number(efe_md_980403.value) + Number(efe_md_980404.value)).toFixed(2))
-
-  console.log('comprobación: efe_md_9804', efe_md_9804.value)
-
-  const efe_md_980501 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010201")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010201_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_980502 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010202")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010202_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_980503 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_1010203")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_1010203_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_980504 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10105")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10105_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_980505 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10106")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10106_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_980506 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10107")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10107_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_980507 = computed(() => {
-    const current = reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10108")
-    const previous = reportStore.getSingleReportValue("activoscorrientesifluc_ant", "esf_10108_ant", true)
-
-    return ((Number(current) - Number(previous)) * -1).toFixed(2)
-  })
-
-  const efe_md_9805 = ref((Number(efe_md_980501.value) + Number(efe_md_980502.value) + Number(efe_md_980503.value) + Number(efe_md_980504.value) + Number(efe_md_980505.value) + Number(efe_md_980506.value) + Number(efe_md_980507.value)).toFixed(2))
-
-  console.log('comprobación: efe_md_9805', efe_md_9805.value)
+  // console.log('comprobación: efe_md_9805', efe_md_9805.value)
 
   const efe_md_9806 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20103")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20103_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9806")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9806', efe_md_9806.value)
+  // console.log('comprobación: efe_md_9806', efe_md_9806.value)
 
   const efe_md_9807 = computed(() => {
     return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9807")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9807', efe_md_9807.value)
+  // console.log('comprobación: efe_md_9807', efe_md_9807.value)
 
   const efe_md_9808 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_201120202")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_201120202_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9808")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9808', efe_md_9808.value)
+  // console.log('comprobación: efe_md_9808', efe_md_9808.value)
 
   const efe_md_9809 = computed(() => {
     return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9809")).toFixed(2)
   })
 
-  console.log('comprobación: efe_md_9809', efe_md_9809.value)
+  // console.log('comprobación: efe_md_9809', efe_md_9809.value)
 
-  const efe_md_981001 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20101")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20101_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
+  const efe_md_9810 = computed(() => {
+    return Number(reportStore.getSingleReportValue("conciliacionganancianetaifluc", "efe_md_9810")).toFixed(2)
   })
 
-  const efe_md_981002 = computed(() => {
-    return (0).toFixed(2)
-  })
-
-  const efe_md_981003 = computed(() => {
-    return (0).toFixed(2)
-  })
-
-  const efe_md_981004 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20105")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20105_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
-  })
-
-  const efe_md_981005 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20106")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20106_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
-  })
-
-  const efe_md_981006 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20107")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20107_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
-  })
-
-  const efe_md_981007 = computed(() => {
-    return Number(reportStore.getSingleReportValue("resultadosifluc", "eri_601")).toFixed(2)
-  })
-
-  const efe_md_981008 = computed(() => {
-    return Number(reportStore.getSingleReportValue("resultadosifluc", "eri_603")).toFixed(2)
-  })
-
-  const efe_md_981009 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20108")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20108_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
-  })
-
-  const efe_md_981010 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20109")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20109_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
-  })
-
-  const efe_md_981011 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20110")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20110_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
-  })
-
-  const efe_md_981012 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20111")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20111_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
-  })
-
-  const efe_md_981013 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20113")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20113_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
-  })
-
-  const efe_md_981014 = computed(() => {
-    const current = reportStore.getSingleReportValue("pasivoscorrientesifluc", "esf_20114")
-    const previous = reportStore.getSingleReportValue("pasivoscorrientesifluc_ant", "esf_20114_ant", true)
-
-    return (Number(current) - Number(previous)).toFixed(2)
-  })
-
-  const efe_md_9810 = ref((Number(efe_md_981001.value) + Number(efe_md_981002.value) + Number(efe_md_981003.value) + Number(efe_md_981004.value) + Number(efe_md_981005.value) + Number(efe_md_981006.value) + Number(efe_md_981007.value) + Number(efe_md_981008.value) + Number(efe_md_981009.value) + Number(efe_md_981010.value) + Number(efe_md_981011.value) + Number(efe_md_981012.value) + Number(efe_md_981013.value) + Number(efe_md_981014.value)).toFixed(2))
-
-  console.log('comprobación: efe_md_9810', efe_md_9810.value)
+  // console.log('comprobación: efe_md_9810', efe_md_9810.value)
 
   const efe_md_98 = ref((Number(efe_md_9801.value) + Number(efe_md_9802.value) + Number(efe_md_9803.value) + Number(efe_md_9804.value) + Number(efe_md_9805.value) + Number(efe_md_9806.value) + Number(efe_md_9807.value) + Number(efe_md_9808.value) + Number(efe_md_9809.value) + Number(efe_md_9810.value)).toFixed(2))
 
-  console.log('comprobación: efe_md_98', efe_md_98.value)
+  // console.log('comprobación: efe_md_98', efe_md_98.value)
+
+  console.log('comprobación: efe_md_9820', (Number(efe_md_96.value) + Number(efe_md_97.value) + Number(efe_md_98.value)).toFixed(2))
 
   return (Number(efe_md_96.value) + Number(efe_md_97.value) + Number(efe_md_98.value)).toFixed(2)
 }

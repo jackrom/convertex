@@ -34,29 +34,38 @@ let eri_705_ant = operacionesDiscontinuadasAnt['eri_705_ant']
 let eri_706_ant = operacionesDiscontinuadasAnt['eri_706_ant']
 let eri_707_ant = operacionesDiscontinuadasAnt['eri_707_ant']
 
-let convertirNegativo_703_ant = async id => { eri_703_ant.value = (Number(eri_703_ant.value) > 0) ? Number(eri_703_ant.value) * -1 : Number(eri_703_ant.value) }
-let convertirNegativo_705_ant = async id => { eri_705_ant.value = (Number(eri_705_ant.value) > 0) ? Number(eri_705_ant.value) * -1 : Number(eri_705_ant.value) }
+let convertirNegativo_701_ant = async id => { eri_701_ant.value = (Number(eri_701_ant.value) > 0) ? Number(eri_701_ant.value) : Number(eri_701_ant.value) * -1 }
+let convertirNegativo_703_ant = async id => { eri_703_ant.value = (Number(eri_703_ant.value) > 0) ? Number(eri_703_ant.value): Number(eri_703_ant.value)  * -1 }
+let convertirNegativo_705_ant = async id => { eri_705_ant.value = (Number(eri_705_ant.value) > 0) ? Number(eri_705_ant.value): Number(eri_705_ant.value)  * -1 }
 
-let convertirNegativo_703 = async id => { eri_703.value = (Number(eri_703.value) > 0) ? Number(eri_703.value) * -1 : Number(eri_703.value) }
-let convertirNegativo_705 = async id => { eri_705.value = (Number(eri_705.value) > 0) ? Number(eri_705.value) * -1 : Number(eri_705.value) }
+let convertirNegativo_701 = async id => { eri_701.value = (Number(eri_701.value) > 0) ? Number(eri_701.value) : Number(eri_701.value) * -1 }
+let convertirNegativo_703 = async id => { eri_703.value = (Number(eri_703.value) > 0) ? Number(eri_703.value) : Number(eri_703.value)  * -1 }
+let convertirNegativo_705 = async id => { eri_705.value = (Number(eri_705.value) > 0) ? Number(eri_705.value) : Number(eri_705.value)  * -1 }
 
 const eri_607 = computed(() => {
-  return calcular_eri_607()
+  return Number(reportStore.getSingleReportValue("resultadosifluc", "eri_607")).toFixed(2)
 })
 
 const eri_607_ant = computed(() => {
   return Number(reportStore.getSingleReportValue("resultadosifluc_ant", "eri_607_ant", true)).toFixed(2)
 })
 
-const eri_707 = computed(() => {
-  return calcular_eri_607()
-})
+let eri_707 = ref()
+
+console.log('eri_607: ', eri_607.value)
+console.log('eri_706: ', eri_706.value)
+console.log((Number(eri_607.value) + Number(eri_706.value)).toFixed(2))
 
 const handleActionClick = async id => {
-  eri_607.value = calcular_eri_607()
-  eri_702.value = (Number(eri_700.value) + Number(eri_701.value)).toFixed(2)
-  eri_704.value = (Number(eri_702.value) + Number(eri_703.value)).toFixed(2)
-  eri_706.value = (Number(eri_704.value) + Number(eri_705.value)).toFixed(2)
+  // eri_607.value = calcular_eri_607()
+  eri_702.value = (Number(eri_700.value) - Number(eri_701.value)).toFixed(2)
+  eri_704.value = (Number(eri_702.value) - Number(eri_703.value)).toFixed(2)
+  eri_706.value = (Number(eri_704.value) - Number(eri_705.value)).toFixed(2)
+  eri_707.value = (Number(eri_607.value) + (Number(eri_706.value))).toFixed(2)
+
+  console.log('eri_607: ', eri_607.value)
+  console.log('eri_706: ', eri_706.value)
+  console.log((Number(eri_607.value) + Number(eri_706.value)).toFixed(2))
 
   const resultadosoperacionesdiscontinuas = {
     eri_700: eri_700.value,
@@ -76,9 +85,9 @@ const handleActionClick = async id => {
 }
 
 const handleActionClick_ant = async id => {
-  eri_702_ant.value = (Number(eri_700_ant.value) + Number(eri_701_ant.value)).toFixed(2)
-  eri_704_ant.value = (Number(eri_702_ant.value) + Number(eri_703_ant.value)).toFixed(2)
-  eri_706_ant.value = (Number(eri_704_ant.value) + Number(eri_705_ant.value)).toFixed(2)
+  eri_702_ant.value = (Number(eri_700_ant.value) - Number(eri_701_ant.value)).toFixed(2)
+  eri_704_ant.value = (Number(eri_702_ant.value) - Number(eri_703_ant.value)).toFixed(2)
+  eri_706_ant.value = (Number(eri_704_ant.value) - Number(eri_705_ant.value)).toFixed(2)
   eri_707_ant.value = (Number(eri_706_ant.value) + Number(eri_607_ant.value)).toFixed(2)
 
   const resultadosoperacionesdiscontinuas_ant = {
@@ -155,10 +164,10 @@ onUnmounted(() => handleActionClick_ant(1))
                   <span class="text-sm">701</span>
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 701" @blur="handleActionClick(this)" type="number" v-model="eri_701" />
+                  <VTextField label="(+) 701" @blur="handleActionClick(this); convertirNegativo_701();" type="number" v-model="eri_701" />
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 701" @blur="handleActionClick_ant(this)" type="number" v-model="eri_701_ant" />
+                  <VTextField label="(+) 701" @blur="handleActionClick_ant(this); convertirNegativo_701_ant();" type="number" v-model="eri_701_ant" />
                 </VCol>
               </VRow>
 

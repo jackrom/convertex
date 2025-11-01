@@ -247,7 +247,9 @@ const onSubmit = () => {
           </template>
 
           <VCardTitle class="font-weight-bold text-h3 py-1">
-            <img src="../assets/images/logo.png" width="200"/>
+            <img
+              src="../assets/images/logo.png"
+              width="200">
           </VCardTitle>
         </VCardItem>
         <VCardText class="pt-1">

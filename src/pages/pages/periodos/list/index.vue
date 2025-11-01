@@ -25,6 +25,8 @@ const totalEmpresas = ref(0)
 const periodos = ref([])
 const empresas = ref([])
 const loading = ref([])
+const indice = ref([])
+const counter = ref([])
 const reporteActualDelPeriodoAnteriorADuplicar = ref()
 const indiceDuplicarPeriodo = ref()
 
@@ -131,8 +133,19 @@ const eliminarPeriodo = id => {
 }
 
 const confirmarDuplicarPeriodo = (id, index) => {
-  indiceDuplicarPeriodo.value = index
-  isConfirmDialogoDuplicateOpen.value = true
+  try {
+    loading.value[index] = true
+    indice.value[index] = 60
+    counter.value[index] = setInterval(() => {
+      indice.value[index] --
+    }, 1000)
+
+    indiceDuplicarPeriodo.value = index
+    isConfirmDialogoDuplicateOpen.value = true
+
+  } catch (error) {
+    console.error('Error al descargar el reporte Excel:', error)
+  }
 }
 
 const addNewPeriodo = periodoData => {
@@ -254,6 +267,7 @@ onMounted(async () => {
                   class="text-center"
                   style="width: 5rem;"
                 >
+                  <span v-if="loading[index]" class="text-error" style="margin-right: 10px;">Espere ... {{ indice[index] }}</span>
                   <VBtn
                     icon
                     size="x-small"

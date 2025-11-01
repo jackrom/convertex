@@ -14,6 +14,12 @@ const eri_80102 = ref(Number(reportStore.getSingleReportValue("resultadospartici
 const eri_80101_ant = ref(Number(reportStore.getSingleReportValue("resultadosparticipacioncontroladoraifluc_ant", "eri_80101_ant", true)).toFixed(2))
 const eri_80102_ant = ref(Number(reportStore.getSingleReportValue("resultadosparticipacioncontroladoraifluc_ant", "eri_80102_ant", true)).toFixed(2))
 
+let convertirNegativo_80101 = async id => { eri_80101.value = (Number(eri_80101.value)  > 0) ? Number(eri_80101.value): Number(eri_80101.value)  * -1 }
+let convertirNegativo_80102 = async id => { eri_80102.value = (Number(eri_80102.value)  > 0) ? Number(eri_80102.value): Number(eri_80102.value)  * -1 }
+
+let convertirNegativo_80101_ant = async id => { eri_80101_ant.value = (Number(eri_80101_ant.value)  > 0) ? Number(eri_80101_ant.value): Number(eri_80101_ant.value)  * -1 }
+let convertirNegativo_80102_ant = async id => { eri_80102_ant.value = (Number(eri_80102_ant.value)  > 0) ? Number(eri_80102_ant.value): Number(eri_80102_ant.value)  * -1 }
+
 const handleActionClick = async id => {
   const resultadosparticipacioncontroladora = {
     eri_80101: eri_80101.value,
@@ -80,10 +86,10 @@ onUnmounted(() => handleActionClick_ant(1))
                   <span class="text-sm">80101</span>
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80101" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this)" type="number" v-model="eri_80101" />
+                  <VTextField label="(+) 80101" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this); convertirNegativo_80101()" type="number" v-model="eri_80101" />
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80101" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this)" type="number" v-model="eri_80101_ant" />
+                  <VTextField label="(+) 80101" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this); convertirNegativo_80101_ant()" type="number" v-model="eri_80101_ant" />
                 </VCol>
               </VRow>
 
@@ -95,10 +101,10 @@ onUnmounted(() => handleActionClick_ant(1))
                   <span class="text-sm">80102</span>
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80102" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this)" type="number" v-model="eri_80102" />
+                  <VTextField label="(+) 80102" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this); convertirNegativo_80102()" type="number" v-model="eri_80102" />
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80102" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this)" type="number" v-model="eri_80102_ant" />
+                  <VTextField label="(+) 80102" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this); convertirNegativo_80102_ant()" type="number" v-model="eri_80102_ant" />
                 </VCol>
               </VRow>
 

@@ -39,6 +39,16 @@ let eri_801_ant = otrosResultadosAnt['eri_801_ant']
 let convertirNegativo_80006_ant = async id => { eri_80006_ant.value = (Number(eri_80006_ant.value) > 0) ? Number(eri_80006_ant.value) * -1 : Number(eri_80006_ant.value) }
 let convertirNegativo_80006 = async id => { eri_80006.value = (Number(eri_80006.value)  > 0) ? Number(eri_80006.value) * -1 : Number(eri_80006.value) }
 
+let convertirNegativo_80001 = async id => { eri_80001.value = (Number(eri_80001.value)  > 0) ? Number(eri_80001.value): Number(eri_80001.value) * -1  }
+let convertirNegativo_80003 = async id => { eri_80003.value = (Number(eri_80003.value)  > 0) ? Number(eri_80003.value): Number(eri_80003.value)  * -1 }
+let convertirNegativo_80004 = async id => { eri_80004.value = (Number(eri_80004.value)  > 0) ? Number(eri_80004.value): Number(eri_80004.value)  * -1 }
+let convertirNegativo_80008 = async id => { eri_80008.value = (Number(eri_80008.value)  > 0) ? Number(eri_80008.value): Number(eri_80008.value)  * -1 }
+
+let convertirNegativo_80001_ant = async id => { eri_80001_ant.value = (Number(eri_80001_ant.value)  > 0) ? Number(eri_80001_ant.value): Number(eri_80001_ant.value) * -1  }
+let convertirNegativo_80003_ant = async id => { eri_80003_ant.value = (Number(eri_80003_ant.value)  > 0) ? Number(eri_80003_ant.value): Number(eri_80003_ant.value)  * -1 }
+let convertirNegativo_80004_ant = async id => { eri_80004_ant.value = (Number(eri_80004_ant.value)  > 0) ? Number(eri_80004_ant.value): Number(eri_80004_ant.value)  * -1 }
+let convertirNegativo_80008_ant = async id => { eri_80008_ant.value = (Number(eri_80008_ant.value)  > 0) ? Number(eri_80008_ant.value): Number(eri_80008_ant.value)  * -1 }
+
 const eri_707 = computed(() => {
   return Number(reportStore.getSingleReportValue("operacionesdiscontinuadasifluc", "eri_707")).toFixed(2)
 })
@@ -152,10 +162,10 @@ onUnmounted(() => handleActionClick_ant(1))
                   <span class="text-sm">80001</span>
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80001" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this)" type="number" v-model="eri_80001" />
+                  <VTextField label="(+) 80001" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this); convertirNegativo_80001()" type="number" v-model="eri_80001" />
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80001" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this)" type="number" v-model="eri_80001_ant" />
+                  <VTextField label="(+) 80001" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this); convertirNegativo_80001_ant();" type="number" v-model="eri_80001_ant" />
                 </VCol>
               </VRow>
 
@@ -182,10 +192,10 @@ onUnmounted(() => handleActionClick_ant(1))
                   <span class="text-sm">80003</span>
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80003" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this)" type="number" v-model="eri_80003" />
+                  <VTextField label="(+) 80003" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this); convertirNegativo_80003();" type="number" v-model="eri_80003" />
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80003" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this)" type="number" v-model="eri_80003_ant" />
+                  <VTextField label="(+) 80003" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this); convertirNegativo_80003_ant();" type="number" v-model="eri_80003_ant" />
                 </VCol>
               </VRow>
 
@@ -197,10 +207,10 @@ onUnmounted(() => handleActionClick_ant(1))
                   <span class="text-sm">80004</span>
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80004" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this)" type="number" v-model="eri_80004" />
+                  <VTextField label="(+) 80004" @blur="handleActionClick(this)" @input="handleActionClick(this)" @keyup="handleActionClick(this); convertirNegativo_80004();" type="number" v-model="eri_80004" />
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80004" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this)" type="number" v-model="eri_80004_ant" />
+                  <VTextField label="(+) 80004" @blur="handleActionClick_ant(this)" @input="handleActionClick_ant(this)" @keyup="handleActionClick_ant(this); convertirNegativo_80004_ant();" type="number" v-model="eri_80004_ant" />
                 </VCol>
               </VRow>
 
@@ -257,10 +267,10 @@ onUnmounted(() => handleActionClick_ant(1))
                   <span class="text-sm">80008</span>
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80008" @blur="handleActionClick(this)" type="number" v-model="eri_80008" />
+                  <VTextField label="(+) 80008" @blur="handleActionClick(this); convertirNegativo_80008();" type="number" v-model="eri_80008" />
                 </VCol>
                 <VCol cols="12" md="2">
-                  <VTextField label="(+) 80008" @blur="handleActionClick_ant(this)" type="number" v-model="eri_80008_ant" />
+                  <VTextField label="(+) 80008" @blur="handleActionClick_ant(this); convertirNegativo_80008_ant();" type="number" v-model="eri_80008_ant" />
                 </VCol>
               </VRow>
 

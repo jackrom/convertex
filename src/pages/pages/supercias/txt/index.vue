@@ -93,6 +93,7 @@ const emit = defineEmits([
   'diferencia30607_SI',
   'diferencia30701_SI',
   'diferencia30702_SI',
+  'diferencia31_SI',
   'diferencia301_SF',
   'diferencia302_SF',
   'diferencia303_SF',
@@ -111,6 +112,7 @@ const emit = defineEmits([
   'diferencia30607_SF',
   'diferencia30701_SF',
   'diferencia30702_SF',
+  'diferencia31_SF',
   'totaldiferenciaefeporcuadrar_actual',
   'totaldiferenciaefeporcuadrar_anterior',
   'habilitarBotonDescargaTxt',
@@ -180,12 +182,15 @@ const openResumenEsfPanel = () => {
   mostrarResumenEsf.value = true
   verResultadosEsfTrece()
   calcularEsfCuadre()
+
+  closePanels()
 }
 
 // VENTANA FLOTANTE RESUMEN SALDOSINICIALES ECP
 const mostrarECP_SaldosIniciales = ref(false)
 
 const openECP_SaldosInicialesPanel = () => {
+  closePanels()
   mostrarECP_SaldosIniciales.value = true
   calcularEcpCuadre()
 }
@@ -194,6 +199,7 @@ const openECP_SaldosInicialesPanel = () => {
 const mostrarECP_SaldosFinales = ref(false)
 
 const openECP_SaldosFinalesPanel = () => {
+  closePanels()
   mostrarECP_SaldosFinales.value = true
   calcularEcpCuadre()
 }
@@ -204,16 +210,19 @@ const mostrarResumenEfe = ref(false)
 const mostrarResumenEfeDynamicFlow = ref(false)
 
 const openResumenEriPanel = () => {
+  closePanels()
   mostrarResumenEri.value = true
   calcularEriCuadre()
   calcular607()
 }
 
 const openResumenEfePanel = () => {
+  closePanels()
   mostrarResumenEfe.value = true
 
   efe_9507.value = calcular_9507()
-  efe_9507_ant.value = calcular_9507_ant()
+  efe_9820.value = calcular_9820()
+  console.log("9820: ", efe_9820.value)
   resumen_diferenciaporcuadrar_efe_af.value = (Number(efe_9507.value) - Number(reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10101"))).toFixed(2)
   efe_9501.value = calcular_9501()
 
@@ -272,6 +281,8 @@ pasivos.value = {
 patrimonio.value = {
   pat: Number(reportStore.getSingleReportValue("patrimonioifluc", "esf_3")).toFixed(2),
   pat_301: Number(reportStore.getSingleReportValue("patrimonioifluc", "esf_301")).toFixed(2),
+  pat_31: Number(reportStore.getSingleReportValue("patrimonioifluc", "esf_31")).toFixed(2),
+
   pat_302: Number(reportStore.getSingleReportValue("patrimonioifluc", "esf_302")).toFixed(2),
   pat_303: Number(reportStore.getSingleReportValue("patrimonioifluc", "esf_303")).toFixed(2),
   pat_30401: Number(reportStore.getSingleReportValue("patrimonioifluc", "esf_30401")).toFixed(2),
@@ -291,6 +302,8 @@ patrimonio.value = {
   pat_30701: Number(reportStore.getSingleReportValue("patrimonioifluc", "esf_30701")).toFixed(2),
   pat_30702: Number(reportStore.getSingleReportValue("patrimonioifluc", "esf_30702")).toFixed(2),
   pat_ant: Number(reportStore.getSingleReportValue("patrimonioifluc_ant", "esf_3_ant", true)).toFixed(2),
+
+  pat_31_ant: Number(reportStore.getSingleReportValue("patrimonioifluc_ant", "esf_31_ant", true)).toFixed(2),
   pat_301_ant: Number(reportStore.getSingleReportValue("patrimonioifluc_ant", "esf_301_ant", true)).toFixed(2),
   pat_302_ant: Number(reportStore.getSingleReportValue("patrimonioifluc_ant", "esf_302_ant", true)).toFixed(2),
   pat_303_ant: Number(reportStore.getSingleReportValue("patrimonioifluc_ant", "esf_303_ant", true)).toFixed(2),
@@ -310,6 +323,7 @@ patrimonio.value = {
   pat_307_ant: Number(reportStore.getSingleReportValue("patrimonioifluc_ant", "esf_307_ant", true)).toFixed(2),
   pat_30701_ant: Number(reportStore.getSingleReportValue("patrimonioifluc_ant", "esf_30701_ant", true)).toFixed(2),
   pat_30702_ant: Number(reportStore.getSingleReportValue("patrimonioifluc_ant", "esf_30702_ant", true)).toFixed(2),
+  pat_99_31: Number(reportStore.getSingleReportValue("ecpifluc", "ecp_99_31")).toFixed(2),
   pat_99_301: Number(reportStore.getSingleReportValue("ecpifluc", "ecp_99_301")).toFixed(2),
   pat_99_302: Number(reportStore.getSingleReportValue("ecpifluc", "ecp_99_302")).toFixed(2),
   pat_99_303: Number(reportStore.getSingleReportValue("ecpifluc", "ecp_99_303")).toFixed(2),
@@ -409,7 +423,8 @@ const diferenciaperiodoanterior = ref(0)
 
 const resumen_diferenciaporcuadrar_efe_af = ref(Number(calcular_9507).toFixed(2) - Number(reportStore.getSingleReportValue("activoscorrientesifluc", "esf_10101")).toFixed(2))
 
-const resumen_diferenciaporcuadrar_efe_celgnylfo = ref(Number(reportStore.diferenciaporcuadrar_efe_celgnylfo).toFixed((2)))
+const resumen_diferenciaporcuadrar_efe_celgnylfo = computed(() => (Number(reportStore.diferenciaporcuadrar_efe_celgnylfo).toFixed((2))))
+console.log("resumen_diferenciaporcuadrar_efe_celgnylfo", resumen_diferenciaporcuadrar_efe_celgnylfo.value)
 
 const efe_9501 = ref(calcular_9501())
 const efe_9505 = ref(calcular_9505())
@@ -632,6 +647,8 @@ const guardarReporteTxt = () => {
         'otros',
       ]
 
+      console.log('sectionKeys["ecpifluc"]', sectionKeys['ecpifluc'])
+
       const sections = getProcessedDataBatch(sectionKeys)
 
       const antSectionKeys = sectionKeys.map(key => `${key}_ant`)
@@ -840,6 +857,7 @@ let pasivosNoCorrientesParaResumen, pasivosNoCorrientesParaResumenAt
 let patrimonioParaResumen, patrimonioParaResumenAt
 let activosCorrientesParaResumen, activosCorrientesParaResumenAt
 let activosNoCorrientesParaResumen, activosNoCorrientesParaResumenAt
+let  totalactivosactual, totalactivosanterior, totalpasivosactual, tpyp, tpyp_ant
 
 const calcularResumenesESF = () => {
   const sufijos = [
@@ -986,17 +1004,31 @@ const calcularResumenesESF = () => {
       return total + valor
     }, 0)
     .toFixed(2)
+
+  totalactivosactual = computed(() => (Number(activosCorrientesParaResumen) + Number(activosNoCorrientesParaResumen)).toFixed(2))
+  totalactivosanterior = computed(() => (Number(activosCorrientesParaResumenAt) + Number(activosNoCorrientesParaResumenAt)).toFixed(2))
+  totalpasivosactual = computed(() => (Number(pasivosCorrientesParaResumen) + Number(pasivosNoCorrientesParaResumen)).toFixed(2))
+
+  tpyp = computed(() => (Number(pasivosCorrientesParaResumen) + Number(pasivosNoCorrientesParaResumen) + Number(patrimonioParaResumen)).toFixed(2))
+  tpyp_ant = computed(() => (Number(pasivosCorrientesParaResumenAt) + Number(pasivosNoCorrientesParaResumenAt) + Number(patrimonioParaResumenAt)).toFixed(2))
+
+
+  console.log('activosCorrientesParaResumen: ', activosCorrientesParaResumen)
+  console.log('activosNoCorrientesParaResumen: ', activosNoCorrientesParaResumen)
 }
 
 calcularResumenesESF()
 
 // RESUMEN ESF
-const tpyp_ant = computed(() => (Number(pasivosCorrientesParaResumenAt) + Number(pasivosNoCorrientesParaResumenAt) + Number(patrimonioParaResumenAt)).toFixed(2))
+tpyp_ant = computed(() => (Number(pasivosCorrientesParaResumenAt) + Number(pasivosNoCorrientesParaResumenAt) + Number(patrimonioParaResumenAt)).toFixed(2))
 
-const tpyp = computed(() => (Number(pasivosCorrientesParaResumen) + Number(pasivosNoCorrientesParaResumen) + Number(patrimonioParaResumen)).toFixed(2))
-const totalactivosactual = computed(() => (Number(activosCorrientesParaResumen) + Number(activosNoCorrientesParaResumen)).toFixed(2))
-const totalactivosanterior = computed(() => (Number(activosCorrientesParaResumenAt) + Number(activosNoCorrientesParaResumenAt)).toFixed(2))
-const totalpasivosactual = computed(() => (Number(pasivosCorrientesParaResumen) + Number(pasivosNoCorrientesParaResumen)).toFixed(2))
+tpyp = computed(() => (Number(pasivosCorrientesParaResumen) + Number(pasivosNoCorrientesParaResumen) + Number(patrimonioParaResumen)).toFixed(2))
+
+totalactivosactual = computed(() => (Number(activosCorrientesParaResumen) + Number(activosNoCorrientesParaResumen)).toFixed(2))
+
+totalactivosanterior = computed(() => (Number(activosCorrientesParaResumenAt) + Number(activosNoCorrientesParaResumenAt)).toFixed(2))
+
+totalpasivosactual = computed(() => (Number(pasivosCorrientesParaResumen) + Number(pasivosNoCorrientesParaResumen)).toFixed(2))
 
 let movCuadre = ref(true)
 
@@ -1423,11 +1455,35 @@ const calcularResumenesERI = () => {
   // GASTOS ADMINISTRATIVOS
   const sufijosGastosAdministrativosGrupos = [
     [
-      "5020201", "5020202", "5020203", "5020204", "5020205", "5020206", "5020207",
-      "5020208", "5020209", "5020210", "5020211", "5020212", "5020213", "5020214",
-      "5020215", "5020216", "5020217", "5020218", "5020219", "5020220",
-      "5020221", "5020222", "5020223", "5020224", "5020225", "5020226",
-      "5020227", "5020228", "5020229"
+      "5020201",
+      "5020202",
+      "5020203",
+      "5020204",
+      "5020205",
+      "5020206",
+      "5020207",
+      "5020208",
+      "5020209",
+      "5020210",
+      "5020211",
+      "5020212",
+      "5020213",
+      "5020214",
+      "5020215",
+      "5020216",
+      "5020217",
+      "5020218",
+      "5020219",
+      "5020220",
+      "5020221",
+      "5020222",
+      "5020223",
+      "5020224",
+      "5020225",
+      "5020226",
+      "5020227",
+      "5020228",
+      "5020229",
     ],
     ["502022101", "502022102", "502022103"],
     ["502022201", "502022202"],
@@ -1576,6 +1632,9 @@ watch(pat_307_ant, () => {
 
 // RESUMEN ECP
 
+const esf_31 = computed(() => Number(reportStore.getSingleReportValue("patrimonioifluc", "esf_31")).toFixed(2))
+const esf_31_ant = computed(() => Number(reportStore.getSingleReportValue("patrimonioifluc_ant", "esf_31_ant", true)).toFixed(2))
+
 /* saldos iniciales */
 const dif_301_si = computed(() => ((patrimonio.value.pat_301) - (patrimonio.value.pat_99_301)).toFixed(2))
 const dif_302_si = computed(() => ((patrimonio.value.pat_302) - (patrimonio.value.pat_99_302)).toFixed(2))
@@ -1595,6 +1654,7 @@ const dif_30606_si = computed(() => ((patrimonio.value.pat_30606) - (patrimonio.
 const dif_30607_si = computed(() => ((patrimonio.value.pat_30607) - (patrimonio.value.pat_99_30607)).toFixed(2))
 const dif_30701_si = computed(() => ((patrimonio.value.pat_30701) - (patrimonio.value.pat_99_30701)).toFixed(2))
 const dif_30702_si = computed(() => ((patrimonio.value.pat_30702) - (patrimonio.value.pat_99_30702)).toFixed(2))
+const dif_31_si = computed(() => ((esf_31.value) - (patrimonio.value.pat_99_31)).toFixed(2))
 
 /* saldos finales */
 const dif_301_sf = computed(() => ((patrimonio.value.pat_301_ant) - (patrimonio.value.pat_9901_301)).toFixed(2))
@@ -1615,6 +1675,7 @@ const dif_30606_sf = computed(() => ((patrimonio.value.pat_30606_ant) - (patrimo
 const dif_30607_sf = computed(() => ((patrimonio.value.pat_30607_ant) - (patrimonio.value.pat_9901_30607)).toFixed(2))
 const dif_30701_sf = computed(() => ((patrimonio.value.pat_30701_ant) - (patrimonio.value.pat_9901_30701)).toFixed(2))
 const dif_30702_sf = computed(() => ((patrimonio.value.pat_30702_ant) - (patrimonio.value.pat_9901_30702)).toFixed(2))
+const dif_31_sf = computed(() => ((esf_31_ant.value) - (patrimonio.value.pat_9901_31)).toFixed(2))
 
 watch(dif_301_si, () => {
   // eslint-disable-next-line vue/custom-event-name-casing
@@ -1704,6 +1765,11 @@ watch(dif_30701_si, () => {
 watch(dif_30702_si, () => {
   // eslint-disable-next-line vue/custom-event-name-casing
   emit('diferencia30702_SI', dif_30702_si.value)
+}, { immediate: true })
+
+watch(dif_31_si, () => {
+  // eslint-disable-next-line vue/custom-event-name-casing
+  emit('diferencia31_SI', dif_31_si.value)
 }, { immediate: true })
 
 watch(dif_301_sf, () => {
@@ -1796,6 +1862,11 @@ watch(dif_30702_sf, () => {
   emit('diferencia30702_SF', dif_30702_sf.value)
 }, { immediate: true })
 
+watch(dif_31_sf, () => {
+  // eslint-disable-next-line vue/custom-event-name-casing
+  emit('diferencia31_SF', dif_31_sf.value)
+}, { immediate: true })
+
 const reporte = ref(false)
 
 const sellarencabezado = () => {
@@ -1851,6 +1922,19 @@ const efeEventClick = () => {
 const efeDFEventClick = () => {
 
 }
+
+
+function openAC() {
+  panel.value = ['ac', 'anc', 'pc', 'pnc', 'pat']
+}
+function closePanels() {
+  panel.value = null
+  panel2.value = null
+  panel3.value = null
+  panel4.value = null
+  panel5.value = null
+}
+
 
 const turboNotasEventClick = () => {
   console.log('se ha hecho click en TurboNotas tab')
@@ -2115,23 +2199,25 @@ onMounted(() => {
               color="error"
             />
           </VTab>
-          <!-- MOV TAB MAIN
-          <VTab
+          <!--
+            MOV TAB MAIN
+            <VTab
             value="mov"
             @click="movEventClick"
-          >
+            >
             MOV
             <VIcon
-              v-if="movCuadre"
-              icon="tabler-check"
-              color="success"
+            v-if="movCuadre"
+            icon="tabler-check"
+            color="success"
             />
             <VIcon
-              v-else
-              icon="tabler-alert-circle"
-              color="error"
+            v-else
+            icon="tabler-alert-circle"
+            color="error"
             />
-          </VTab> -->
+            </VTab>
+          -->
           <!-- ECP TAB MAIN -->
           <VTab
             value="ecp"
@@ -2166,39 +2252,43 @@ onMounted(() => {
               color="error"
             />
           </VTab>
-          <!-- TURBO NOTAS
-          <VTab
+          <!--
+            TURBO NOTAS
+            <VTab
             value="turbonotas"
             @click="turboNotasEventClick"
-          >
+            >
             TURBO NOTAS
-          </VTab>
+            </VTab>
 
-          <VTab
+            <VTab
             v-if="turbonotas.id"
             value="informessocietarios"
             @click="turboNotasEventClick"
-          >
+            >
             INFORMES SOCIETARIOS
-          </VTab>
-
-          <VTab
+            </VTab>
+          -->
+          <!--
+            EFE DYNAMIC FLOW TAB MAIN
+            <VTab
             value="dynamic-flow"
             @click="efeDinamicEventClick"
             v-if="efeCuadre"
-          >
+            >
             DYNAMIC-FLOW
             <VIcon
-              v-if="efeCuadre"
-              icon="tabler-check"
-              color="success"
+            v-if="efeCuadre"
+            icon="tabler-check"
+            color="success"
             />
             <VIcon
-              v-else
-              icon="tabler-alert-circle"
-              color="error"
+            v-else
+            icon="tabler-alert-circle"
+            color="error"
             />
-          </VTab> -->
+            </VTab>
+          -->
         </VTabs>
 
         <VDivider />
@@ -2210,7 +2300,7 @@ onMounted(() => {
               <VWindowItem value="mapeo1">
                 <h3
                   class="ml-4"
-                  style="color:#2D3455"
+                  style="color:#477130"
                 >
                   Si deseas IMPORTAR mediante EXCEL la información del Estado de Situación Financiera (ESF) y Estado de Resultado Integral (ERI) utilice esta opción. Caso contrario, puede ingresar el ESF y ERI la información manualmente.
                 </h3>
@@ -2248,6 +2338,7 @@ onMounted(() => {
                   <VExpansionPanel
                     id="activoscorrientes"
                     :key="0"
+                    :value="ac"
                     eager
                   >
                     <VExpansionPanelTitle
@@ -2269,6 +2360,7 @@ onMounted(() => {
                   <VExpansionPanel
                     id="activosnocorrientes"
                     :key="1"
+                    :value="anc"
                     eager
                   >
                     <VExpansionPanelTitle
@@ -2288,6 +2380,7 @@ onMounted(() => {
                   <!-- SECTION PASIVOS CORRIENTES -->
                   <VExpansionPanel
                     :key="2"
+                    :value="pc"
                     eager
                   >
                     <VExpansionPanelTitle
@@ -2308,6 +2401,7 @@ onMounted(() => {
                   <!-- SECTION PASIVOS NO CORRIENTES -->
                   <VExpansionPanel
                     :key="3"
+                    :value="pnc"
                     eager
                   >
                     <VExpansionPanelTitle
@@ -2328,6 +2422,7 @@ onMounted(() => {
                   <!-- SECTION Patrimonio -->
                   <VExpansionPanel
                     :key="4"
+                    :value="pat"
                     eager
                   >
                     <VExpansionPanelTitle
@@ -4287,6 +4382,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -4355,6 +4451,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -4423,6 +4520,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -4491,6 +4589,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -4559,6 +4658,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -4627,6 +4727,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -4695,6 +4796,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -4763,6 +4865,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -4969,6 +5072,76 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
+
+                              <VRow class="font-weight-medium px-4 mt-10">
+                                <VCol
+                                  cols="12"
+                                  md="4"
+                                >
+                                  <span class="text-sm">PARTICIPACION NO CONTROLADORA</span>
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="1"
+                                >
+                                  <span
+                                    class="text-sm text-primary"
+                                    style="font-size:0.900rem"
+                                  >31</span>
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="2"
+                                >
+                                  <VTextField
+                                    v-model="esf_31_ant"
+                                    label=""
+                                    type="number"
+                                    disabled
+                                  />
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="2"
+                                >
+                                  <VTextField
+
+                                    v-model="patrimonio.pat_9901_31"
+                                    label=""
+                                    type="number"
+                                    disabled
+                                  />
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="2"
+                                >
+                                  <VTextField
+
+                                    v-model="dif_31_sf"
+                                    label=""
+                                    type="number"
+                                    disabled
+                                  />
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="1"
+                                  style="text-align: center !important"
+                                >
+                                  <VIcon
+                                    v-if="dif_31_sf == 0"
+                                    icon="tabler-check"
+                                    color="success"
+                                  />
+                                  <VIcon
+                                    v-else
+                                    icon="tabler-alert-circle"
+                                    color="error"
+                                  />
+                                </VCol>
+                              </VRow>
                             </VCol>
                           </VRow>
                         </div>
@@ -4976,7 +5149,7 @@ onMounted(() => {
                     </VCardText>
                   </VCard>
                 </VDialog>
-                <!-- Diálogo para Resumen Saldos Iniciales ECP -->
+                <!-- Diálogo para Resumen Saldos Finales ECP -->
                 <VDialog
                   v-model="mostrarECP_SaldosFinales"
                   max-width="1000px"
@@ -5615,6 +5788,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -5683,6 +5857,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -5751,6 +5926,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -5819,6 +5995,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -5887,6 +6064,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -5955,6 +6133,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -6023,6 +6202,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -6091,6 +6271,7 @@ onMounted(() => {
                                   />
                                 </VCol>
                               </VRow>
+
                               <VRow class="font-weight-medium px-4 mt-10">
                                 <VCol
                                   cols="12"
@@ -6181,7 +6362,7 @@ onMounted(() => {
                                   md="2"
                                 >
                                   <VTextField
-                                    v-model="patrimonio.pat_30701_ant"
+                                    v-model="patrimonio.pat_30701"
                                     label=""
                                     type="number"
                                     disabled
@@ -6287,6 +6468,75 @@ onMounted(() => {
                                 >
                                   <VIcon
                                     v-if="dif_30702_si == 0"
+                                    icon="tabler-check"
+                                    color="success"
+                                  />
+                                  <VIcon
+                                    v-else
+                                    icon="tabler-alert-circle"
+                                    color="error"
+                                  />
+                                </VCol>
+                              </VRow>
+
+                              <VRow class="font-weight-medium px-4 mt-10">
+                                <VCol
+                                  cols="12"
+                                  md="4"
+                                >
+                                  <span class="text-sm">PARTICIPACION NO CONTROLADORA</span>
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="1"
+                                >
+                                  <span
+                                    class="text-sm text-primary"
+                                    style="font-size:0.900rem"
+                                  >31</span>
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="2"
+                                >
+                                  <VTextField
+                                    v-model="esf_31"
+                                    label=""
+                                    type="number"
+                                    disabled
+                                  />
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="2"
+                                >
+                                  <VTextField
+
+                                    v-model="patrimonio.pat_99_31"
+                                    label=""
+                                    type="number"
+                                    disabled
+                                  />
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="2"
+                                >
+                                  <VTextField
+
+                                    v-model="dif_31_si"
+                                    label=""
+                                    type="number"
+                                    disabled
+                                  />
+                                </VCol>
+                                <VCol
+                                  cols="12"
+                                  md="1"
+                                  style="text-align: center !important"
+                                >
+                                  <VIcon
+                                    v-if="dif_31_si == 0"
                                     icon="tabler-check"
                                     color="success"
                                   />
@@ -7263,20 +7513,6 @@ onMounted(() => {
               >
                 RESUMEN EFE
               </VBtn>
-
-              <!-- Botón flotante para Resumen EFE -->
-              <VBtn
-                v-if="tab === 'dynamic-flow'"
-                id="openResumeEfeDF"
-                fixed
-                right
-                top
-                fab
-                class="resumen-esf-btn"
-                @click="openResumenEfeDFPanel"
-              >
-                RESUMEN EFE-DF
-              </VBtn>
             </VWindow>
           </VCardText>
 
@@ -7350,17 +7586,17 @@ onMounted(() => {
               </template>
             </VBtn>
             <!--
-            <VBtn
+              <VBtn
               color="secondary"
               variant="tonal"
               :loading="loadings"
               :disabled="loadings"
-            >
+              >
               Cancelar
               <template #loader>
-                <span>Cancelar</span>
+              <span>Cancelar</span>
               </template>
-            </VBtn>
+              </VBtn>
             -->
           </VCardText>
         </VCard>

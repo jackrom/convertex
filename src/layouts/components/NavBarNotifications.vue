@@ -44,8 +44,8 @@ const notifications = [
 ]
 
 const empresasEliminadas = ref([])
-const empresasEliminadasListStore = useEmpresaListStore()
-const totalEmpresasEliminadasIfluc = ref(0)
+const empresaListStore = useEmpresaListStore()
+const totalEmpresasEliminadasConvertex = ref(0)
 const currentPage = ref(1)
 const totalPage = ref(1)
 const searchQuery = ref('')
@@ -54,36 +54,43 @@ const selectedPlan = ref()
 const selectedStatus = ref()
 const rowPerPage = ref(10)
 
-let userId
-try {
-  userId = JSON.parse(sessionStorage.getItem('userData')).id
-} catch (error) {
-  console.error("Error al obtener userData del sessionStorage:", error)
+const userId = ref(null)
+const sub = sessionStorage.getItem('sub')
+
+userId.value = sub || null
+
+const fetchEmpresasConvertex = async () => {
+  if (!userId.value) {
+    console.warn('No hay sub en sessionStorage, no se puede cargar empresas eliminadas')
+
+    return
+  }
+
+  try {
+    const response = await empresaListStore.fetchEmpresasEliminadasConvertex({
+      user: userId.value,
+      origen: 'convertex',
+    })
+
+    const data = response?.data || response || {}
+
+    empresasEliminadas.value = data.empresas || []
+    totalPage.value = data.totalPage || 1
+    totalEmpresasEliminadasConvertex.value =
+      data.totalEmpresasEliminadasConvertex || empresasEliminadas.value.length
+  } catch (error) {
+    // 👉 Ignorar abortos/timeout para no ensuciar consola
+    if (error.code === 'ECONNABORTED' || error.message === 'Request aborted') {
+      console.warn('Request de empresas eliminadas abortado (redirect / recarga).')
+
+      return
+    }
+
+    console.error('Error al cargar empresas eliminadas de Convertex:', error)
+  }
 }
 
-const fetchEmpresasIfluc = () => {
-  empresasEliminadasListStore.fetchEmpresasEliminadasIfluc({
-    q: searchQuery.value,
-    status: selectedStatus.value,
-    plan: selectedPlan.value,
-    role: selectedRole.value,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: userId,
-    origen: 'ifluc',
-  }).then(response => {
-    // console.log(response)
-    empresasEliminadas.value = response.data.empresas
-    totalPage.value = response.data.totalPage
-    totalEmpresasEliminadasIfluc.value = response.data.totalEmpresasEliminadasIfluc
-
-    // console.log("totalEmpresasEliminadasIfluc: ", totalEmpresasEliminadasIfluc.value)
-  }).catch(error => {
-    console.error(error)
-  })
-}
-
-watchEffect(fetchEmpresasIfluc)
+watchEffect(fetchEmpresasConvertex)
 
 // 👉 watching current page
 watchEffect(() => {

@@ -1,16 +1,11 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import {
-  emailValidator,
-  requiredValidator,
-} from '@validators'
-import { useEmpresaListStore } from "@/views/pages/empresas/useEmpresaListStore"
-import { useSuperciasListStore } from "@/views/pages/supercias/useSuperciasListStore"
-import { usePeriodoListStore } from "@/views/pages/periodos/usePeriodoListStore"
-import {
-  obtenerDatosReporte, obtenerDatosUsuario,
-} from "@core/utils/reportes"
-import { useReportStore } from "@/@store/reportStore"
+import { requiredValidator } from '@validators'
+import { useEmpresaListStore } from '@/views/pages/empresas/useEmpresaListStore'
+import { useSuperciasListStore } from '@/views/pages/supercias/useSuperciasListStore'
+import { usePeriodoListStore } from '@/views/pages/periodos/usePeriodoListStore'
+import { obtenerDatosReporte, obtenerDatosUsuario } from '@core/utils/reportes'
+import { onMounted, nextTick, ref, watch } from 'vue'
 
 const props = defineProps({
   isDrawerOpen: {
@@ -27,184 +22,208 @@ const emit = defineEmits([
 const empresaListStore = useEmpresaListStore()
 const superciasListStore = useSuperciasListStore()
 const periodoListStore = usePeriodoListStore()
+
 const isFormValid = ref(false)
 const refForm = ref()
+
 const periodo = ref('')
 const periodos = ref([])
 
-const empresa =  ref({
+const empresa = ref({
   title: 'Tu Empresa',
   value: '1717170110',
   periodosifluc: [],
 })
 
 const empresas = ref([])
-const aniosposibles = ref([2017,2018,2019,2020,2021,2022,2023,2024,2025])
+
+const aniosPosibles = ref([2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025])
 const anios = ref([])
-const searchQuery = ref('')
+
 const currentPage = ref(1)
 const totalPage = ref(1)
-const rowPerPage = ref(1000)
+
 const route = useRoute()
 const router = useRouter()
 
-// 👉 drawer close
-const closeNavigationDrawer = () => {
-  emit('update:isDrawerOpen', false)
-  nextTick(() => {
-    refForm.value?.reset()
-    refForm.value?.resetValidation()
-  })
-}
-
-const fetchEmpresas = () => {
-  empresaListStore.fetchEmpresas({
-    q: searchQuery.value,
-    status: null,
-    plan: null,
-    role: null,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: JSON.parse(sessionStorage.getItem('userData')).id,
-    origen: "ifluc",
-  }).then(response => {
-
-    const companies = response.data.empresas
-    const e = []
-
-    companies.forEach(obj => {
-      let compania = { title: obj.nombre, value: obj.ruc, periodos: obj.periodosifluc }
-      e.push(compania)
-    })
-    empresas.value = e
-
-  }).catch(error => {
-    console.error(error)
-  })
-}
-
-watchEffect(fetchEmpresas)
-
-// 👉 watching current page
-watchEffect(() => {
-  if (currentPage.value > totalPage.value)
-    currentPage.value = totalPage.value
-})
-
-// 👉 Fetching periodos
-const fetchPeriodos = () => {
-  periodoListStore.fetchPeriodos({
-    q: searchQuery.value,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: JSON.parse(sessionStorage.getItem('userData')).id,
-    origen: 'ifluc',
-  }).then(response => {
-    console.log("response periodos: ", response)
-    periodos.value = response.data.periodos
-    totalPage.value = response.data.totalPage
-
-    // Verifica si la propiedad empresas existe y es un array
-    if (Array.isArray(response.data.periodos)) {
-      const periodosOcupados = response.data.periodos.map(obj => obj.periodo)
-
-      anios.value = aniosposibles.value.filter(anio => !periodosOcupados.includes(anio))
-    } else {
-      anios.value = [...aniosposibles.value]
-    }
-  }).catch(error => {
-    console.error(error)
-  })
-}
-
-watchEffect(fetchPeriodos)
-
-const reporteManagement = reporteId => {
-  console.log('reporteId: ', reporteId)
-  if (reporteId === 0) {
-    setTimeout(() => {
-      let periodo = JSON.parse(localStorage.getItem('periodonuevo'))
-      reporteManagement(periodo)
-    }, 1000)
-  } else {
-    guardarReporteTxt(reporteId)
-  }
-}
-
-const onSubmit = () => {
-  refForm.value?.validate().then(({ valid }) => {
-    if (valid) {
-      console.log('empresa: ', empresa.value)
-      console.log('empresa: ', empresa.value.value)
-      loadings.value = true
-      localStorage.setItem('empresanueva', JSON.stringify(empresa.value.value))
-
-      emit('userData', {
-        periodo: Number(periodo.value),
-        empresaId: empresa.value.value,
-        userId: JSON.parse(sessionStorage.getItem('userData')).id,
-      })
-
-      nextTick(() => {
-        setTimeout(() => {
-          console.log(Number(localStorage.getItem('periodonuevo')))
-          let periodoNuevo = JSON.parse(localStorage.getItem('periodonuevo'))
-          reporteManagement(periodoNuevo)
-        }, 2000)
-
-        // refForm.value?.reset()
-        // refForm.value?.resetValidation()
-
-        // router.replace(route.query.to ? String(route.query.to) : '/pages/supercias/list')
-      })
-    }
-
-  })
-}
+const userId = sessionStorage.getItem('sub') || null
 
 const loadings = ref(false)
 const countdown = ref(60)
 const intervalId = ref(null)
 
+// 👉 Drawer close
+const closeNavigationDrawer = () => {
+  emit('update:isDrawerOpen', false)
+  nextTick(() => {
+    refForm.value?.reset()
+    refForm.value?.resetValidation()
+    periodo.value = ''
+  })
+}
+
+// 👉 Fetch empresas del usuario
+const fetchEmpresas = async () => {
+  if (!userId) return
+
+  try {
+    const response = await empresaListStore.fetchEmpresas({ user: userId })
+    const companies = response?.data?.data || []
+
+    empresas.value = companies.map(obj => ({
+      title: obj.nombre,
+      value: obj.ruc,
+      periodos: obj.periodosifluc || [],
+    }))
+  } catch (error) {
+    console.error('Error al obtener empresas (AddNewPeriodo.vue):', error)
+  }
+}
+
+// 👉 Fetch periodos globales del usuario (para filtrar años)
+const fetchPeriodos = async () => {
+  if (!userId) return
+
+  try {
+    const response = await periodoListStore.fetchPeriodos({ user: userId })
+
+    // Solo para verificar una vez la forma de la respuesta
+    console.log('periodos API (AddNewPeriodo):', response)
+
+    // Soportar ambos casos: que el store devuelva {data: {...}} o directamente {...}
+    const data = response?.data ?? response
+
+    if (!data) {
+      console.error('Respuesta vacía en fetchPeriodos (AddNewPeriodo.vue)')
+      anios.value = [...aniosPosibles.value]
+
+      return
+    }
+
+    const {
+      periodos: lista = [],
+      totalPage: tp = 1,
+      totalPeriodos: tot = 0,
+    } = data
+
+    // array de periodos
+    periodos.value = Array.isArray(lista) ? lista : []
+
+    // paginación
+    totalPage.value = tp || 1
+
+    // calcular años disponibles
+    if (Array.isArray(periodos.value)) {
+      const periodosOcupados = periodos.value.map(obj => obj.periodo)
+
+      anios.value = aniosPosibles.value.filter(anio => !periodosOcupados.includes(anio))
+    } else {
+      anios.value = [...aniosPosibles.value]
+    }
+  } catch (error) {
+    console.error('Error fetchPeriodos (AddNewPeriodo.vue):', error)
+
+    // en caso de error, por lo menos deja todos los años disponibles
+    anios.value = [...aniosPosibles.value]
+  }
+}
+
+
+// 👉 Ejecutar al montar
+watchEffect(() => {
+  fetchEmpresas()
+  fetchPeriodos()
+})
+
+// 👉 Asegurar que currentPage no supere totalPage
+watchEffect([currentPage, totalPage], () => {
+  if (currentPage.value > totalPage.value)
+    currentPage.value = totalPage.value
+})
+
+// 👉 Manejo del reporte
+const reporteManagement = periodoNuevo => {
+  if (!periodoNuevo) {
+    console.error('Periodo nuevo inválido en reporteManagement')
+
+    return
+  }
+
+  guardarReporteTxt(periodoNuevo)
+}
+
+const onSubmit = () => {
+  refForm.value?.validate().then(({ valid }) => {
+    if (!valid) return
+
+    if (!empresa.value?.value || !periodo.value) return
+
+    loadings.value = true
+    localStorage.setItem('empresanueva', JSON.stringify(empresa.value.value))
+
+    const userDataStr = sessionStorage.getItem('userData')
+    const userData = userDataStr ? JSON.parse(userDataStr) : null
+
+    emit('userData', {
+      periodo: Number(periodo.value),
+      empresaId: empresa.value.value,
+      userId: userData?.id ?? null,
+    })
+
+    nextTick(() => {
+      setTimeout(() => {
+        const periodoNuevo = JSON.parse(localStorage.getItem('periodonuevo'))
+
+        reporteManagement(periodoNuevo)
+      }, 2000)
+    })
+  })
+}
+
 const guardarReporte = reporte => {
   if (reporte.periodoId > 0) {
-    console.log("reporte: ", reporte)
     addNewReporte(reporte)
-
     startCountdown()
     loadings.value = true
   } else {
     console.error('Error al guardar el reporte: Periodo ID inválido.')
+    loadings.value = false
   }
 }
 
-
 const guardarReporteTxt = async periodoNuevo => {
-  console.log('guardarReporteTxt: ', periodoNuevo)
   try {
     const user = await obtenerDatosUsuario()
     const datosReporte = await obtenerDatosReporte(user, periodoNuevo)
 
-
     guardarReporte(datosReporte)
   } catch (error) {
     console.error('Error al guardar reporte TXT:', error)
+    loadings.value = false
   }
 }
 
 const addNewReporte = reporteData => {
-  // localStorage.clear()
   superciasListStore.addReporteSupercias(reporteData)
     .then(res => {
-      console.log(res)
+      console.log('Reporte guardado correctamente: ', res)
       emit('update:isDrawerOpen', false)
       router.replace('/pages/supercias/list')
+    })
+    .catch(error => {
+      console.error('Error al guardar reporte en Supercias:', error)
+      loadings.value = false
+      stopCountdown()
     })
 }
 
 const startCountdown = () => {
   loadings.value = true
   countdown.value = 60
+
+  if (intervalId.value)
+    clearInterval(intervalId.value)
+
   intervalId.value = setInterval(() => {
     if (countdown.value > 0) {
       countdown.value -= 1
@@ -215,26 +234,32 @@ const startCountdown = () => {
 }
 
 const stopCountdown = () => {
-  clearInterval(intervalId)
+  if (intervalId.value) {
+    clearInterval(intervalId.value)
+    intervalId.value = null
+  }
   loadings.value = false
 }
 
+// 👉 Cuando cambia la empresa, recalculamos años disponibles
 const getEmpresa = () => {
-  let companies = empresas.value
-  let periodos = []
+  const companies = empresas.value
+  let periodosEmpresa = []
+
   companies.forEach(compania => {
-    if (((compania?.value) ? compania?.value : compania) === empresa.value.value) {
-      periodos = compania?.periodos
-
-      if (Array.isArray(periodos)) {
-        const periodosOcupados = periodos.map(obj => obj.periodo)
-
-        anios.value = aniosposibles.value.filter(anio => !periodosOcupados.includes(anio))
-      } else {
-        anios.value = [...aniosposibles.value]
-      }
+    const valueCompania = compania?.value ?? compania
+    if (valueCompania === empresa.value.value) {
+      periodosEmpresa = compania?.periodos ?? []
     }
   })
+
+  if (Array.isArray(periodosEmpresa)) {
+    const periodosOcupados = periodosEmpresa.map(obj => obj.periodo)
+
+    anios.value = aniosPosibles.value.filter(anio => !periodosOcupados.includes(anio))
+  } else {
+    anios.value = [...aniosPosibles.value]
+  }
 }
 
 const handleDrawerModelValueUpdate = val => {
@@ -272,7 +297,7 @@ const handleDrawerModelValueUpdate = val => {
           size="18"
           icon="tabler-x"
         />
-      </VBTn>
+      </VBtn>
     </div>
 
     <PerfectScrollbar :options="{ wheelPropagation: false }">
@@ -309,33 +334,37 @@ const handleDrawerModelValueUpdate = val => {
                   label="Periodo"
                   :rules="[requiredValidator]"
                   :items="anios"
+                  placeholder="Seleccione el periodo"
                 />
               </VCol>
 
-              <!-- 👉 Submit and Cancel -->
+              <!-- 👉 Submit -->
               <VCol cols="12">
                 <VBtn
                   type="submit"
                   class="me-4"
-                  style="font-size:12px;width: 100%;"
+                  style="font-size: 12px; width: 100%;"
                   :loading="loadings"
-                  :disabled="loadings || (periodo == '')"
-
+                  :disabled="loadings || periodo === ''"
                 >
                   <template #loader>
                     <span class="custom-loader">
                       <VIcon icon="tabler-refresh" />
                     </span>
-                    <span class="pl-2 pr-2">Creando reporte, espere {{ countdown }} ...</span>
+                    <span class="pl-2 pr-2">
+                      Creando reporte, espere {{ countdown }} ...
+                    </span>
                   </template>
                   Crear Periodo
                 </VBtn>
               </VCol>
+
+              <!-- 👉 Cancel -->
               <VCol cols="12">
                 <VBtn
                   type="reset"
                   variant="tonal"
-                  style="font-size:12px;width: 100%;"
+                  style="font-size: 12px; width: 100%;"
                   color="secondary"
                   @click="closeNavigationDrawer"
                   :loading="loadings"
@@ -354,6 +383,7 @@ const handleDrawerModelValueUpdate = val => {
     </PerfectScrollbar>
   </VNavigationDrawer>
 </template>
+
 <style lang="scss" scoped>
 .custom-loader {
   display: flex;

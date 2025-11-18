@@ -1,23 +1,27 @@
 <script setup>
+import { ref } from 'vue'
+import { useWindowSize } from '@vueuse/core'
 import { useLayouts } from '@layouts'
 import { config } from '@layouts/config'
 import { can } from '@layouts/plugins/casl'
 
 const props = defineProps({
   item: {
-    type: null,
+    type: Object,
     required: true,
   },
 })
 
-const { isVerticalNavMini, dynamicI18nProps } = useLayouts()
 const { width: windowWidth } = useWindowSize()
+const { isVerticalNavMini } = useLayouts()
+
+// Mini-nav => solo icono
 const shallRenderIcon = isVerticalNavMini(windowWidth)
 </script>
 
 <template>
   <li
-    v-if="can(item.action, item.subject)"
+    v-if="can(item.action, item.subject) ?? true"
     class="nav-section-title"
   >
     <div class="title-wrapper">
@@ -27,10 +31,10 @@ const shallRenderIcon = isVerticalNavMini(windowWidth)
       >
         <!-- eslint-disable vue/no-v-text-v-html-on-component -->
         <Component
-          :is="shallRenderIcon ? config.app.iconRenderer : config.app.enableI18n ? 'i18n-t' : 'span'"
+          :is="shallRenderIcon ? config.app.iconRenderer : 'span'"
           :key="shallRenderIcon"
           :class="shallRenderIcon ? 'placeholder-icon' : 'title-text'"
-          v-bind="{ ...config.icons.sectionTitlePlaceholder, ...dynamicI18nProps(item.heading, 'span') }"
+          v-bind="shallRenderIcon ? config.icons.sectionTitlePlaceholder : {}"
           v-text="!shallRenderIcon ? item.heading : null"
         />
         <!-- eslint-enable vue/no-v-text-v-html-on-component -->

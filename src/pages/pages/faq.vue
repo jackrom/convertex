@@ -1,6 +1,6 @@
 <script setup>
 import sittingGirlWithLaptop from '@images/illustrations/sitting-girl-with-laptop.png'
-import axios from '@axios'
+import axios from '@/plugins/axios/axios'
 import AppSearchHeader from '@core/components/AppSearchHeader.vue'
 
 const faqSearchQuery = ref('')

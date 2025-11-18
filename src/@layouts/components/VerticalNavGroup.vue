@@ -1,4 +1,9 @@
 <script setup>
+import { computed, inject, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useWindowSize } from '@vueuse/core'
+import { useI18n } from 'vue-i18n'
+
 import {
   injectionKeyIsVerticalNavHovered,
   useLayouts,
@@ -16,7 +21,7 @@ import {
 
 const props = defineProps({
   item: {
-    type: null,
+    type: Object,
     required: true,
   },
 })
@@ -26,75 +31,117 @@ defineOptions({ name: 'VerticalNavGroup' })
 const route = useRoute()
 const router = useRouter()
 const { width: windowWidth } = useWindowSize()
-const { isVerticalNavMini, dynamicI18nProps } = useLayouts()
+const { isVerticalNavMini } = useLayouts()
+const { t } = useI18n({ useScope: 'global' })
+
 const hideTitleAndBadge = isVerticalNavMini(windowWidth)
 const isVerticalNavHovered = inject(injectionKeyIsVerticalNavHovered, ref(false))
 
-// })
 const isGroupActive = ref(false)
 const isGroupOpen = ref(false)
 
-const isAnyChildOpen = children => {
-  return children.some(child => {
+// --- helpers i18n para título y badge ---
+
+const isTitleI18nKey = computed(
+  () => config.app?.enableI18n && typeof props.item?.title === 'string' && props.item.title.includes('.'),
+)
+
+const titleText = computed(() => {
+  if (isTitleI18nKey.value)
+    return t(props.item.title)
+
+  return props.item.title
+})
+
+const isBadgeI18nKey = computed(
+  () => config.app?.enableI18n && typeof props.item?.badgeContent === 'string' && props.item.badgeContent.includes('.'),
+)
+
+const badgeText = computed(() => {
+  if (!props.item?.badgeContent)
+    return ''
+
+  if (isBadgeI18nKey.value)
+    return t(props.item.badgeContent)
+
+  return props.item.badgeContent
+})
+
+// --- lógica de grupos ---
+
+const isAnyChildOpen = children =>
+  children.some(child => {
     let result = openGroups.value.includes(child.title)
+
     if ('children' in child)
       result = isAnyChildOpen(child.children) || result
-    
+
     return result
   })
-}
 
 const collapseChildren = children => {
   children.forEach(child => {
     if ('children' in child)
       collapseChildren(child.children)
+
     openGroups.value = openGroups.value.filter(group => group !== child.title)
   })
 }
 
-watch(() => route.path, () => {
-  const isActive = isNavGroupActive(props.item.children, router)
+watch(
+  () => route.path,
+  () => {
+    const active = isNavGroupActive(props.item.children, router)
 
-  // Don't open group if vertical nav is collapsed and window size is more than overlay nav breakpoint
-  isGroupOpen.value = isActive && !isVerticalNavMini(windowWidth, isVerticalNavHovered).value
-  isGroupActive.value = isActive
-}, { immediate: true })
-watch(isGroupOpen, val => {
+    isGroupOpen.value = active && !isVerticalNavMini(windowWidth, isVerticalNavHovered).value
+    isGroupActive.value = active
+  },
+  { immediate: true },
+)
 
-  // Find group index for adding/removing group from openGroups array
-  const grpIndex = openGroups.value.indexOf(props.item.title)
+watch(
+  isGroupOpen,
+  val => {
+    const idx = openGroups.value.indexOf(props.item.title)
 
-  // If group is opened => Add it to `openGroups` array
-  if (val && grpIndex === -1) {
-    openGroups.value.push(props.item.title)
-  } else if (!val && grpIndex !== -1) {
-    openGroups.value.splice(grpIndex, 1)
-    collapseChildren(props.item.children)
-  }
-}, { immediate: true })
-watch(openGroups, val => {
+    if (val && idx === -1) {
+      openGroups.value.push(props.item.title)
+    } else if (!val && idx !== -1) {
+      openGroups.value.splice(idx, 1)
+      collapseChildren(props.item.children)
+    }
+  },
+  { immediate: true },
+)
 
-  // Prevent closing recently opened inactive group.
-  const lastOpenedGroup = val[val.length - 1]
-  if (lastOpenedGroup === props.item.title)
-    return
-  const isActive = isNavGroupActive(props.item.children, router)
+watch(
+  openGroups,
+  val => {
+    const lastOpenedGroup = val[val.length - 1]
 
-  // Goal of this watcher is to close inactive groups. So don't do anything for active groups.
-  if (isActive)
-    return
+    if (lastOpenedGroup === props.item.title)
+      return
 
-  // We won't close group if any of child group is open in current group
-  if (isAnyChildOpen(props.item.children))
-    return
-  isGroupOpen.value = isActive
-  isGroupActive.value = isActive
-}, { deep: true })
+    const active = isNavGroupActive(props.item.children, router)
 
-// ℹ️ Previously instead of below watcher we were using two individual watcher for `isVerticalNavHovered`, `isVerticalNavCollapsed` & `isLessThanOverlayNavBreakpoint`
-watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), val => {
-  isGroupOpen.value = val ? false : isGroupActive.value
-})
+    if (active)
+      return
+
+    if (isAnyChildOpen(props.item.children))
+      return
+
+    isGroupOpen.value = active
+    isGroupActive.value = active
+  },
+  { deep: true },
+)
+
+watch(
+  isVerticalNavMini(windowWidth, isVerticalNavHovered),
+  val => {
+    isGroupOpen.value = val ? false : isGroupActive.value
+  },
+)
 </script>
 
 <template>
@@ -118,30 +165,29 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), val => {
         v-bind="item.icon || config.verticalNav.defaultNavItemIconProps"
         class="nav-item-icon"
       />
+
       <TransitionGroup name="transition-slide-x">
-        <!-- 👉 Title -->
-        <Component
-          :is=" config.app.enableI18n ? 'i18n-t' : 'span'"
-          v-bind="dynamicI18nProps(item.title, 'span')"
+        <!-- 👉 Título -->
+        <span
           v-show="!hideTitleAndBadge"
           key="title"
           class="nav-item-title"
         >
-          {{ item.title }}
-        </Component>
+          {{ titleText }}
+        </span>
 
         <!-- 👉 Badge -->
-        <Component
-          :is="config.app.enableI18n ? 'i18n-t' : 'span'"
-          v-bind="dynamicI18nProps(item.badgeContent, 'span')"
-          v-show="!hideTitleAndBadge"
+        <span
           v-if="item.badgeContent"
+          v-show="!hideTitleAndBadge"
           key="badge"
           class="nav-item-badge"
           :class="item.badgeClass"
         >
-          {{ item.badgeContent }}
-        </Component>
+          {{ badgeText }}
+        </span>
+
+        <!-- 👉 Flecha -->
         <Component
           :is="config.app.iconRenderer || 'div'"
           v-show="!hideTitleAndBadge"
@@ -151,6 +197,7 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), val => {
         />
       </TransitionGroup>
     </div>
+
     <TransitionExpand>
       <ul
         v-show="isGroupOpen"

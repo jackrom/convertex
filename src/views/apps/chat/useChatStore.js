@@ -1,4 +1,4 @@
-import axios from '@axios'
+import axios from '@/plugins/axios/axios'
 
 export const useChatStore = defineStore('chat', {
   // ℹ️ arrow function recommended for full type inference
@@ -60,7 +60,7 @@ export const useChatStore = defineStore('chat', {
       const contact = this.chatsContacts.find(c => {
         if (this.activeChat)
           return c.id === this.activeChat.contact.id
-        
+
         return false
       })
 

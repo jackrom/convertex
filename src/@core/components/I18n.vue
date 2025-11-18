@@ -5,7 +5,7 @@ const props = defineProps({
     required: true,
   },
   location: {
-    type: null,
+    type: String,
     required: false,
     default: 'bottom end',
   },
@@ -22,27 +22,26 @@ const { locale } = useI18n({ useScope: 'global' })
     variant="text"
     color="default"
     size="small"
+    aria-label="Cambiar idioma"
   >
     <VIcon
       icon="tabler-language"
       size="24"
     />
-    <!-- Menu -->
+
     <VMenu
       activator="parent"
       :location="props.location"
       offset="14px"
     >
-      <!-- List -->
       <VList min-width="175px">
-        <!-- List item -->
         <VListItem
           v-for="lang in props.languages"
           :key="lang.i18nLang"
           :value="lang.i18nLang"
-          @click="locale = lang.i18nLang; $emit('change', lang.i18nLang)"
+          :active="locale === lang.i18nLang"
+          @click="locale = lang.i18nLang; emit('change', lang.i18nLang)"
         >
-          <!-- Language label -->
           <VListItemTitle>{{ lang.label }}</VListItemTitle>
         </VListItem>
       </VList>

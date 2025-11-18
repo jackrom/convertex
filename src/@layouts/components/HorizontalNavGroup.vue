@@ -1,4 +1,8 @@
 <script setup>
+import { ref, watch, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+
 import { useLayouts } from '@layouts'
 import {
   HorizontalNavLink,
@@ -10,17 +14,15 @@ import { isNavGroupActive } from '@layouts/utils'
 
 const props = defineProps({
   item: {
-    type: null,
+    type: Object,
     required: true,
   },
   childrenAtEnd: {
     type: Boolean,
-    required: false,
     default: false,
   },
   isSubItem: {
     type: Boolean,
-    required: false,
     default: false,
   },
 })
@@ -29,14 +31,27 @@ defineOptions({ name: 'HorizontalNavGroup' })
 
 const route = useRoute()
 const router = useRouter()
-const { dynamicI18nProps, isAppRtl } = useLayouts()
+const { isAppRtl } = useLayouts()
+const { t } = useI18n({ useScope: 'global' })
+
 const isGroupActive = ref(false)
 
-watch(() => route.path, () => {
-  const isActive = isNavGroupActive(props.item.children, router)
+// 🔹 Texto del título (i18n opcional)
+const titleText = computed(() => {
+  if (config.app?.enableI18n && typeof props.item?.title === 'string')
+    return t(props.item.title)
 
-  isGroupActive.value = isActive
-}, { immediate: true })
+  return props.item.title
+})
+
+watch(
+  () => route.path,
+  () => {
+    const active = isNavGroupActive(props.item.children, router)
+    isGroupActive.value = active
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -46,12 +61,14 @@ watch(() => route.path, () => {
     class="nav-group"
     tag="li"
     content-container-tag="ul"
-    :class="[{
-      'active': isGroupActive,
-      'children-at-end': childrenAtEnd,
-      'sub-item': isSubItem,
-      'disabled': item.disable,
-    }]"
+    :class="[
+      {
+        active: isGroupActive,
+        'children-at-end': childrenAtEnd,
+        'sub-item': isSubItem,
+        disabled: item.disable,
+      },
+    ]"
     :popper-inline-end="childrenAtEnd"
   >
     <div class="nav-group-label">
@@ -60,16 +77,14 @@ watch(() => route.path, () => {
         class="nav-item-icon"
         v-bind="item.icon || config.verticalNav.defaultNavItemIconProps"
       />
+
+      <span class="nav-item-title">
+        {{ titleText }}
+      </span>
+
       <Component
-        :is="config.app.enableI18n ? 'i18n-t' : 'span'"
-        v-bind="dynamicI18nProps(item.title, 'span')"
-        class="nav-item-title"
-      >
-        {{ item.title }}
-      </Component>
-      <Component
-        v-bind="config.icons.chevronDown"
         :is="config.app.iconRenderer || 'div'"
+        v-bind="config.icons.chevronDown"
         class="nav-group-arrow"
       />
     </div>

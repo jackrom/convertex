@@ -1,240 +1,194 @@
 <script setup>
-const items = [
-  'Ingrese valores únicamente hasta con 2 decimales',
-  'Para la separación decimal utilizar punto',
-  'No utilizar ni coma ni punto para la separación de miles',
-  'Al ingresar la información de cada módulo (ESF, ERI, ECP, EFE) recuerde dar clic en el botón Guardar',
-]
+import { ref, computed, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useEmpresaListStore } from '@/views/pages/empresas/useEmpresaListStore'
+import { useSafeI18n } from '@/composables/useSafeI18n'
 
-const usuario = JSON.parse(sessionStorage.getItem('userData'))
-const aplicaciones = usuario.aplicaciones
-let aplicacion = aplicaciones.find(app => app.aplicacionId === 4)
-const fechaCaducidad = aplicacion.fechapago
-const fecha = new Date(fechaCaducidad)
-const dia = fecha.getDate()
-let mes = (fecha.getMonth() + 1) < 10 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1)
-const anio = fecha.getFullYear()
+const { t, safeT } = useSafeI18n('global')
+const { tm } = useI18n({ useScope: 'global' })
 
-switch (mes) {
-case '01':
-  mes = 'Enero'
-  break
-case '02':
-  mes = 'Febrero'
-  break
-case '03':
-  mes = 'Marzo'
-  break
-case '04':
-  mes = 'Abril'
-  break
-case '05':
-  mes = 'Mayo'
-  break
-case '06':
-  mes = 'Junio'
-  break
-case '07':
-  mes = 'Julio'
-  break
-case '08':
-  mes = 'Agosto'
-  break
-case '09':
-  mes = 'Septiembre'
-  break
-case '10':
-  mes = 'Octubre'
-  break
-case '11':
-  mes = 'Noviembre'
-  break
-case '12':
-  mes = 'Diciembre'
-  break
-}
+// 🔹 Recomendaciones: se leen como ARRAY desde i18n usando `tm`
+const items = computed(() => {
+  const raw = tm('convertex.deletedCompanies.recommendations.items')
 
-const fechaProximoPago = dia + '-' + mes + '-' + anio
-const fechaactual = new Date()
-const unDia = 24 * 60 * 60 * 1000 // Milisegundos en un día
-const diasFaltantes = Math.ceil((fecha - fechaactual) / unDia)
+  console.log('[i18n] tm items →', raw)
 
-</script>
-
-<template>
-  <div>
-    <VCard title="ACCESO CONVERTEX" >
-      <VCardText>
-        <h2><span style="color: #2c3555;">Su licencia actual caduca el:</span> {{ fechaProximoPago }}</h2>
-        <p>Le quedan {{diasFaltantes}} días para que renueve su licencia</p>
-      </VCardText>
-    </VCard>
-    <div style="height: 30px;"></div>
-    <VCard title="IMPORTANTE 🙌">
-      <VCardText><h2><span style="color: #2c3555;">Recomendaciones para un óptimo funcionamiento:</span></h2></VCardText>
-      <VCardText>
-        <VList :items="items" />
-      </VCardText>
-      <VCardText><h2 class="text-primary">ANTES DE SOLICITAR SOPORTE, POR FAVOR ES NECESARIO QUE REVISE Y VEA LOS TUTORIALES</h2></VCardText>
-    </VCard>
-  </div>
-</template>
-
-<!--
-<script setup>
-import { ref, watchEffect, computed } from 'vue'
-import { useEmpresaListStore } from "@/views/pages/empresas/useEmpresaListStore"
-
-const items = [
-  'Ingrese valores únicamente hasta con 2 decimales',
-  'Para la separación decimal utilizar punto',
-  'No utilizar ni coma ni punto para la separación de miles',
-  'Al ingresar la información de cada módulo (ESF, ERI, ECP, EFE) recuerde dar clic en el botón Guardar',
-]
+  return Array.isArray(raw) ? raw : []
+})
 
 const empresasEliminadas = ref([])
 const empresasEliminadasListStore = useEmpresaListStore()
-const totalEmpresasEliminadasIfluc = ref(0)
+const totalEmpresasEliminadasConvertex = ref(0)
 const currentPage = ref(1)
 const totalPage = ref(1)
+const rowPerPage = ref(10)
+
+// Si luego quieres usar filtros de búsqueda/paginación, los dejas:
 const searchQuery = ref('')
 const selectedRole = ref()
 const selectedPlan = ref()
 const selectedStatus = ref()
-const rowPerPage = ref(10)
 
-let userId
-try {
-  userId = JSON.parse(sessionStorage.getItem('userData')).id
-} catch (error) {
-  console.error("Error al obtener userData del sessionStorage:", error)
+const userId = (() => {
+  try {
+    const raw = sessionStorage.getItem('sub')
+
+    return raw ?? null
+  } catch (err) {
+    console.error('Error al obtener sub del sessionStorage:', err)
+
+    return null
+  }
+})()
+
+const fetchEmpresasConvertex = async () => {
+  if (!userId) {
+    console.warn('Sin sub en sessionStorage, no se consultan empresas eliminadas')
+
+    return
+  }
+
+  try {
+    const response = await empresasEliminadasListStore.fetchEmpresasEliminadasConvertex({
+      user: userId,
+    })
+
+    // Asumimos respuesta tipo { data: { empresas, totalPage, totalEmpresasEliminadasConvertex } }
+    const payload = response?.data || response || {}
+
+    console.log('data analytics: ', payload)
+
+    empresasEliminadas.value = payload.empresas || []
+    totalPage.value = payload.totalPage || 1
+    totalEmpresasEliminadasConvertex.value =
+      payload.totalEmpresasEliminadasConvertex ?? empresasEliminadas.value.length
+
+    console.log('totalEmpresasEliminadasConvertex: ', totalEmpresasEliminadasConvertex.value)
+  } catch (error) {
+    console.error('Error al cargar empresas eliminadas de Convertex:', error)
+
+    if (error.code === 'ECONNABORTED' || error.message === 'Request aborted') {
+      console.warn('Request de empresas eliminadas abortado (redirect / timeout).')
+    }
+  }
 }
 
-const fetchEmpresasIfluc = () => {
-  empresasEliminadasListStore.fetchEmpresasEliminadasIfluc({
-    q: searchQuery.value,
-    status: selectedStatus.value,
-    plan: selectedPlan.value,
-    role: selectedRole.value,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: userId,
-    origen: 'ifluc',
-  }).then(response => {
-    console.log(response)
-    empresasEliminadas.value = response.data.empresas
-    totalPage.value = response.data.totalPage
-    totalEmpresasEliminadasIfluc.value = response.data.totalEmpresasEliminadasIfluc
-
-    console.log("totalEmpresasEliminadasIfluc: ", totalEmpresasEliminadasIfluc.value)
-  }).catch(error => {
-    console.error(error)
-  })
-}
-
-watchEffect(fetchEmpresasIfluc)
-
-// 👉 watching current page
 watchEffect(() => {
-  if (currentPage.value > totalPage.value)
-    currentPage.value = totalPage.value
+  fetchEmpresasConvertex()
 })
 
-const paginationData = computed(() => {
-  const firstIndex = empresasEliminadas.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = empresasEliminadas.value.length + (currentPage.value - 1) * rowPerPage.value
+watchEffect(
+  () => currentPage.value,
+  () => {
+    if (currentPage.value > totalPage.value)
+      currentPage.value = totalPage.value
+  },
+)
 
-  return `Mostrando ${ firstIndex } a ${ lastIndex } de ${ totalEmpresasEliminadasIfluc.value } registros`
+const paginationData = computed(() => {
+  const firstIndex = empresasEliminadas.value.length
+    ? (currentPage.value - 1) * rowPerPage.value + 1
+    : 0
+
+  const lastIndex =
+    empresasEliminadas.value.length + (currentPage.value - 1) * rowPerPage.value
+
+  return t('convertex.deletedCompanies.pagination', {
+    first: firstIndex,
+    last: lastIndex,
+    total: totalEmpresasEliminadasConvertex.value,
+  })
 })
 </script>
 
 <template>
   <div>
-    <VCard title="IMPORTANTE 🙌">
-      <VCardText><h2>Recomendaciones para un óptimo funcionamiento:</h2></VCardText>
+    <VCard :title="safeT('dashboards.analytics.title', 'Analytics')">
       <VCardText>
-        <VList :items="items" />
+        <h2>{{ safeT('dashboards.analytics.subtitle', 'Resumen') }}</h2>
+      </VCardText>
+
+      <VCardText>
+        <VList>
+          <VListItem>Ingrese valores únicamente hasta con 2 decimales</VListItem>
+          <VListItem>Para la separación decimal utilizar punto</VListItem>
+          <VListItem>No utilizar ni coma ni punto para la separación de miles</VListItem>
+          <VListItem>Al ingresar la información de cada módulo (ESF, ERI, ECP, EFE) recuerde dar clic en el botón Guardar</VListItem>
+        </VList>
       </VCardText>
     </VCard>
   </div>
 
-  <VDivider />
-  <div style="margin-top:20px;margin-bottom:20px;margin-left:12px;">
-    EMPRESAS ELIMINADAS
-  </div>
-  <VDivider />
+  <VDivider style="margin-bottom: 10px" />
 
-  <VRow>
-    <VTable
-      class="text-no-wrap"
-      style="margin-top:20px;"
-    >
-      <thead>
-        <tr>
-          <th scope="col">
-            RUC
-          </th>
-          <th scope="col">
-            EMPRESA
-          </th>
-          <th scope="col">
-            CIUDAD
-          </th>
-          <th scope="col">
-            PROVINCIA
-          </th>
-          <th scope="col">
-            USUARIO
-          </th>
-          <th scope="col">
-            FECHA CREACIÓN
-          </th>
-          <th scope="col">
-            FECHA ELIMINACIÓN
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="empresa in empresasEliminadas"
-          :key="empresa.id"
-          style="height: 3.75rem;"
-        >
-          <td>
-            <span class="text-capitalize text-base">{{ empresa.ruc }}</span>
-          </td>
-          <td>
-            <span class="text-capitalize text-base font-weight-semibold">{{ empresa.nombre }}</span>
-          </td>
-          <td>
-            <span class="text-base">{{ empresa.ciudad }}</span>
-          </td>
-          <td>
-            {{ empresa.provincia }}
-          </td>
-          <td>
-            {{ empresa.userId }}
-          </td>
-          <td>
-            {{ empresa.fechaCreacion }}
-          </td>
-          <td>
-            {{ empresa.createdAt }}
-          </td>
-        </tr>
-      </tbody>
+  <div>
+    <VCard :title="safeT('convertex.deletedCompanies.tableTitle', 'Empresas eliminadas')">
+      <VTable
+        class="text-no-wrap"
+        style="margin-top:20px;"
+      >
+        <thead>
+          <tr>
+            <th>{{ safeT('convertex.deletedCompanies.headers.ruc', 'RUC') }}</th>
+            <th>{{ safeT('convertex.deletedCompanies.headers.company', 'Empresa') }}</th>
+            <th>{{ safeT('convertex.deletedCompanies.headers.city', 'Ciudad') }}</th>
+            <th>{{ safeT('convertex.deletedCompanies.headers.province', 'Provincia') }}</th>
+            <th>{{ safeT('convertex.deletedCompanies.headers.user', 'Usuario') }}</th>
+            <th>{{ safeT('convertex.deletedCompanies.headers.createdAt', 'Fecha creación') }}</th>
+            <th>{{ safeT('convertex.deletedCompanies.headers.deletedAt', 'Fecha eliminación') }}</th>
+          </tr>
+        </thead>
 
-      <tfoot v-show="!empresasEliminadas.length">
-        <tr>
-          <td
-            colspan="7"
-            class="text-center"
+        <tbody>
+          <tr
+            v-for="empresa in empresasEliminadas"
+            :key="empresa.id"
+            style="height: 3.75rem;"
           >
-            No existen empresas eliminadas aún
-          </td>
-        </tr>
-      </tfoot>
-    </VTable>
-  </VRow>
+            <td>
+              <span class="text-capitalize text-base">
+                {{ empresa.ruc }}
+              </span>
+            </td>
+
+            <td>
+              <span class="text-capitalize text-base font-weight-semibold">
+                {{ empresa.nombre }}
+              </span>
+            </td>
+
+            <td>
+              <span class="text-base">
+                {{ empresa.ciudad }}
+              </span>
+            </td>
+
+            <td>{{ empresa.provincia }}</td>
+            <td>{{ empresa.userId }}</td>
+            <td>{{ empresa.createdat }}</td>
+            <td>{{ empresa.deletedat }}</td>
+          </tr>
+        </tbody>
+
+        <tfoot v-show="!empresasEliminadas.length">
+          <tr>
+            <td
+              colspan="7"
+              class="text-center"
+            >
+              {{ safeT('convertex.deletedCompanies.noData', 'No hay registros') }}
+            </td>
+          </tr>
+        </tfoot>
+      </VTable>
+
+      <!-- Si quieres mostrar la paginación:
+      <VCardText>
+        <span>{{ paginationData }}</span>
+      </VCardText>
+      -->
+    </VCard>
+  </div>
 </template>
--->
+
+

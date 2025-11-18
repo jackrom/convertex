@@ -1,55 +1,95 @@
 import { defineStore } from 'pinia'
-import axios from '@axios'
-import { environment } from "@/utils/environments"
+import axios from '@/plugins/axios/axios'
+import { environment } from '@/utils/environments'
 
 export const useEmpresaListStore = defineStore('EmpresaListStore', {
+  state: () => ({
+    empresas: [],
+    loadingEmpresas: false,
+    empresasLoaded: false,
+
+    empresasEliminadas: [],
+    loadingEmpresasEliminadas: false,
+    empresasEliminadasLoaded: false,
+  }),
 
   actions: {
-    // 👉 Fetch empresa data
-    fetchEmpresas(params) {
-      return axios.get(`${environment.apiUrl}/empresasifluc/byuser`, { params })
+    // 👉 Fetch empresas data (con protección)
+    async fetchEmpresas(params = {}) {
+      // Evita peticiones simultáneas
+      if (this.loadingEmpresas) return
+
+      // Si ya cargaste y no te están pidiendo forzar, devuelve lo que hay
+      if (this.empresasLoaded && !params.force) {
+        return this.empresas
+      }
+
+      this.loadingEmpresas = true
+      try {
+        const { data } = await axios.get(
+          `${environment.apiUrl}/v1/convertex/empresasconvertex/by-user`,
+          { params },
+        )
+
+        this.empresas = data
+        this.empresasLoaded = true
+
+        return data
+      } finally {
+        this.loadingEmpresas = false
+      }
     },
 
     // 👉 Add Empresa
-    addEmpresa(empresaData) {
-      return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/empresasifluc`, { empresa: empresaData }).then(response => {
-          resolve(response)
-        })
-          .catch(error => reject(error))
-      })
+    async addEmpresa(empresaData) {
+      const response = await axios.post(
+        `${environment.apiUrl}/v1/convertex/empresasconvertex`,
+        { empresa: empresaData },
+      )
+
+      return response
     },
 
     // 👉 fetch single empresa
-    fetchEmpresa(id) {
-      return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/empresasifluc/${id}`).then(response => {
-          resolve(response)
-        }).catch(error => reject(error))
-      })
+    async fetchEmpresa(id) {
+      return axios.get(`${environment.apiUrl}/v1/convertex/empresasconvertex/${id}`)
     },
 
     // 👉 delete single empresa
-    eliminarEmpresaSeleccionada(id) {
-      return new Promise((resolve, reject) => {
-        axios.delete(`${environment.apiUrl}/empresasifluc/${id}`).then(response => {
-          resolve(response)
-        }).catch(error => reject(error))
-      })
+    async eliminarEmpresaSeleccionada(id) {
+      return axios.delete(`${environment.apiUrl}/v1/convertex/empresasconvertex/${id}`)
     },
 
     // 👉 add single empresa to delete empresa table
-    agregarEmpresaEliminadaToDB(dataEmpresa) {
-
-      return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/empresaseliminadasIfluc`, { dataEmpresa }).then(response => {
-          resolve(response)
-        }).catch(error => reject(error))
-      })
+    async agregarEmpresaEliminadaToDB(dataEmpresa) {
+      return axios.post(
+        `${environment.apiUrl}/v1/convertex/empresaseliminadasconvertex`,
+        { dataEmpresa },
+      )
     },
 
-    fetchEmpresasEliminadasIfluc(params) {
-      return axios.get(`${environment.apiUrl}/empresaseliminadasIfluc/byuser`, { params })
+    // 👉 Fetch empresas eliminadas (también con protección)
+    async fetchEmpresasEliminadasConvertex(params = {}) {
+      if (this.loadingEmpresasEliminadas) return
+
+      if (this.empresasEliminadasLoaded && !params.force) {
+        return this.empresasEliminadas
+      }
+
+      this.loadingEmpresasEliminadas = true
+      try {
+        const { data } = await axios.get(
+          `${environment.apiUrl}/v1/convertex/empresasconvertex/deleted/by-user`,
+          { params },
+        )
+
+        this.empresasEliminadas = data
+        this.empresasEliminadasLoaded = true
+
+        return data
+      } finally {
+        this.loadingEmpresasEliminadas = false
+      }
     },
   },
 })

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from '@axios'
+import axios from '@/plugins/axios/axios'
 
 export const useInvoiceStore = defineStore('InvoiceStore', {
   actions: {

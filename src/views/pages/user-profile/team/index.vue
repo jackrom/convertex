@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from 'vue-router'
-import axios from '@axios'
+import axios from '@/plugins/axios/axios'
 
 const router = useRoute()
 const teamData = ref([])

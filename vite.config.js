@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'url'
-import VueI18n from '@intlify/vite-plugin-vue-i18n'
+import VueI18n from '@intlify/unplugin-vue-i18n/vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -10,18 +10,29 @@ import Pages from 'vite-plugin-pages'
 import Layouts from 'vite-plugin-vue-layouts'
 import vuetify from 'vite-plugin-vuetify'
 
-// const rutaServidor = '/'
 const rutaServidor = '/'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // base: '/ifluc/',
   base: '/',
   plugins: [
     vue(),
     vueJsx(),
 
-    // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
+    // Excluimos JSON de la internacionalización
+    VueI18n({
+      runtimeOnly: true,
+      compositionOnly: true,
+      include: [
+        fileURLToPath(new URL(`./${rutaServidor}src/plugins/i18n/locales/**`, import.meta.url)),
+      ],
+      // Excluimos los archivos JSON de los assets
+      exclude: [
+        fileURLToPath(new URL(`./${rutaServidor}src/assets/jsondata/*.json`, import.meta.url)),
+      ],
+    }),
+
+    // Otros plugins
     vuetify({
       styles: {
         configFile: `src/styles/variables/_vuetify.scss`,
@@ -29,33 +40,6 @@ export default defineConfig({
     }),
     Pages({
       dirs: [`./${rutaServidor}src/pages`],
-
-      // ℹWe need three routes using single routes so we will ignore generating route for this SFC file
-      onRoutesGenerated: routes => [
-        // Email filter
-        {
-          path: '/apps/email/:filter',
-          name: 'apps-email-filter',
-          component: '/src/pages/apps/email/index.vue',
-          meta: {
-            navActiveLink: 'apps-email',
-            layoutWrapperClasses: 'layout-content-height-fixed',
-          },
-        },
-
-        // Email label
-        {
-          path: '/apps/email/label/:label',
-          name: 'apps-email-label',
-          component: '/src/pages/apps/email/index.vue',
-          meta: {
-            // contentClass: 'email-application',
-            navActiveLink: 'apps-email',
-            layoutWrapperClasses: 'layout-content-height-fixed',
-          },
-        },
-        ...routes,
-      ],
     }),
     Layouts({
       layoutsDirs: `./${rutaServidor}src/layouts/`,
@@ -71,13 +55,6 @@ export default defineConfig({
       },
       imports: ['vue', 'vue-router', '@vueuse/core', '@vueuse/math', 'vue-i18n', 'pinia'],
       vueTemplate: true,
-    }),
-    VueI18n({
-      runtimeOnly: true,
-      compositionOnly: true,
-      include: [
-        fileURLToPath(new URL(`./${rutaServidor}src/plugins/i18n/locales/**`, import.meta.url)),
-      ],
     }),
     DefineOptions(),
   ],

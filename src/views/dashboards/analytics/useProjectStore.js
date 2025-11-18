@@ -1,4 +1,4 @@
-import axios from '@axios'
+import axios from '@/plugins/axios/axios'
 import { environment } from "@/utils/environments"
 
 export const useProjectStore = defineStore('ProjectStore', {

@@ -1,4 +1,4 @@
-import axios from '@axios'
+import axios from '@/plugins/axios/axios'
 
 export const useCalendarStore = defineStore('calendar', {
   // arrow function recommended for full type inference

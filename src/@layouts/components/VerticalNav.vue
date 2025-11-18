@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from 'vue'
+import { useWindowSize, useElementHover } from '@vueuse/core'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VNodeRenderer } from './VNodeRenderer'
 import {
@@ -14,15 +16,11 @@ import { config } from '@layouts/config'
 
 const props = defineProps({
   tag: {
-    type: [
-      String,
-      null,
-    ],
-    required: false,
+    type: [String, null],
     default: 'aside',
   },
   navItems: {
-    type: null,
+    type: Array,
     required: true,
   },
   isOverlayNavActive: {
@@ -35,7 +33,7 @@ const props = defineProps({
   },
 })
 
-const refNav = ref()
+const refNav = ref(null)
 const { width: windowWidth } = useWindowSize()
 const isHovered = useElementHover(refNav)
 
@@ -61,12 +59,18 @@ const resolveNavItemComponent = item => {
 
 const route = useRoute()
 
-watch(() => route.name, () => {
-  props.toggleIsOverlayNavActive(false)
-})
+watch(
+  () => route.name,
+  () => {
+    props.toggleIsOverlayNavActive(false)
+  },
+)
 
 const isVerticalNavScrolled = ref(false)
-const updateIsVerticalNavScrolled = val => isVerticalNavScrolled.value = val
+
+const updateIsVerticalNavScrolled = val => {
+  isVerticalNavScrolled.value = val
+}
 
 const handleNavScroll = evt => {
   isVerticalNavScrolled.value = evt.target.scrollTop > 0
@@ -81,9 +85,9 @@ const handleNavScroll = evt => {
     :class="[
       {
         'overlay-nav': isLessThanOverlayNavBreakpoint(windowWidth),
-        'hovered': isHovered,
-        'visible': isOverlayNavActive,
-        'scrolled': isVerticalNavScrolled,
+        hovered: isHovered,
+        visible: isOverlayNavActive,
+        scrolled: isVerticalNavScrolled,
       },
     ]"
   >
@@ -105,8 +109,8 @@ const handleNavScroll = evt => {
             </h1>
           </Transition>
         </RouterLink>
+
         <!-- 👉 Vertical nav actions -->
-        <!-- Show toggle collapsible in >md and close button in <md -->
         <template v-if="!isLessThanOverlayNavBreakpoint(windowWidth)">
           <Component
             :is="config.app.iconRenderer || 'div'"
@@ -123,6 +127,7 @@ const handleNavScroll = evt => {
             @click="isCollapsed = !isCollapsed"
           />
         </template>
+
         <template v-else>
           <Component
             :is="config.app.iconRenderer || 'div'"
@@ -133,9 +138,11 @@ const handleNavScroll = evt => {
         </template>
       </slot>
     </div>
+
     <slot name="before-nav-items">
       <div class="vertical-nav-items-shadow" />
     </slot>
+
     <slot
       name="nav-items"
       :update-is-vertical-nav-scrolled="updateIsVerticalNavScrolled"
@@ -172,7 +179,10 @@ const handleNavScroll = evt => {
   inline-size: variables.$layout-vertical-nav-width;
   inset-block-start: 0;
   inset-inline-start: 0;
-  transition: transform 0.25s ease-in-out, inline-size 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+  transition:
+    transform 0.25s ease-in-out,
+    inline-size 0.25s ease-in-out,
+    box-shadow 0.25s ease-in-out;
   will-change: transform, inline-size;
 
   .nav-header {
@@ -190,12 +200,6 @@ const handleNavScroll = evt => {
 
   .nav-items {
     block-size: 100%;
-
-    // ℹ️ We no loner needs this overflow styles as perfect scrollbar applies it
-    // overflow-x: hidden;
-
-    // // ℹ️ We used `overflow-y` instead of `overflow` to mitigate overflow x. Revert back if any issue found.
-    // overflow-y: auto;
   }
 
   .nav-item-title {

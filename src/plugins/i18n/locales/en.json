@@ -143,5 +143,44 @@
   "MISCELANEOS": "MISCELANEOS",
   "Registros Usuario": "Registros Usuario",
   "Tutoriales": "Tutoriales",
-  "Agendar Soporte": "Agendar Soporte"
+  "Agendar Soporte": "Agendar Soporte",
+  "convertex": {
+    "deletedCompanies": {
+      "importantCardTitle": "IMPORTANT 🙌",
+      "importantCardSubtitle": "Recommendations for optimal performance:",
+      "recommendations": [
+        "Ingrese valores únicamente hasta con 2 decimales",
+        "Para la separación decimal utilizar punto",
+        "No utilizar ni coma ni punto para la separación de miles",
+        "Al ingresar la información de cada módulo (ESF, ERI, ECP, EFE) recuerde dar clic en el botón Guardar"
+      ],
+      "tableTitle": "DELETED COMPANIES",
+      "headers": {
+        "ruc": "Tax ID (RUC)",
+        "company": "Company",
+        "city": "City",
+        "province": "Province",
+        "user": "User",
+        "createdAt": "Created at",
+        "deletedAt": "Deleted at"
+      },
+      "noData": "There are no deleted companies yet",
+      "pagination": "Showing {first} to {last} of {total} records",
+      "infoInterest": {
+        "title": "Information of Interest"
+      }
+    }
+  },
+  "nav": {
+    "dashboard": {
+      "infoHeading": "Information of Interest",
+      "recommendations": "Recommendations"
+    }
+  },
+  "dashboards": {
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Resumen"
+    }
+  }
 }

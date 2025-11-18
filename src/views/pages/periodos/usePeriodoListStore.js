@@ -1,48 +1,72 @@
 import { defineStore } from 'pinia'
-import axios from '@axios'
-import { environment } from "@/utils/environments"
-import { useSuperciasListStore } from "@/views/pages/supercias/useSuperciasListStore"
+import axios from '@/plugins/axios/axios'
+import { environment } from '@/utils/environments'
 
 export const usePeriodoListStore = defineStore('PeriodoListStore', {
+  state: () => ({
+    periodos: [],
+    loadingPeriodos: false,
+    periodosLoaded: false, // para cargar solo una vez si quieres
+  }),
+
   actions: {
+    // 👉 Fetch periodos data (con protección)
+    async fetchPeriodos(params = {}) {
+      // Evita peticiones simultáneas
+      if (this.loadingPeriodos) return
 
-    // 👉 Fetch users data
-    fetchPeriodos(params) { return axios.get(`${environment.apiUrl}/periodosifluc/byuser`, { params }) },
+      // Si no quieres recargar siempre, solo cuando se fuerce
+      if (this.periodosLoaded && !params.force) {
+        return this.periodos
+      }
 
-    fetchPeriodosWithFlowValid(params) { return axios.get(`${environment.apiUrl}/periodosifluc/byuser/flowvalid`, { params }) },
+      this.loadingPeriodos = true
 
-    // 👉 Add User
-    addPeriodo(periodoData) {
+      try {
+        const { data } = await axios.get(
+          `${environment.apiUrl}/v1/convertex/periodosconvertex/by-user`,
+          { params },
+        )
+
+        console.log('fetchPeriodos: ', data)
+        this.periodos = data
+        this.periodosLoaded = true
+
+        return data
+      } finally {
+        this.loadingPeriodos = false
+      }
+    },
+
+    async fetchPeriodosWithFlowValid(params = {}) {
+      const { data } = await axios.get(
+        `${environment.apiUrl}/v1/convertex/periodosconvertex/byuser/flowvalid`,
+        { params },
+      )
+
+      return data
+    },
+
+    async addPeriodo(periodoData) {
       console.log('nuevoPeriodoData: ', periodoData)
 
-      return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/periodosifluc`, {
-          periodo: periodoData,
-        }).then(response => {
-          console.log('ID NUEVO PERIODO CREADO: ', response.data.id)
-          localStorage.setItem('periodonuevo', JSON.stringify(response.data.id))
-          resolve(response)
-        })
-          .catch(error => reject(error))
-      })
+      const response = await axios.post(
+        `${environment.apiUrl}/v1/convertex/periodosconvertex`,
+        { periodo: periodoData },
+      )
+
+      console.log('ID NUEVO PERIODO CREADO: ', response.data.id)
+      localStorage.setItem('periodonuevo', JSON.stringify(response.data.id))
+
+      return response
     },
 
-    // 👉 fetch single user
-    fetchPeriodo(id) {
-      return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/periodosifluc/${id}`).then(response => {
-          resolve(response)
-        }).catch(error => reject(error))
-      })
+    async fetchPeriodo(id) {
+      return axios.get(`${environment.apiUrl}/v1/convertex/periodosconvertex/${id}`)
     },
 
-    // 👉 fetch single user
-    eliminarPeriodoSeleccionado(id) {
-      return new Promise((resolve, reject) => {
-        axios.delete(`${environment.apiUrl}/periodosifluc/${id}`).then(response => {
-          resolve(response)
-        }).catch(error => reject(error))
-      })
+    async eliminarPeriodoSeleccionado(id) {
+      return axios.delete(`${environment.apiUrl}/v1/convertex/periodosconvertex/${id}`)
     },
   },
 })

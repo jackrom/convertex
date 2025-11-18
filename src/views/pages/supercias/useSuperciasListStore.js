@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from '@axios'
+import axios from '@/plugins/axios/axios'
 import { environment } from "@/utils/environments"
 import { useReportStore } from "@/@store/reportStore"
 
@@ -8,13 +8,13 @@ const reportStore = useReportStore()
 export const useSuperciasListStore = defineStore('SuperciasListStore', {
   actions: {
     // 👉 Fetch users data
-    fetchReportesIfluc(params) { return axios.get(`${environment.apiUrl}/reportesifluc/byuser`, { params }) },
+    fetchReportes(params) { return axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/by-user/${params.user}`, { params }) },
 
     // 👉 Add Reporte
     addReporteSupercias(periodoData) {
 
       return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/reportesifluc`, {
+        axios.post(`${environment.apiUrl}/v1/convertex/reportesconvertex`, {
           reporte: periodoData.reporte,
         })
           .then(response => {
@@ -125,7 +125,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
       const reportStore = useReportStore()
 
       return axios
-        .get(`${environment.apiUrl}/reportesifluc/actualnew/${reporte['reporteId']}`)
+        .get(`${environment.apiUrl}/v1/convertex/reportesconvertex/actualnew/${reporte['reporteId']}`)
         .then(response => {
           console.log(response)
           response.data.empresaId = reporte['empresaId']
@@ -153,7 +153,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
       const reportStore = useReportStore()
 
       return axios
-        .get(`${environment.apiUrl}/reportesifluc/anteriornew/${reporte['reporteId']}`)
+        .get(`${environment.apiUrl}/v1/convertex/reportesconvertex/anteriornew/${reporte['reporteId']}`)
         .then(response => {
           response.data.empresaId = reporte['empresaId']
           response.data.nombre_reporte = "ifluc"
@@ -171,14 +171,14 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
     // 👉 fetch single user
     fetchReporteSuperciasByCompanyByPeriodo(empresa, periodo) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/reportesifluc/${empresa}/${periodo}`).then(response => resolve(response)).catch(error => reject(error))
+        axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/${empresa}/${periodo}`).then(response => resolve(response)).catch(error => reject(error))
       })
     },
 
     // 👉 delete single reporte
     eliminarReporteSeleccionado(id) {
       return new Promise((resolve, reject) => {
-        axios.delete(`${environment.apiUrl}/reportesifluc/${id}`).then(response => {
+        axios.delete(`${environment.apiUrl}/v1/convertex/reportesconvertex/${id}`).then(response => {
           resolve(response)
         }).catch(error => reject(error))
       })
@@ -186,7 +186,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
 
     fetchReporteIflucByPeriodoActual(periodoId) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/reportesIfluc/actual/ByPeriodo/${periodoId}`).then(response => {
+        axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/actual/ByPeriodo/${periodoId}`).then(response => {
           resolve(response)
         }).catch(error => {
           reject(error)

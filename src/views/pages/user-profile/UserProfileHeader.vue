@@ -1,5 +1,5 @@
 <script setup>
-import axios from '@axios'
+import axios from '@/plugins/axios/axios'
 
 const profileHeaderData = ref()
 

@@ -1,4 +1,4 @@
-import axios from '@axios'
+import axios from '@/plugins/axios/axios'
 
 export const useEmailStore = defineStore('email', {
   // ℹ️ arrow function recommended for full type inference

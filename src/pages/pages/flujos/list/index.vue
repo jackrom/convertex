@@ -2,7 +2,7 @@
 import AddNewFlujoDrawer from '@/views/pages/flujos/list/AddNewFlujo.vue'
 import { usePeriodoListStore } from '@/views/pages/periodos/usePeriodoListStore'
 import { useEmpresaListStore } from '@/views/pages/empresas/useEmpresaListStore'
-import { useSuperciasListStore } from "@/views/pages/supercias/useSuperciasListStore"
+import { useSuperciasListStore } from "@/views/pages/supercias/useReportesListStore"
 import ConfirmDialog from '@core/components/ConfirmDialog.vue'
 import ConfirmDuplicatePeriodoDialog from "@core/components/ConfirmDuplicatePeriodoDialog.vue"
 import { ref } from "vue"

@@ -1,8 +1,24 @@
 import { useReportStore } from "@/@store/reportStore"
 
-export const getActivosCorrientes = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-  let activosCorrientesData = {
+export const obtenerDatosUsuario = () => {
+  return JSON.parse(sessionStorage.getItem('userData'))
+}
+
+export const obtenerPeriodoRecienCreado =  value => {
+  if (typeof value === 'number') return value
+  if (!value) throw new Error("PeriodoId inválido")
+
+  const data = JSON.parse(value)
+
+  return data.periodoid
+}
+
+export const obtenerEmpresa = () => {
+  return JSON.parse(localStorage.getItem('empresanueva'))
+}
+
+export const buildActivosCorrientes = (tipo, usuario, periodo, empresa, reporte) => {
+  let data = {
     esf_1: 0.00,
     esf_101: 0.00,
     esf_10101: 0.00,
@@ -166,36 +182,35 @@ export const getActivosCorrientes = (tipo, usuario, periodo,  empresa, reporte) 
     esf_10108: 0.00,
   }
 
-  if (tipo === "actual") {
-    activosCorrientesData.userId = usuario
-    activosCorrientesData.periodoId = periodo
-    activosCorrientesData.empresaId = empresa
-    activosCorrientesData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Activoscorrientes"
 
-    reportStore.setReportData(activosCorrientesData)
+    console.log('data Activos Corrientes: ' + data)
 
-    return activosCorrientesData
-  } else if (tipo === "anterior") {
-    let activosModificados = {}
-    for (let clave in activosCorrientesData) {
-      activosModificados[clave + "_ant"] = activosCorrientesData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "ActivoscorrientesAnt"
 
-    activosModificados.userId = usuario
-    activosModificados.periodoId = periodo
-    activosModificados.empresaId = empresa
-    activosModificados.reporteId = reporte
+    console.log('mod Activos Corrientes Ant: ' + mod)
 
-    reportStore.setReportData(activosModificados)
-
-    return activosModificados
+    return mod
   }
 }
 
-export const getActivosNoCorrientes = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let activosNoCorrientesData = {
+export const buildActivosNoCorrientes = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     esf_102:	0.00,
     esf_10201:	0.00,
     esf_1020101:	0.00,
@@ -273,36 +288,31 @@ export const getActivosNoCorrientes = (tipo, usuario, periodo,  empresa, reporte
     esf_1021004:	0.00,
   }
 
-  if (tipo === "actual") {
-    activosNoCorrientesData.userId = usuario
-    activosNoCorrientesData.periodoId = periodo
-    activosNoCorrientesData.empresaId = empresa
-    activosNoCorrientesData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Activosnocorrientes"
 
-    reportStore.setReportData(activosNoCorrientesData)
-
-    return activosNoCorrientesData
-  } else if (tipo === "anterior") {
-    let activosModificados = {}
-    for (let clave in activosNoCorrientesData) {
-      activosModificados[clave + "_ant"] = activosNoCorrientesData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "ActivosnocorrientesAnt"
 
-    activosModificados.userId = usuario
-    activosModificados.periodoId = periodo
-    activosModificados.empresaId = empresa
-    activosModificados.reporteId = reporte
-
-    reportStore.setReportData(activosModificados)
-
-    return activosModificados
+    return mod
   }
 }
 
-export const getPasivosCorrientes = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let pasivosCorrientesData = {
+export const buildPasivosCorrientes = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     esf_2:	0.00,
     esf_201:	0.00,
     esf_20101:	0.00,
@@ -373,36 +383,31 @@ export const getPasivosCorrientes = (tipo, usuario, periodo,  empresa, reporte) 
     esf_20114:	0.00,
   }
 
-  if (tipo === "actual") {
-    pasivosCorrientesData.userId = usuario
-    pasivosCorrientesData.periodoId = periodo
-    pasivosCorrientesData.empresaId = empresa
-    pasivosCorrientesData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Pasivoscorrientes"
 
-    reportStore.setReportData(pasivosCorrientesData)
-
-    return pasivosCorrientesData
-  } else if (tipo === "anterior") {
-    let pasivosModificados = {}
-    for (let clave in pasivosCorrientesData) {
-      pasivosModificados[clave + "_ant"] = pasivosCorrientesData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "PasivoscorrientesAnt"
 
-    pasivosModificados.userId = usuario
-    pasivosModificados.periodoId = periodo
-    pasivosModificados.empresaId = empresa
-    pasivosModificados.reporteId = reporte
-
-    reportStore.setReportData(pasivosModificados)
-
-    return pasivosModificados
+    return mod
   }
 }
 
-export const getPasivosNoCorrientes = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let pasivosNoCorrientesData = {
+export const buildPasivosNoCorrientes = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     esf_202:	0.00,
     esf_20201:	0.00,
     esf_20202:	0.00,
@@ -449,36 +454,31 @@ export const getPasivosNoCorrientes = (tipo, usuario, periodo,  empresa, reporte
     esf_20210:	0.00,
   }
 
-  if (tipo === "actual") {
-    pasivosNoCorrientesData.userId = usuario
-    pasivosNoCorrientesData.periodoId = periodo
-    pasivosNoCorrientesData.empresaId = empresa
-    pasivosNoCorrientesData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Pasivosnocorrientes"
 
-    reportStore.setReportData(pasivosNoCorrientesData)
-
-    return pasivosNoCorrientesData
-  } else if (tipo === "anterior") {
-    let pasivosModificados = {}
-    for (let clave in pasivosNoCorrientesData) {
-      pasivosModificados[clave + "_ant"] = pasivosNoCorrientesData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "PasivosnocorrientesAnt"
 
-    pasivosModificados.userId = usuario
-    pasivosModificados.periodoId = periodo
-    pasivosModificados.empresaId = empresa
-    pasivosModificados.reporteId = reporte
-
-    reportStore.setReportData(pasivosModificados)
-
-    return pasivosModificados
+    return mod
   }
 }
 
-export const getPatrimonio = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let patrimonioData = {
+export const buildPatrimonio = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     esf_3:	0.00,
     esf_30:	0.00,
     esf_301:	0.00,
@@ -513,36 +513,33 @@ export const getPatrimonio = (tipo, usuario, periodo,  empresa, reporte) => {
     esf_31:	0.00,
   }
 
-  if (tipo === "actual") {
-    patrimonioData.userId = usuario
-    patrimonioData.periodoId = periodo
-    patrimonioData.empresaId = empresa
-    patrimonioData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Patrimonio"
 
-    reportStore.setReportData(patrimonioData)
-
-    return patrimonioData
-  } else if (tipo === "anterior") {
-    let patrimonioModificados = {}
-    for (let clave in patrimonioData) {
-      patrimonioModificados[clave + "_ant"] = patrimonioData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "PatrimonioAnt"
 
-    patrimonioModificados.userId = usuario
-    patrimonioModificados.periodoId = periodo
-    patrimonioModificados.empresaId = empresa
-    patrimonioModificados.reporteId = reporte
-
-    reportStore.setReportData(patrimonioModificados)
-
-    return patrimonioModificados
+    return mod
   }
 }
 
-export const getCostos = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
+// ERI VALUES
 
-  let costosData = {
+export const buildCostos = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_501:	0.00,
     eri_50101:	0.00,
     eri_5010101:	0.00,
@@ -577,36 +574,31 @@ export const getCostos = (tipo, usuario, periodo,  empresa, reporte) => {
     eri_402:	0.00,
   }
 
-  if (tipo === "actual") {
-    costosData.userId = usuario
-    costosData.periodoId = periodo
-    costosData.empresaId = empresa
-    costosData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Costos"
 
-    reportStore.setReportData(costosData)
-
-    return costosData
-  } else if (tipo === "anterior") {
-    let costosModificados = {}
-    for (let clave in costosData) {
-      costosModificados[clave + "_ant"] = costosData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "CostosAnt"
 
-    costosModificados.userId = usuario
-    costosModificados.periodoId = periodo
-    costosModificados.empresaId = empresa
-    costosModificados.reporteId = reporte
-
-    reportStore.setReportData(costosModificados)
-
-    return costosModificados
+    return mod
   }
 }
 
-export const getIngresos = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let ingresosData = {
+export const buildIngresos = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_401:	0.00,
     eri_40101:	0.00,
     eri_40102:	0.00,
@@ -658,72 +650,62 @@ export const getIngresos = (tipo, usuario, periodo,  empresa, reporte) => {
     eri_40116:	0.00,
   }
 
-  if (tipo === "actual") {
-    ingresosData.userId = usuario
-    ingresosData.periodoId = periodo
-    ingresosData.empresaId = empresa
-    ingresosData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Ingresos"
 
-    reportStore.setReportData(ingresosData)
-
-    return ingresosData
-  } else if (tipo === "anterior") {
-    let ingresosModificados = {}
-    for (let clave in ingresosData) {
-      ingresosModificados[clave + "_ant"] = ingresosData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "IngresosAnt"
 
-    ingresosModificados.userId = usuario
-    ingresosModificados.periodoId = periodo
-    ingresosModificados.empresaId = empresa
-    ingresosModificados.reporteId = reporte
-
-    reportStore.setReportData(ingresosModificados)
-
-    return ingresosModificados
+    return mod
   }
 }
 
-export const getOtrosIngresos = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let otrosIngresosData = {
+export const buildOtrosIngresos = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_403:	0.00,
     eri_40301:	0.00,
     eri_40302:	0.00,
     eri_40303:	0.00,
   }
 
-  if (tipo === "actual") {
-    otrosIngresosData.userId = usuario
-    otrosIngresosData.periodoId = periodo
-    otrosIngresosData.empresaId = empresa
-    otrosIngresosData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Otrosingresos"
 
-    reportStore.setReportData(otrosIngresosData)
-
-    return otrosIngresosData
-  } else if (tipo === "anterior") {
-    let otrosIngresosModificados = {}
-    for (let clave in otrosIngresosData) {
-      otrosIngresosModificados[clave + "_ant"] = otrosIngresosData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "OtrosingresosAnt"
 
-    otrosIngresosModificados.userId = usuario
-    otrosIngresosModificados.periodoId = periodo
-    otrosIngresosModificados.empresaId = empresa
-    otrosIngresosModificados.reporteId = reporte
-
-    reportStore.setReportData(otrosIngresosModificados)
-
-    return otrosIngresosModificados
+    return mod
   }
 }
 
-export const getGastosDeVentas = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let gastosDeVentasData = {
+export const buildGastosDeVentas = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_50201:	0.00,
     eri_5020101:	0.00,
     eri_5020102:	0.00,
@@ -770,36 +752,31 @@ export const getGastosDeVentas = (tipo, usuario, periodo,  empresa, reporte) => 
     eri_5020128:	0.00,
   }
 
-  if (tipo === "actual") {
-    gastosDeVentasData.userId = usuario
-    gastosDeVentasData.periodoId = periodo
-    gastosDeVentasData.empresaId = empresa
-    gastosDeVentasData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Gastosdeventas"
 
-    reportStore.setReportData(gastosDeVentasData)
-
-    return gastosDeVentasData
-  } else if (tipo === "anterior") {
-    let gastosDeVentasModificados = {}
-    for (let clave in gastosDeVentasData) {
-      gastosDeVentasModificados[clave + "_ant"] = gastosDeVentasData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "GastosdeventasAnt"
 
-    gastosDeVentasModificados.userId = usuario
-    gastosDeVentasModificados.periodoId = periodo
-    gastosDeVentasModificados.empresaId = empresa
-    gastosDeVentasModificados.reporteId = reporte
-
-    reportStore.setReportData(gastosDeVentasModificados)
-
-    return gastosDeVentasModificados
+    return mod
   }
 }
 
-export const getGastosAdministrativos = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let gastosAdministrativosData = {
+export const buildGastosAdministrativos = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_50202:	0.00,
     eri_5020201:	0.00,
     eri_5020202:	0.00,
@@ -847,36 +824,31 @@ export const getGastosAdministrativos = (tipo, usuario, periodo,  empresa, repor
     eri_5020229:	0.00,
   }
 
-  if (tipo === "actual") {
-    gastosAdministrativosData.userId = usuario
-    gastosAdministrativosData.periodoId = periodo
-    gastosAdministrativosData.empresaId = empresa
-    gastosAdministrativosData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Gastosadministrativos"
 
-    reportStore.setReportData(gastosAdministrativosData)
-
-    return gastosAdministrativosData
-  } else if (tipo === "anterior") {
-    let gastosAdministrativosModificados = {}
-    for (let clave in gastosAdministrativosData) {
-      gastosAdministrativosModificados[clave + "_ant"] = gastosAdministrativosData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "GastosadministrativosAnt"
 
-    gastosAdministrativosModificados.userId = usuario
-    gastosAdministrativosModificados.periodoId = periodo
-    gastosAdministrativosModificados.empresaId = empresa
-    gastosAdministrativosModificados.reporteId = reporte
-
-    reportStore.setReportData(gastosAdministrativosModificados)
-
-    return gastosAdministrativosModificados
+    return mod
   }
 }
 
-export const getGastosFinancieros = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let gastosFinancierosData = {
+export const buildGastosFinancieros = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_50203:	0.00,
     eri_5020301:	0.00,
     eri_502030101:	0.00,
@@ -918,36 +890,31 @@ export const getGastosFinancieros = (tipo, usuario, periodo,  empresa, reporte) 
     eri_5020312:	0.00,
   }
 
-  if (tipo === "actual") {
-    gastosFinancierosData.userId = usuario
-    gastosFinancierosData.periodoId = periodo
-    gastosFinancierosData.empresaId = empresa
-    gastosFinancierosData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Gastosfinancieros"
 
-    reportStore.setReportData(gastosFinancierosData)
-
-    return gastosFinancierosData
-  } else if (tipo === "anterior") {
-    let gastosFinancierosModificados = {}
-    for (let clave in gastosFinancierosData) {
-      gastosFinancierosModificados[clave + "_ant"] = gastosFinancierosData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "GastosfinancierosAnt"
 
-    gastosFinancierosModificados.userId = usuario
-    gastosFinancierosModificados.periodoId = periodo
-    gastosFinancierosModificados.empresaId = empresa
-    gastosFinancierosModificados.reporteId = reporte
-
-    reportStore.setReportData(gastosFinancierosModificados)
-
-    return gastosFinancierosModificados
+    return mod
   }
 }
 
-export const getOtrosGastos = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let otrosGastosData = {
+export const buildOtrosGastos = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_502:	0.00,
     eri_50201:	0.00,
     eri_50202:	0.00,
@@ -957,36 +924,31 @@ export const getOtrosGastos = (tipo, usuario, periodo,  empresa, reporte) => {
     eri_5020402:	0.00,
   }
 
-  if (tipo === "actual") {
-    otrosGastosData.userId = usuario
-    otrosGastosData.periodoId = periodo
-    otrosGastosData.empresaId = empresa
-    otrosGastosData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Otrosgastos"
 
-    reportStore.setReportData(otrosGastosData)
-
-    return otrosGastosData
-  } else if (tipo === "anterior") {
-    let otrosGastosModificados = {}
-    for (let clave in otrosGastosData) {
-      otrosGastosModificados[clave + "_ant"] = otrosGastosData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "OtrosgastosAnt"
 
-    otrosGastosModificados.userId = usuario
-    otrosGastosModificados.periodoId = periodo
-    otrosGastosModificados.empresaId = empresa
-    otrosGastosModificados.reporteId = reporte
-
-    reportStore.setReportData(otrosGastosModificados)
-
-    return otrosGastosModificados
+    return mod
   }
 }
 
-export const getResultados = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let resultadosData = {
+export const buildResultados = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_600:	0.00,
     eri_601:	0.00,
     eri_602:	0.00,
@@ -995,39 +957,33 @@ export const getResultados = (tipo, usuario, periodo,  empresa, reporte) => {
     eri_605:	0.00,
     eri_606:	0.00,
     eri_607:	0.00,
-
   }
 
-  if (tipo === "actual") {
-    resultadosData.userId = usuario
-    resultadosData.periodoId = periodo
-    resultadosData.empresaId = empresa
-    resultadosData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Resultados"
 
-    reportStore.setReportData(resultadosData)
-
-    return resultadosData
-  } else if (tipo === "anterior") {
-    let resultadosModificados = {}
-    for (let clave in resultadosData) {
-      resultadosModificados[clave + "_ant"] = resultadosData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "ResultadosAnt"
 
-    resultadosModificados.userId = usuario
-    resultadosModificados.periodoId = periodo
-    resultadosModificados.empresaId = empresa
-    resultadosModificados.reporteId = reporte
-
-    reportStore.setReportData(resultadosModificados)
-
-    return resultadosModificados
+    return mod
   }
 }
 
-export const getOperacionesDiscontinuadas = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let operacionesDiscontinuadasData = {
+export const buildOperacionesDiscontinuadas = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_700:	0.00,
     eri_701:	0.00,
     eri_702:	0.00,
@@ -1038,36 +994,31 @@ export const getOperacionesDiscontinuadas = (tipo, usuario, periodo,  empresa, r
     eri_707:	0.00,
   }
 
-  if (tipo === "actual") {
-    operacionesDiscontinuadasData.userId = usuario
-    operacionesDiscontinuadasData.periodoId = periodo
-    operacionesDiscontinuadasData.empresaId = empresa
-    operacionesDiscontinuadasData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Operacionesdiscontinuadas"
 
-    reportStore.setReportData(operacionesDiscontinuadasData)
-
-    return operacionesDiscontinuadasData
-  } else if (tipo === "anterior") {
-    let operacionesDiscontinuadasModificadas = {}
-    for (let clave in operacionesDiscontinuadasData) {
-      operacionesDiscontinuadasModificadas[clave + "_ant"] = operacionesDiscontinuadasData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "OperacionesdiscontinuadasAnt"
 
-    operacionesDiscontinuadasModificadas.userId = usuario
-    operacionesDiscontinuadasModificadas.periodoId = periodo
-    operacionesDiscontinuadasModificadas.empresaId = empresa
-    operacionesDiscontinuadasModificadas.reporteId = reporte
-
-    reportStore.setReportData(operacionesDiscontinuadasModificadas)
-
-    return operacionesDiscontinuadasModificadas
+    return mod
   }
 }
 
-export const getOtrosResultadosIntegral = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let otrosResultadosIntegralData = {
+export const buildOtrosResultadosIntegral = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_800:	0.00,
     eri_80001:	0.00,
     eri_80002:	0.00,
@@ -1081,70 +1032,60 @@ export const getOtrosResultadosIntegral = (tipo, usuario, periodo,  empresa, rep
     eri_801:	0.00,
   }
 
-  if (tipo === "actual") {
-    otrosResultadosIntegralData.userId = usuario
-    otrosResultadosIntegralData.periodoId = periodo
-    otrosResultadosIntegralData.empresaId = empresa
-    otrosResultadosIntegralData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Otrosresultadosintegrales"
 
-    reportStore.setReportData(otrosResultadosIntegralData)
-
-    return otrosResultadosIntegralData
-  } else if (tipo === "anterior") {
-    let otrosResultadosModificadas = {}
-    for (let clave in otrosResultadosIntegralData) {
-      otrosResultadosModificadas[clave + "_ant"] = otrosResultadosIntegralData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "OtrosresultadosintegralesAnt"
 
-    otrosResultadosModificadas.userId = usuario
-    otrosResultadosModificadas.periodoId = periodo
-    otrosResultadosModificadas.empresaId = empresa
-    otrosResultadosModificadas.reporteId = reporte
-
-    reportStore.setReportData(otrosResultadosModificadas)
-
-    return otrosResultadosModificadas
+    return mod
   }
 }
 
-export const getResultadosParticipacionControladora = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let resultadosParticipacionControladoraData = {
+export const buildResultadosParticipacionControladora = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     eri_80101:	0.00,
     eri_80102:	0.00,
   }
 
-  if (tipo === "actual") {
-    resultadosParticipacionControladoraData.userId = usuario
-    resultadosParticipacionControladoraData.periodoId = periodo
-    resultadosParticipacionControladoraData.empresaId = empresa
-    resultadosParticipacionControladoraData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Participacioncontroladora"
 
-    reportStore.setReportData(resultadosParticipacionControladoraData)
-
-    return resultadosParticipacionControladoraData
-  } else if (tipo === "anterior") {
-    let resultadosParticipacionControladoraModificados = {}
-    for (let clave in resultadosParticipacionControladoraData) {
-      resultadosParticipacionControladoraModificados[clave + "_ant"] = resultadosParticipacionControladoraData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "ParticipacioncontroladoraAnt"
 
-    resultadosParticipacionControladoraModificados.userId = usuario
-    resultadosParticipacionControladoraModificados.periodoId = periodo
-    resultadosParticipacionControladoraModificados.empresaId = empresa
-    resultadosParticipacionControladoraModificados.reporteId = reporte
-
-    reportStore.setReportData(resultadosParticipacionControladoraModificados)
-
-    return resultadosParticipacionControladoraModificados
+    return mod
   }
 }
 
-export const getActividadesDeOperacion = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let actividadesDeOperacionData = {
+export const buildActividadesDeOperacion = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     efe_md_950101:	0.00,
     efe_md_95010101:	0.00,
     efe_md_9501010101:	0.00,
@@ -1272,36 +1213,31 @@ export const getActividadesDeOperacion = (tipo, usuario, periodo,  empresa, repo
     efe_md_95010813:	0.00,
   }
 
-  if (tipo === "actual") {
-    actividadesDeOperacionData.userId = usuario
-    actividadesDeOperacionData.periodoId = periodo
-    actividadesDeOperacionData.empresaId = empresa
-    actividadesDeOperacionData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Actividadesdeoperacion"
 
-    reportStore.setReportData(actividadesDeOperacionData)
-
-    return actividadesDeOperacionData
-  } else if (tipo === "anterior") {
-    let actividadesDeOperacionModificados = {}
-    for (let clave in actividadesDeOperacionData) {
-      actividadesDeOperacionModificados[clave + "_ant"] = actividadesDeOperacionData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "ActividadesdeoperacionAnt"
 
-    actividadesDeOperacionModificados.userId = usuario
-    actividadesDeOperacionModificados.periodoId = periodo
-    actividadesDeOperacionModificados.empresaId = empresa
-    actividadesDeOperacionModificados.reporteId = reporte
-
-    reportStore.setReportData(actividadesDeOperacionModificados)
-
-    return actividadesDeOperacionModificados
+    return mod
   }
 }
 
-export const getActividadesDeInversion = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let actividadesDeInversionData = {
+export const buildActividadesDeInversion = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     efe_md_9502:	0.00,
     efe_md_950201:	0.00,
     efe_md_950202:	0.00,
@@ -1342,36 +1278,31 @@ export const getActividadesDeInversion = (tipo, usuario, periodo,  empresa, repo
     efe_md_95022110:	0.00,
   }
 
-  if (tipo === "actual") {
-    actividadesDeInversionData.userId = usuario
-    actividadesDeInversionData.periodoId = periodo
-    actividadesDeInversionData.empresaId = empresa
-    actividadesDeInversionData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Actividadesdeinversion"
 
-    reportStore.setReportData(actividadesDeInversionData)
-
-    return actividadesDeInversionData
-  } else if (tipo === "anterior") {
-    let actividadesDeInversionModificados = {}
-    for (let clave in actividadesDeInversionData) {
-      actividadesDeInversionModificados[clave + "_ant"] = actividadesDeInversionData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "Actividadesdeinversion"
 
-    actividadesDeInversionModificados.userId = usuario
-    actividadesDeInversionModificados.periodoId = periodo
-    actividadesDeInversionModificados.empresaId = empresa
-    actividadesDeInversionModificados.reporteId = reporte
-
-    reportStore.setReportData(actividadesDeInversionModificados)
-
-    return actividadesDeInversionModificados
+    return mod
   }
 }
 
-export const getActividadesDeFinanciamiento = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let actividadesDeFinanciamientoData = {
+export const buildActividadesDeFinanciamiento = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     efe_md_95:	0.00,
     efe_md_9501:	0.00,
     efe_md_9503:	0.00,
@@ -1408,36 +1339,31 @@ export const getActividadesDeFinanciamiento = (tipo, usuario, periodo,  empresa,
 
   }
 
-  if (tipo === "actual") {
-    actividadesDeFinanciamientoData.userId = usuario
-    actividadesDeFinanciamientoData.periodoId = periodo
-    actividadesDeFinanciamientoData.empresaId = empresa
-    actividadesDeFinanciamientoData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Actividadesdefinanciamiento"
 
-    reportStore.setReportData(actividadesDeFinanciamientoData)
-
-    return actividadesDeFinanciamientoData
-  } else if (tipo === "anterior") {
-    let actividadesDeFinanciamientoModificados = {}
-    for (let clave in actividadesDeFinanciamientoData) {
-      actividadesDeFinanciamientoModificados[clave + "_ant"] = actividadesDeFinanciamientoData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "ActividadesdefinanciamientoAnt"
 
-    actividadesDeFinanciamientoModificados.userId = usuario
-    actividadesDeFinanciamientoModificados.periodoId = periodo
-    actividadesDeFinanciamientoModificados.empresaId = empresa
-    actividadesDeFinanciamientoModificados.reporteId = reporte
-
-    reportStore.setReportData(actividadesDeFinanciamientoModificados)
-
-    return actividadesDeFinanciamientoModificados
+    return mod
   }
 }
 
-export const getConciliacion = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let conciliacionData = {
+export const buildConciliacion = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     efe_md_96:	0.00,
     efe_md_97:	0.00,
     efe_md_9701:	0.00,
@@ -1538,36 +1464,31 @@ export const getConciliacion = (tipo, usuario, periodo,  empresa, reporte) => {
     efe_md_9820:	0.00,
   }
 
-  if (tipo === "actual") {
-    conciliacionData.userId = usuario
-    conciliacionData.periodoId = periodo
-    conciliacionData.empresaId = empresa
-    conciliacionData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Conciliacion"
 
-    reportStore.setReportData(conciliacionData)
-
-    return conciliacionData
-  } else if (tipo === "anterior") {
-    let conciliacionModificados = {}
-    for (let clave in conciliacionData) {
-      conciliacionModificados[clave + "_ant"] = conciliacionData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "ConciliacionAnt"
 
-    conciliacionModificados.userId = usuario
-    conciliacionModificados.periodoId = periodo
-    conciliacionModificados.empresaId = empresa
-    conciliacionModificados.reporteId = reporte
-
-    reportStore.setReportData(conciliacionModificados)
-
-    return conciliacionModificados
+    return mod
   }
 }
 
-export const getEcp = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let ecpData = {
+export const buildEcp = (tipo, usuario, periodo, empresa, reporte) => {
+  let data =  {
     ecp_99_301:	0.00,
     ecp_99_302:	0.00,
     ecp_99_303:	0.00,
@@ -1943,764 +1864,127 @@ export const getEcp = (tipo, usuario, periodo,  empresa, reporte) => {
     ecp_990210_Total: 0.00,
   }
 
-  if (tipo === "actual") {
-    ecpData.userId = usuario
-    ecpData.periodoId = periodo
-    ecpData.empresaId = empresa
-    ecpData.reporteId = reporte
+  if (tipo === 'actual') {
+    data.userid = usuario
+    data.periodoid = periodo
+    data.empresaid = empresa
+    data.reporteid = reporte
+    data.tablaorigen = "Ecp"
 
-    reportStore.setReportData(ecpData)
-
-    return ecpData
-  } else if (tipo === "anterior") {
-    let ecpModificados = {}
-    for (let clave in ecpData) {
-      ecpModificados[clave + "_ant"] = ecpData[clave]
+    return data
+  } else {
+    const mod = {}
+    for (let clave in data) {
+      mod[clave + '_ant'] = data[clave]
     }
+    mod.userid = usuario
+    mod.periodoid = periodo
+    mod.empresaid = empresa
+    mod.reporteid = reporte
+    mod.tablaorigen = "EcpAnt"
 
-    ecpModificados.userId = usuario
-    ecpModificados.periodoId = periodo
-    ecpModificados.empresaId = empresa
-    ecpModificados.reporteId = reporte
-
-    reportStore.setReportData(ecpModificados)
-
-    return ecpModificados
+    return mod
   }
 }
 
-export const getMovPerdidasAcumuladasCuentasIncobrablesAndDeterioro = (tipo, usuario, periodo,  empresa, reporte) => {
+
+export const obtenerDatosReporte = async (id, periodo, empresa) => {
+
+  console.log(periodo)
+
   const reportStore = useReportStore()
 
-  let movPerdidasAcumuladasCuentasIncobrablesAndDeterioroData = {
-    ajustes: 0.00,
-    bajasoreversiones: 0.00,
-    diferenciaporcuadrar: 0.00,
-    provisionesanio:  0.00,
-    saldofinalsegunesf: 0.00,
-    saldofinalsegunmovimiento: 0.00,
-    saldoinicial: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movPerdidasAcumuladasCuentasIncobrablesAndDeterioroData.userId = usuario
-    movPerdidasAcumuladasCuentasIncobrablesAndDeterioroData.periodoId = periodo
-    movPerdidasAcumuladasCuentasIncobrablesAndDeterioroData.empresaId = empresa
-    movPerdidasAcumuladasCuentasIncobrablesAndDeterioroData.reporteId = reporte
-
-    reportStore.setReportData(movPerdidasAcumuladasCuentasIncobrablesAndDeterioroData)
-
-    return movPerdidasAcumuladasCuentasIncobrablesAndDeterioroData
-  } else if (tipo === "anterior") {
-    let movPerdidasAcumuladasCuentasIncobrablesAndDeterioroModificados = {}
-    for (let clave in movPerdidasAcumuladasCuentasIncobrablesAndDeterioroData) {
-      movPerdidasAcumuladasCuentasIncobrablesAndDeterioroModificados[clave + "_ant"] = movPerdidasAcumuladasCuentasIncobrablesAndDeterioroData[clave]
-    }
-
-    movPerdidasAcumuladasCuentasIncobrablesAndDeterioroModificados.userId = usuario
-    movPerdidasAcumuladasCuentasIncobrablesAndDeterioroModificados.periodoId = periodo
-    movPerdidasAcumuladasCuentasIncobrablesAndDeterioroModificados.empresaId = empresa
-    movPerdidasAcumuladasCuentasIncobrablesAndDeterioroModificados.reporteId = reporte
-
-    reportStore.setReportData(movPerdidasAcumuladasCuentasIncobrablesAndDeterioroModificados)
-
-    return movPerdidasAcumuladasCuentasIncobrablesAndDeterioroModificados
-  }
-}
-
-export const getMovPerdidasAcumuladasValorNetoRealizacion = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movPerdidasAcumuladasValorNetoRealizacionData = {
-    provisionesdelanio:  0.00,
-    ajustes: 0.00,
-    bajasoreversiones: 0.00,
-    diferenciaporcuadrar: 0.00,
-    saldofinalsegunesf: 0.00,
-    saldofinalsegunmovimiento: 0.00,
-    saldoinicial: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movPerdidasAcumuladasValorNetoRealizacionData.userId = usuario
-    movPerdidasAcumuladasValorNetoRealizacionData.periodoId = periodo
-    movPerdidasAcumuladasValorNetoRealizacionData.empresaId = empresa
-    movPerdidasAcumuladasValorNetoRealizacionData.reporteId = reporte
-
-    reportStore.setReportData(movPerdidasAcumuladasValorNetoRealizacionData)
-
-    return movPerdidasAcumuladasValorNetoRealizacionData
-  } else if (tipo === "anterior") {
-    let movPerdidasAcumuladasValorNetoRealizacionModificados = {}
-    for (let clave in movPerdidasAcumuladasValorNetoRealizacionData) {
-      movPerdidasAcumuladasValorNetoRealizacionModificados[clave + "_ant"] = movPerdidasAcumuladasValorNetoRealizacionData[clave]
-    }
-
-    movPerdidasAcumuladasValorNetoRealizacionModificados.userId = usuario
-    movPerdidasAcumuladasValorNetoRealizacionModificados.periodoId = periodo
-    movPerdidasAcumuladasValorNetoRealizacionModificados.empresaId = empresa
-    movPerdidasAcumuladasValorNetoRealizacionModificados.reporteId = reporte
-
-    reportStore.setReportData(movPerdidasAcumuladasValorNetoRealizacionModificados)
-
-    return movPerdidasAcumuladasValorNetoRealizacionModificados
-  }
-}
-
-export const getMovPropiedadesPlantasEquipos = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movPropiedadesPlantasEquiposData = {
-    mov_construccionesencurso_bilddb: 0.00,
-    mov_construccionesencurso_compras: 0.00,
-    mov_construccionesencurso_gdd: 0.00,
-    mov_construccionesencurso_od: 0.00,
-    mov_construccionesencurso_si: 0.00,
-    mov_construccionesencurso_sida: 0.00,
-    mov_construccionesencurso_total: 0.00,
-    mov_construccionesencurso_transf: 0.00,
-    mov_edificios_bilddb: 0.00,
-    mov_edificios_compras: 0.00,
-    mov_edificios_gdd: 0.00,
-    mov_edificios_od: 0.00,
-    mov_edificios_si: 0.00,
-    mov_edificios_sida: 0.00,
-    mov_edificios_total: 0.00,
-    mov_edificios_transf: 0.00,
-    mov_equipodecomputacion_bilddb: 0.00,
-    mov_equipodecomputacion_compras: 0.00,
-    mov_equipodecomputacion_gdd: 0.00,
-    mov_equipodecomputacion_od: 0.00,
-    mov_equipodecomputacion_si: 0.00,
-    mov_equipodecomputacion_sida: 0.00,
-    mov_equipodecomputacion_total: 0.00,
-    mov_equipodecomputacion_transf: 0.00,
-    mov_instalaciones_bilddb: 0.00,
-    mov_instalaciones_compras: 0.00,
-    mov_instalaciones_gdd: 0.00,
-    mov_instalaciones_od: 0.00,
-    mov_instalaciones_si: 0.00,
-    mov_instalaciones_sida: 0.00,
-    mov_instalaciones_total: 0.00,
-    mov_instalaciones_transf: 0.00,
-    mov_maquinariayequipo_bilddb: 0.00,
-    mov_maquinariayequipo_compras: 0.00,
-    mov_maquinariayequipo_gdd: 0.00,
-    mov_maquinariayequipo_od: 0.00,
-    mov_maquinariayequipo_si: 0.00,
-    mov_maquinariayequipo_sida: 0.00,
-    mov_maquinariayequipo_total: 0.00,
-    mov_maquinariayequipo_transf: 0.00,
-    mov_mueblesyenseres_bilddb: 0.00,
-    mov_mueblesyenseres_compras: 0.00,
-    mov_mueblesyenseres_gdd: 0.00,
-    mov_mueblesyenseres_od: 0.00,
-    mov_mueblesyenseres_si: 0.00,
-    mov_mueblesyenseres_sida: 0.00,
-    mov_mueblesyenseres_total: 0.00,
-    mov_mueblesyenseres_transf: 0.00,
-    mov_otrospropiedadesplantasyequipos_bilddb: 0.00,
-    mov_otrospropiedadesplantasyequipos_compras: 0.00,
-    mov_otrospropiedadesplantasyequipos_gdd: 0.00,
-    mov_otrospropiedadesplantasyequipos_od: 0.00,
-    mov_otrospropiedadesplantasyequipos_si: 0.00,
-    mov_otrospropiedadesplantasyequipos_sida: 0.00,
-    mov_otrospropiedadesplantasyequipos_total: 0.00,
-    mov_otrospropiedadesplantasyequipos_transf: 0.00,
-    mov_terreno_bilddb: 0.00,
-    mov_terreno_compras: 0.00,
-    mov_terreno_gdd: 0.00,
-    mov_terreno_od: 0.00,
-    mov_terreno_si: 0.00,
-    mov_terreno_sida: 0.00,
-    mov_terreno_total: 0.00,
-    mov_terreno_transf: 0.00,
-    mov_vehiculo_bilddb: 0.00,
-    mov_vehiculo_compras: 0.00,
-    mov_vehiculo_gdd: 0.00,
-    mov_vehiculo_od: 0.00,
-    mov_vehiculo_si: 0.00,
-    mov_vehiculo_sida: 0.00,
-    mov_vehiculo_total: 0.00,
-    mov_vehiculo_transf: 0.00,
-    mov_total_si: 0.00,
-    mov_total_sida: 0.00,
-    mov_total_compras: 0.00,
-    mov_total_bilddb: 0.00,
-    mov_total_transf: 0.00,
-    mov_total_od: 0.00,
-    mov_total_gdd: 0.00,
-    mov_total_sf: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movPropiedadesPlantasEquiposData.userId = usuario
-    movPropiedadesPlantasEquiposData.periodoId = periodo
-    movPropiedadesPlantasEquiposData.empresaId = empresa
-    movPropiedadesPlantasEquiposData.reporteId = reporte
-
-    reportStore.setReportData(movPropiedadesPlantasEquiposData)
-
-    return movPropiedadesPlantasEquiposData
-  } else if (tipo === "anterior") {
-    let movPropiedadesPlantasEquiposModificados = {}
-    for (let clave in movPropiedadesPlantasEquiposData) {
-      movPropiedadesPlantasEquiposModificados[clave + "_ant"] = movPropiedadesPlantasEquiposData[clave]
-    }
-
-    movPropiedadesPlantasEquiposModificados.userId = usuario
-    movPropiedadesPlantasEquiposModificados.periodoId = periodo
-    movPropiedadesPlantasEquiposModificados.empresaId = empresa
-    movPropiedadesPlantasEquiposModificados.reporteId = reporte
-
-    reportStore.setReportData(movPropiedadesPlantasEquiposModificados)
-
-    return movPropiedadesPlantasEquiposModificados
-  }
-}
-
-export const getMovPropiedadesDeInversion = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movPropiedadesDeInversionData = {
-    mov_bajasincluida_edificios: 0.00,
-    mov_bajasincluida_terrenos: 0.00,
-    mov_compras_edificios: 0.00,
-    mov_compras_terrenos: 0.00,
-    mov_gastosdedepreciacion_edificios: 0.00,
-    mov_gastosdedepreciacion_terrenos: 0.00,
-    mov_otros_edificios: 0.00,
-    mov_otros_terrenos: 0.00,
-    mov_saldo_edificios: 0.00,
-    mov_saldo_terrenos: 0.00,
-    mov_saldoinicial_edificios: 0.00,
-    mov_saldoinicial_terrenos: 0.00,
-    mov_transferencia_edificios: 0.00,
-    mov_transferencia_terrenos: 0.00,
-    mov_valorrazonable_edificios: 0.00,
-    mov_valorrazonable_terrenos: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movPropiedadesDeInversionData.userId = usuario
-    movPropiedadesDeInversionData.periodoId = periodo
-    movPropiedadesDeInversionData.empresaId = empresa
-    movPropiedadesDeInversionData.reporteId = reporte
-
-    reportStore.setReportData(movPropiedadesDeInversionData)
-
-    return movPropiedadesDeInversionData
-  } else if (tipo === "anterior") {
-    let movPropiedadesDeInversionModificados = {}
-    for (let clave in movPropiedadesDeInversionData) {
-      movPropiedadesDeInversionModificados[clave + "_ant"] = movPropiedadesDeInversionData[clave]
-    }
-
-    movPropiedadesDeInversionModificados.userId = usuario
-    movPropiedadesDeInversionModificados.periodoId = periodo
-    movPropiedadesDeInversionModificados.empresaId = empresa
-    movPropiedadesDeInversionModificados.reporteId = reporte
-
-    reportStore.setReportData(movPropiedadesDeInversionModificados)
-
-    return movPropiedadesDeInversionModificados
-  }
-}
-
-export const getIntangibles = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movIntangiblesData = {
-    mov_bajasincluida: 0.00,
-    mov_compras: 0.00,
-    mov_diferenciaporcuadrar: 0.00,
-    mov_gastosdeamortizacion: 0.00,
-    mov_otros: 0.00,
-    mov_saldofinalsegunesf: 0.00,
-    mov_saldofinalsegunmovimiento: 0.00,
-    mov_saldoinicialamortizacionacumulada: 0.00,
-    mov_saldoinicialcosto: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movIntangiblesData.userId = usuario
-    movIntangiblesData.periodoId = periodo
-    movIntangiblesData.empresaId = empresa
-    movIntangiblesData.reporteId = reporte
-
-    reportStore.setReportData(movIntangiblesData)
-
-    return movIntangiblesData
-  } else if (tipo === "anterior") {
-    let movIntangiblesModificados = {}
-    for (let clave in movIntangiblesData) {
-      movIntangiblesModificados[clave + "_ant"] = movIntangiblesData[clave]
-    }
-
-    movIntangiblesModificados.userId = usuario
-    movIntangiblesModificados.periodoId = periodo
-    movIntangiblesModificados.empresaId = empresa
-    movIntangiblesModificados.reporteId = reporte
-
-    reportStore.setReportData(movIntangiblesModificados)
-
-    return movIntangiblesModificados
-  }
-}
-
-export const getActivosBiologicos = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movActivosBiologicosData = {
-    mov_bajasoventas_aec: 0.00,
-    mov_bajasoventas_aep: 0.00,
-    mov_bajasoventas_otros: 0.00,
-    mov_bajasoventas_pec: 0.00,
-    mov_bajasoventas_total: 0.00,
-    mov_compras_aec: 0.00,
-    mov_compras_aep: 0.00,
-    mov_compras_otros: 0.00,
-    mov_compras_pec: 0.00,
-    mov_compras_total: 0.00,
-    mov_diferenciaporcuadrar: 0.00,
-    mov_incrementodisminuciondevalor_aec: 0.00,
-    mov_incrementodisminuciondevalor_aep: 0.00,
-    mov_incrementodisminuciondevalor_otros: 0.00,
-    mov_incrementodisminuciondevalor_pec: 0.00,
-    mov_incrementodisminuciondevalor_total: 0.00,
-    mov_reclasificacion_aec: 0.00,
-    mov_reclasificacion_aep: 0.00,
-    mov_reclasificacion_otros: 0.00,
-    mov_reclasificacion_pec: 0.00,
-    mov_reclasificacion_total: 0.00,
-    mov_saldofinal_aec: 0.00,
-    mov_saldofinal_aep: 0.00,
-    mov_saldofinal_otros: 0.00,
-    mov_saldofinal_pec: 0.00,
-    mov_saldofinal_total: 0.00,
-    mov_saldofinalsegunesf: 0.00,
-    mov_saldofinalsegunmovimiento: 0.00,
-    mov_saldoinicial_aec: 0.00,
-    mov_saldoinicial_aep: 0.00,
-    mov_saldoinicial_otros: 0.00,
-    mov_saldoinicial_pec: 0.00,
-    mov_saldoinicial_total: 0.00,
-    mov_plantasencrecimiento_total: 0.00,
-    mov_plantasenproduccion_total: 0.00,
-    mov_otros_total: 0.00,
-    mov_total_total: 0.00,
-    mov_animalesenccrecimiento_total: 0.00,
-    mov_animalesenproduccion_total: 0.00,
-    mov_saldoinicial_pep: 0.00,
-    mov_compras_pep: 0.00,
-    mov_bajasoventas_pep: 0.00,
-    mov_incrementodisminuciondevalor_pep: 0.00,
-    mov_reclasificacion_pep: 0.00,
-    mov_saldofinal_pep: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movActivosBiologicosData.userId = usuario
-    movActivosBiologicosData.periodoId = periodo
-    movActivosBiologicosData.empresaId = empresa
-    movActivosBiologicosData.reporteId = reporte
-
-    reportStore.setReportData(movActivosBiologicosData)
-
-    return movActivosBiologicosData
-  } else if (tipo === "anterior") {
-    let movActivosBiologicosModificados = {}
-    for (let clave in movActivosBiologicosData) {
-      movActivosBiologicosModificados[clave + "_ant"] = movActivosBiologicosData[clave]
-    }
-
-    movActivosBiologicosModificados.userId = usuario
-    movActivosBiologicosModificados.periodoId = periodo
-    movActivosBiologicosModificados.empresaId = empresa
-    movActivosBiologicosModificados.reporteId = reporte
-
-    reportStore.setReportData(movActivosBiologicosModificados)
-
-    return movActivosBiologicosModificados
-  }
-}
-
-export const getImpuestosDiferidos = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movImpuestosDiferidosData = {
-    mov_apid_afectacionaresultadosintegrales: 0.00,
-    mov_apid_ajustesresultadosacumulados: 0.00,
-    mov_apid_ajustesresultadospyg: 0.00,
-    mov_apid_diferenciaporcuadrar: 0.00,
-    mov_apid_generacionenrevision: 0.00,
-    mov_apid_saldofinalsegunesf: 0.00,
-    mov_apid_saldofinalsegunmovimiento: 0.00,
-    mov_apid_saldoinicial: 0.00,
-    mov_ppid_afectacionaresultadosintegrales: 0.00,
-    mov_ppid_ajustesresultadosacumulados: 0.00,
-    mov_ppid_ajustesresultadospyg: 0.00,
-    mov_ppid_diferenciaporcuadrar: 0.00,
-    mov_ppid_generacionenrevision: 0.00,
-    mov_ppid_saldofinalsegunesf: 0.00,
-    mov_ppid_saldofinalsegunmovimiento: 0.00,
-    mov_ppid_saldoinicial: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movImpuestosDiferidosData.userId = usuario
-    movImpuestosDiferidosData.periodoId = periodo
-    movImpuestosDiferidosData.empresaId = empresa
-    movImpuestosDiferidosData.reporteId = reporte
-
-    reportStore.setReportData(movImpuestosDiferidosData)
-
-    return movImpuestosDiferidosData
-  } else if (tipo === "anterior") {
-    let movImpuestosDiferidosModificados = {}
-    for (let clave in movImpuestosDiferidosData) {
-      movImpuestosDiferidosModificados[clave + "_ant"] = movImpuestosDiferidosData[clave]
-    }
-
-    movImpuestosDiferidosModificados.userId = usuario
-    movImpuestosDiferidosModificados.periodoId = periodo
-    movImpuestosDiferidosModificados.empresaId = empresa
-    movImpuestosDiferidosModificados.reporteId = reporte
-
-    reportStore.setReportData(movImpuestosDiferidosModificados)
-
-    return movImpuestosDiferidosModificados
-  }
-}
-
-export const getJubilacionPatronal = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movJubilacionPatronalData = {
-    mov_beneficiospagados: 0.00,
-    mov_costofinanciero: 0.00,
-    mov_costosporservicios: 0.00,
-    mov_diferenciaporcuadrar: 0.00,
-    mov_efectodeliquidaciones: 0.00,
-    mov_gananciaoperdidaactuarial: 0.00,
-    mov_otros: 0.00,
-    mov_saldofinalsegunesf: 0.00,
-    mov_saldofinalsegunmovimiento: 0.00,
-    mov_saldoinicial: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movJubilacionPatronalData.userId = usuario
-    movJubilacionPatronalData.periodoId = periodo
-    movJubilacionPatronalData.empresaId = empresa
-    movJubilacionPatronalData.reporteId = reporte
-
-    reportStore.setReportData(movJubilacionPatronalData)
-
-    return movJubilacionPatronalData
-  } else if (tipo === "anterior") {
-    let movJubilacionPatronalModificados = {}
-    for (let clave in movJubilacionPatronalData) {
-      movJubilacionPatronalModificados[clave + "_ant"] = movJubilacionPatronalData[clave]
-    }
-
-    movJubilacionPatronalModificados.userId = usuario
-    movJubilacionPatronalModificados.periodoId = periodo
-    movJubilacionPatronalModificados.empresaId = empresa
-    movJubilacionPatronalModificados.reporteId = reporte
-
-    reportStore.setReportData(movJubilacionPatronalModificados)
-
-    return movJubilacionPatronalModificados
-  }
-}
-
-export const getDesahucio = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movDesahucioData = {
-    mov_beneficiospagados: 0.00,
-    mov_costofinanciero: 0.00,
-    mov_costosporservicios: 0.00,
-    mov_diferenciaporcuadrar: 0.00,
-    mov_efectodeliquidaciones: 0.00,
-    mov_gananciaoperdidaactuarial: 0.00,
-    mov_otros: 0.00,
-    mov_saldofinalsegunesf: 0.00,
-    mov_saldofinalsegunmovimiento: 0.00,
-    mov_saldoinicial: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movDesahucioData.userId = usuario
-    movDesahucioData.periodoId = periodo
-    movDesahucioData.empresaId = empresa
-    movDesahucioData.reporteId = reporte
-
-    reportStore.setReportData(movDesahucioData)
-
-    return movDesahucioData
-  } else if (tipo === "anterior") {
-    let movDesahucioModificados = {}
-    for (let clave in movDesahucioData) {
-      movDesahucioModificados[clave + "_ant"] = movDesahucioData[clave]
-    }
-
-    movDesahucioModificados.userId = usuario
-    movDesahucioModificados.periodoId = periodo
-    movDesahucioModificados.empresaId = empresa
-    movDesahucioModificados.reporteId = reporte
-
-    reportStore.setReportData(movDesahucioModificados)
-
-    return movDesahucioModificados
-  }
-}
-
-export const getActivosFinancierosCortoPlazo = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movActivosFinancierosCortoPlazoData = {
-    mov_provisionpordeterioro: 0.00,
-    mov_ajustes: 0.00,
-    mov_diferenciaporcuadrar: 0.00,
-    mov_interesactualizacionantiguasinv: 0.00,
-    mov_nuevasinversiones: 0.00,
-    mov_saldofinalsegunesf: 0.00,
-    mov_saldofinalsegunmovimiento: 0.00,
-    mov_saldoinicial: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movActivosFinancierosCortoPlazoData.userId = usuario
-    movActivosFinancierosCortoPlazoData.periodoId = periodo
-    movActivosFinancierosCortoPlazoData.empresaId = empresa
-    movActivosFinancierosCortoPlazoData.reporteId = reporte
-
-    reportStore.setReportData(movActivosFinancierosCortoPlazoData)
-
-    return movActivosFinancierosCortoPlazoData
-  } else if (tipo === "anterior") {
-    let movActivosFinancierosCortoPlazoModificados = {}
-    for (let clave in movActivosFinancierosCortoPlazoData) {
-      movActivosFinancierosCortoPlazoModificados[clave + "_ant"] = movActivosFinancierosCortoPlazoData[clave]
-    }
-
-    movActivosFinancierosCortoPlazoModificados.userId = usuario
-    movActivosFinancierosCortoPlazoModificados.periodoId = periodo
-    movActivosFinancierosCortoPlazoModificados.empresaId = empresa
-    movActivosFinancierosCortoPlazoModificados.reporteId = reporte
-
-    reportStore.setReportData(movActivosFinancierosCortoPlazoModificados)
-
-    return movActivosFinancierosCortoPlazoModificados
-  }
-}
-
-export const getMovOtros = (tipo, usuario, periodo,  empresa, reporte) => {
-  const reportStore = useReportStore()
-
-  let movOtrosData = {
-    mov_ajuste: 0.00,
-    mov_diferenciaporcuadrar: 0.00,
-    mov_interesactualizacionantiguasinv: 0.00,
-    mov_nuevasinversiones: 0.00,
-    mov_saldofinalsegunesf: 0.00,
-    mov_saldofinalsegunmovimiento: 0.00,
-    mov_saldoinicial: 0.00,
-    mov_dividendos_dividendospagados: 0.00,
-    mov_islr_pagos: 0.00,
-    mov_islr_provisiondelanio:  0.00,
-    mov_pt_pagos:  0.00,
-    mov_pt_provisiondelanio: 0.00,
-  }
-
-  if (tipo === "actual") {
-    movOtrosData.userId = usuario
-    movOtrosData.periodoId = periodo
-    movOtrosData.empresaId = empresa
-    movOtrosData.reporteId = reporte
-
-    reportStore.setReportData(movOtrosData)
-
-    return movOtrosData
-  } else if (tipo === "anterior") {
-    let movOtrosModificados = {}
-    for (let clave in movOtrosData) {
-      movOtrosModificados[clave + "_ant"] = movOtrosData[clave]
-    }
-
-    movOtrosModificados.userId = usuario
-    movOtrosModificados.periodoId = periodo
-    movOtrosModificados.empresaId = empresa
-    movOtrosModificados.reporteId = reporte
-
-    reportStore.setReportData(movOtrosModificados)
-
-    return movOtrosModificados
-  }
-}
-
-export const obtenerDatosUsuario = () => {
-  return JSON.parse(sessionStorage.getItem('userData'))
-}
-
-export const obtenerPeriodoRecienCreado =  () => {
-  console.log(localStorage.getItem('periodonuevo'))
-
-  return Number(JSON.parse(localStorage.getItem('periodonuevo')))
-}
-
-export const obtenerEmpresa = () => {
-  return JSON.parse(localStorage.getItem('empresanueva'))
-}
-
-export const obtenerDatosReporte = async () => {
-  const reportStore = useReportStore()
-
-  const user = obtenerDatosUsuario()
+  // const user = obtenerDatosUsuario()
 
   const reporte = {
-    userId: user.id,
-    periodoId: obtenerPeriodoRecienCreado(),
-    empresaId: obtenerEmpresa(),
-    nombre_reporte: 'ifluc',
+    userid: id,
+    periodoid: periodo,
+    empresaid: empresa,
+    nombre_reporte: 'convertex',
   }
 
-  const activoscorrientesifluc = await getActivosCorrientes('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const activosnocorrientesifluc = await getActivosNoCorrientes('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const pasivoscorrientesifluc = await getPasivosCorrientes('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const pasivosnocorrientesifluc = await getPasivosNoCorrientes('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const patrimonioifluc = await getPatrimonio('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const costosifluc = await getCostos('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const ingresosifluc = await getIngresos('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const otrosingresosifluc = await getOtrosIngresos('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const gastosdeventasifluc = await getGastosDeVentas('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const gastosadministrativosifluc = await getGastosAdministrativos('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const gastosfinancierosifluc = await getGastosFinancieros('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const otrosgastosifluc = await getOtrosGastos('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const resultadosifluc = await getResultados('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const operacionesdiscontinuadasifluc = await getOperacionesDiscontinuadas('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const otrosresultadosintegralifluc = await getOtrosResultadosIntegral('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const resultadosparticipacioncontroladoraifluc = await getResultadosParticipacionControladora('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const actividadesdeoperacionifluc = await getActividadesDeOperacion('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const actividadesdeinversionifluc = await getActividadesDeInversion('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const actividadesdefinanciamientoifluc = await getActividadesDeFinanciamiento('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const conciliacionganancianetaifluc = await getConciliacion('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const ecpifluc = await getEcp('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movperdidasacumuladascuentasincobrablesydeterioro = await getMovPerdidasAcumuladasCuentasIncobrablesAndDeterioro('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movperdidasacumuladasvalornetorealizacion = await getMovPerdidasAcumuladasValorNetoRealizacion('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movpropiedadesplantasyequipos = await getMovPropiedadesPlantasEquipos('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movpropiedadesdeinversion = await getMovPropiedadesDeInversion('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movintangibles = await getIntangibles('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movactivosbiologicos = await getActivosBiologicos('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movimpuestosdiferidos = await getImpuestosDiferidos('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movjubilacionpatronal = await getJubilacionPatronal('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const deshaucio = await getDesahucio('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const activosfinancieroslargoplazo = await getActivosFinancierosCortoPlazo('actual', user.id, reporte.periodoId, reporte.empresaId, null)
-  const otros = await getMovOtros('actual', user.id, reporte.periodoId, reporte.empresaId, null)
+  const activoscorrientesconvertex = await buildActivosCorrientes('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const activosnocorrientesconvertex = await buildActivosNoCorrientes('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const pasivoscorrientesconvertex = await buildPasivosCorrientes('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const pasivosnocorrientesconvertex = await buildPasivosNoCorrientes('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const patrimonioconvertex = await buildPatrimonio('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const costosconvertex = await buildCostos('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const ingresosconvertex = await buildIngresos('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const otrosingresosconvertex = await buildOtrosIngresos('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const gastosdeventasconvertex = await buildGastosDeVentas('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const gastosadministrativosconvertex = await buildGastosAdministrativos('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const gastosfinancierosconvertex = await buildGastosFinancieros('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const otrosgastosconvertex = await buildOtrosGastos('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const resultadosconvertex = await buildResultados('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const operacionesdiscontinuadasconvertex = await buildOperacionesDiscontinuadas('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const otrosresultadosintegralconvertex = await buildOtrosResultadosIntegral('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const resultadosparticipacioncontroladoraconvertex = await buildResultadosParticipacionControladora('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const actividadesdeoperacionconvertex = await buildActividadesDeOperacion('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const actividadesdeinversionconvertex = await buildActividadesDeInversion('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const actividadesdefinanciamientoconvertex = await buildActividadesDeFinanciamiento('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const conciliacionganancianetaconvertex = await buildConciliacion('actual', id, reporte.periodoid, reporte.empresaid, null)
+  const ecpconvertex = await buildEcp('actual', id, reporte.periodoid, reporte.empresaid, null)
 
   // PERIODO ANTERIOR
-  const activoscorrientesifluc_ant = await getActivosCorrientes('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const activosnocorrientesifluc_ant = await getActivosNoCorrientes('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const pasivoscorrientesifluc_ant = await getPasivosCorrientes('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const pasivosnocorrientesifluc_ant = await getPasivosNoCorrientes('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const patrimonioifluc_ant = await getPatrimonio('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const costosifluc_ant = await getCostos('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const ingresosifluc_ant = await getIngresos('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const otrosingresosifluc_ant = await getOtrosIngresos('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const gastosdeventasifluc_ant = await getGastosDeVentas('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const gastosadministrativosifluc_ant = await getGastosAdministrativos('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const gastosfinancierosifluc_ant = await getGastosFinancieros('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const otrosgastosifluc_ant = await getOtrosGastos('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const resultadosifluc_ant = await getResultados('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const operacionesdiscontinuadasifluc_ant = await getOperacionesDiscontinuadas('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const otrosresultadosintegralifluc_ant = await getOtrosResultadosIntegral('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const resultadosparticipacioncontroladoraifluc_ant = await getResultadosParticipacionControladora('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const actividadesdeoperacionifluc_ant = await getActividadesDeOperacion('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const actividadesdeinversionifluc_ant = await getActividadesDeInversion('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const actividadesdefinanciamientoifluc_ant = await getActividadesDeFinanciamiento('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const conciliacionganancianetaifluc_ant = await getConciliacion('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movperdidasacumuladascuentasincobrablesydeterioro_ant = await getMovPerdidasAcumuladasCuentasIncobrablesAndDeterioro('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movperdidasacumuladasvalornetorealizacion_ant = await getMovPerdidasAcumuladasValorNetoRealizacion('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movpropiedadesplantasyequipos_ant = await getMovPropiedadesPlantasEquipos('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movpropiedadesdeinversion_ant = await getMovPropiedadesDeInversion('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movintangibles_ant = await getIntangibles('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movactivosbiologicos_ant = await getActivosBiologicos('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movimpuestosdiferidos_ant = await getImpuestosDiferidos('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const movjubilacionpatronal_ant = await getJubilacionPatronal('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const deshaucio_ant = await getDesahucio('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const activosfinancieroslargoplazo_ant = await getActivosFinancierosCortoPlazo('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
-  const otros_ant = await getMovOtros('anterior', user.id, reporte.periodoId, reporte.empresaId, null)
+  const activoscorrientesconvertex_ant = await buildActivosCorrientes('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const activosnocorrientesconvertex_ant = await buildActivosNoCorrientes('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const pasivoscorrientesconvertex_ant = await buildPasivosCorrientes('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const pasivosnocorrientesconvertex_ant = await buildPasivosNoCorrientes('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const patrimonioconvertex_ant = await buildPatrimonio('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const costosconvertex_ant = await buildCostos('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const ingresosconvertex_ant = await buildIngresos('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const otrosingresosconvertex_ant = await buildOtrosIngresos('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const gastosdeventasconvertex_ant = await buildGastosDeVentas('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const gastosadministrativosconvertex_ant = await buildGastosAdministrativos('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const gastosfinancierosconvertex_ant = await buildGastosFinancieros('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const otrosgastosconvertex_ant = await buildOtrosGastos('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const resultadosconvertex_ant = await buildResultados('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const operacionesdiscontinuadasconvertex_ant = await buildOperacionesDiscontinuadas('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const otrosresultadosintegralconvertex_ant = await buildOtrosResultadosIntegral('anterior', id, reporte.periodoid, reporte.empresaid, null)
+  const resultadosparticipacioncontroladoraconvertex_ant = await buildResultadosParticipacionControladora('anterior', id, reporte.periodoid, reporte.empresaid, null)
 
-  const periodoId = obtenerPeriodoRecienCreado()
+  // const periodoId = obtenerPeriodoRecienCreado()
 
   return {
     reporte,
-    periodoId,
-    activoscorrientesifluc,
-    activosnocorrientesifluc,
-    pasivoscorrientesifluc,
-    pasivosnocorrientesifluc,
-    patrimonioifluc,
-    costosifluc,
-    ingresosifluc,
-    otrosingresosifluc,
-    gastosdeventasifluc,
-    gastosadministrativosifluc,
-    gastosfinancierosifluc,
-    otrosgastosifluc,
-    resultadosifluc,
-    operacionesdiscontinuadasifluc,
-    otrosresultadosintegralifluc,
-    resultadosparticipacioncontroladoraifluc,
-    actividadesdeoperacionifluc,
-    actividadesdeinversionifluc,
-    actividadesdefinanciamientoifluc,
-    conciliacionganancianetaifluc,
-    ecpifluc,
-    movperdidasacumuladascuentasincobrablesydeterioro,
-    movperdidasacumuladasvalornetorealizacion,
-    movpropiedadesplantasyequipos,
-    movpropiedadesdeinversion,
-    movintangibles,
-    movactivosbiologicos,
-    movimpuestosdiferidos,
-    movjubilacionpatronal,
-    deshaucio,
-    activosfinancieroslargoplazo,
-    otros,
-    activoscorrientesifluc_ant,
-    activosnocorrientesifluc_ant,
-    pasivoscorrientesifluc_ant,
-    pasivosnocorrientesifluc_ant,
-    patrimonioifluc_ant,
-    costosifluc_ant,
-    ingresosifluc_ant,
-    otrosingresosifluc_ant,
-    gastosdeventasifluc_ant,
-    gastosadministrativosifluc_ant,
-    gastosfinancierosifluc_ant,
-    otrosgastosifluc_ant,
-    resultadosifluc_ant,
-    operacionesdiscontinuadasifluc_ant,
-    otrosresultadosintegralifluc_ant,
-    resultadosparticipacioncontroladoraifluc_ant,
-    actividadesdeoperacionifluc_ant,
-    actividadesdeinversionifluc_ant,
-    actividadesdefinanciamientoifluc_ant,
-    conciliacionganancianetaifluc_ant,
-    movperdidasacumuladascuentasincobrablesydeterioro_ant,
-    movperdidasacumuladasvalornetorealizacion_ant,
-    movpropiedadesplantasyequipos_ant,
-    movpropiedadesdeinversion_ant,
-    movintangibles_ant,
-    movactivosbiologicos_ant,
-    movimpuestosdiferidos_ant,
-    movjubilacionpatronal_ant,
-    deshaucio_ant,
-    activosfinancieroslargoplazo_ant,
-    otros_ant,
+    periodo,
+    activoscorrientesconvertex,
+    activosnocorrientesconvertex,
+    pasivoscorrientesconvertex,
+    pasivosnocorrientesconvertex,
+    patrimonioconvertex,
+    costosconvertex,
+    ingresosconvertex,
+    otrosingresosconvertex,
+    gastosdeventasconvertex,
+    gastosadministrativosconvertex,
+    gastosfinancierosconvertex,
+    otrosgastosconvertex,
+    resultadosconvertex,
+    operacionesdiscontinuadasconvertex,
+    otrosresultadosintegralconvertex,
+    resultadosparticipacioncontroladoraconvertex,
+    actividadesdeoperacionconvertex,
+    actividadesdeinversionconvertex,
+    actividadesdefinanciamientoconvertex,
+    conciliacionganancianetaconvertex,
+    ecpconvertex,
+    activoscorrientesconvertex_ant,
+    activosnocorrientesconvertex_ant,
+    pasivoscorrientesconvertex_ant,
+    pasivosnocorrientesconvertex_ant,
+    patrimonioconvertex_ant,
+    costosconvertex_ant,
+    ingresosconvertex_ant,
+    otrosingresosconvertex_ant,
+    gastosdeventasconvertex_ant,
+    gastosadministrativosconvertex_ant,
+    gastosfinancierosconvertex_ant,
+    otrosgastosconvertex_ant,
+    resultadosconvertex_ant,
+    operacionesdiscontinuadasconvertex_ant,
+    otrosresultadosintegralconvertex_ant,
+    resultadosparticipacioncontroladoraconvertex_ant,
   }
 }
 

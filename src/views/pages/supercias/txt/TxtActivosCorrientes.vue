@@ -1,353 +1,135 @@
 <script setup>
 import { initializeActivosCorrientes, initializeActivosCorrientesAnt } from "@core/utils/initializers"
-
-const emits = defineEmits(['accion'])
+import { useReportStore } from "@/@store/reportStore"
+import { computed, reactive, watchEffect } from "vue"
+import { usePerformanceMetrics } from "@/composables/usePerformanceMetrics"
 
 const props = defineProps({
+  // Recibe: 'esf' | 'eri' | 'ecp' | 'efe' desde ReportViewerPage.vue
+  tipo: {
+    type: String,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  periodo: {
+    type: String,
+    required: true,
+  },
+  empresa: {
+    type: String,
+    required: true,
+  },
+  // Array de registros de valores (esfvalues, erivalues, etc.)
+  values: {
+    type: Array,
+    default: () => [],
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
   data: {
-    corrientes: null,
-    corrientes_ant: null,
-    ac_10101: null,
-    ac_10101_ant: null,
-    esf_1010302_ant: null,
+    type: Object,
+    default: () => ({
+      corrientes: null,
+      corrientes_ant: null,
+      ac_10101: null,
+      ac_10101_ant: null,
+      esf_1010302_ant: null,
+    }),
   },
 })
 
-import { useReportStore } from "@/@store/reportStore"
+const emit = defineEmits(["change-value"])
+
+console.log('props.values', props.values.activosCorrientes)
+console.log('props.values', props.values.activosCorrientesAnt)
 
 const reportStore = useReportStore()
 
-const activosCorrientes = initializeActivosCorrientes()
-const activosCorrientesAnt = initializeActivosCorrientesAnt()
+const activosCorrientesData = computed(() => {
+  const out = {}
 
-/* PERIODO ACTUAL */
-let esf_1 = activosCorrientes['esf_1']
-let esf_101 = activosCorrientes['esf_101']
-let esf_102 = activosCorrientes['esf_102']
-let esf_10101 = activosCorrientes['esf_10101']
-let esf_1010101 = activosCorrientes['esf_1010101']
-let esf_1010102 = activosCorrientes['esf_1010102']
-let esf_1010103 = activosCorrientes['esf_1010103']
-let esf_10102 = activosCorrientes['esf_10102']
-let esf_1010201 = activosCorrientes['esf_1010201']
-let esf_101020101 = activosCorrientes['esf_101020101']
-let esf_10102010101 = activosCorrientes['esf_10102010101']
-let esf_10102010102 = activosCorrientes['esf_10102010102']
-let esf_10102010103 = activosCorrientes['esf_10102010103']
-let esf_10102010104 = activosCorrientes['esf_10102010104']
-let esf_10102010105 = activosCorrientes['esf_10102010105']
-let esf_10102010106 = activosCorrientes['esf_10102010106']
-let esf_101020102 = activosCorrientes['esf_101020102']
-let esf_10102010201 = activosCorrientes['esf_10102010201']
-let esf_10102010202 = activosCorrientes['esf_10102010202']
-let esf_10102010203 = activosCorrientes['esf_10102010203']
-let esf_10102010204 = activosCorrientes['esf_10102010204']
-let esf_10102010205 = activosCorrientes['esf_10102010205']
-let esf_10102010206 = activosCorrientes['esf_10102010206']
-let esf_10102010207 = activosCorrientes['esf_10102010207']
-let esf_10102010208 = activosCorrientes['esf_10102010208']
-let esf_10102010209 = activosCorrientes['esf_10102010209']
-let esf_10102010210 = activosCorrientes['esf_10102010210']
-let esf_10102010211 = activosCorrientes['esf_10102010211']
-let esf_10102010212 = activosCorrientes['esf_10102010212']
-let esf_10102010213 = activosCorrientes['esf_10102010213']
-let esf_10102010214 = activosCorrientes['esf_10102010214']
-let esf_10102010215 = activosCorrientes['esf_10102010215']
-let esf_10102010216 = activosCorrientes['esf_10102010216']
-let esf_10102010217 = activosCorrientes['esf_10102010217']
-let esf_10102010218 = activosCorrientes['esf_10102010218']
-let esf_10102010219 = activosCorrientes['esf_10102010219']
-let esf_10102010220 = activosCorrientes['esf_10102010220']
-let esf_10102010221 = activosCorrientes['esf_10102010221']
-let esf_10102010222 = activosCorrientes['esf_10102010222']
-let esf_10102010223 = activosCorrientes['esf_10102010223']
-let esf_101020103 = activosCorrientes['esf_101020103']
-let esf_10102010301 = activosCorrientes['esf_10102010301']
-let esf_10102010302 = activosCorrientes['esf_10102010302']
-let esf_10102010303 = activosCorrientes['esf_10102010303']
-let esf_10102010304 = activosCorrientes['esf_10102010304']
-let esf_1010202 = activosCorrientes['esf_1010202']
-let esf_101020201 = activosCorrientes['esf_101020201']
-let esf_10102020101 = activosCorrientes['esf_10102020101']
-let esf_10102020102 = activosCorrientes['esf_10102020102']
-let esf_10102020103 = activosCorrientes['esf_10102020103']
-let esf_10102020104 = activosCorrientes['esf_10102020104']
-let esf_10102020105 = activosCorrientes['esf_10102020105']
-let esf_10102020106 = activosCorrientes['esf_10102020106']
-let esf_101020202 = activosCorrientes['esf_101020202']
-let esf_10102020201 = activosCorrientes['esf_10102020201']
-let esf_10102020202 = activosCorrientes['esf_10102020202']
-let esf_10102020203 = activosCorrientes['esf_10102020203']
-let esf_10102020204 = activosCorrientes['esf_10102020204']
-let esf_10102020205 = activosCorrientes['esf_10102020205']
-let esf_10102020206 = activosCorrientes['esf_10102020206']
-let esf_10102020207 = activosCorrientes['esf_10102020207']
-let esf_10102020208 = activosCorrientes['esf_10102020208']
-let esf_10102020209 = activosCorrientes['esf_10102020209']
-let esf_10102020210 = activosCorrientes['esf_10102020210']
-let esf_10102020211 = activosCorrientes['esf_10102020211']
-let esf_10102020212 = activosCorrientes['esf_10102020212']
-let esf_10102020213 = activosCorrientes['esf_10102020213']
-let esf_10102020214 = activosCorrientes['esf_10102020214']
-let esf_10102020215 = activosCorrientes['esf_10102020215']
-let esf_10102020216 = activosCorrientes['esf_10102020216']
-let esf_10102020217 = activosCorrientes['esf_10102020217']
-let esf_10102020218 = activosCorrientes['esf_10102020218']
-let esf_10102020219 = activosCorrientes['esf_10102020219']
-let esf_10102020220 = activosCorrientes['esf_10102020220']
-let esf_10102020221 = activosCorrientes['esf_10102020221']
-let esf_10102020222 = activosCorrientes['esf_10102020222']
-let esf_10102020223 = activosCorrientes['esf_10102020223']
-let esf_1010203 = activosCorrientes['esf_1010203']
-let esf_101020302 = activosCorrientes['esf_101020302']
-let esf_10102030201 = activosCorrientes['esf_10102030201']
-let esf_10102030202 = activosCorrientes['esf_10102030202']
-let esf_10102030203 = activosCorrientes['esf_10102030203']
-let esf_10102030204 = activosCorrientes['esf_10102030204']
-let esf_10102030205 = activosCorrientes['esf_10102030205']
-let esf_10102030206 = activosCorrientes['esf_10102030206']
-let esf_10102030207 = activosCorrientes['esf_10102030207']
-let esf_10102030208 = activosCorrientes['esf_10102030208']
-let esf_10102030209 = activosCorrientes['esf_10102030209']
-let esf_10102030210 = activosCorrientes['esf_10102030210']
-let esf_10102030211 = activosCorrientes['esf_10102030211']
-let esf_10102030212 = activosCorrientes['esf_10102030212']
-let esf_10102030213 = activosCorrientes['esf_10102030213']
-let esf_10102030214 = activosCorrientes['esf_10102030214']
-let esf_10102030215 = activosCorrientes['esf_10102030215']
-let esf_10102030216 = activosCorrientes['esf_10102030216']
-let esf_10102030217 = activosCorrientes['esf_10102030217']
-let esf_10102030218 = activosCorrientes['esf_10102030218']
-let esf_10102030219 = activosCorrientes['esf_10102030219']
-let esf_10102030220 = activosCorrientes['esf_10102030220']
-let esf_10102030221 = activosCorrientes['esf_10102030221']
-let esf_10102030222 = activosCorrientes['esf_10102030222']
-let esf_10102030223 = activosCorrientes['esf_10102030223']
-let esf_1010204 = activosCorrientes['esf_1010204']
-let esf_101020401 = activosCorrientes['esf_101020401']
-let esf_101020402 = activosCorrientes['esf_101020402']
-let esf_101020403 = activosCorrientes['esf_101020403']
-let esf_1010205 = activosCorrientes['esf_1010205']
-let esf_101020501 = activosCorrientes['esf_101020501']
-let esf_10102050101 = activosCorrientes['esf_10102050101']
-let esf_10102050102 = activosCorrientes['esf_10102050102']
-let esf_101020502 = activosCorrientes['esf_101020502']
-let esf_10102050201 = activosCorrientes['esf_10102050201']
-let esf_10102050202 = activosCorrientes['esf_10102050202']
-let esf_10102050203 = activosCorrientes['esf_10102050203']
-let esf_10102050204 = activosCorrientes['esf_10102050204']
-let esf_10102050207 = activosCorrientes['esf_10102050207']
-let esf_10102050208 = activosCorrientes['esf_10102050208']
-let esf_10102050209 = activosCorrientes['esf_10102050209']
-let esf_10102050210 = activosCorrientes['esf_10102050210']
-let esf_10102050211 = activosCorrientes['esf_10102050211']
-let esf_10102050212 = activosCorrientes['esf_10102050212']
-let esf_10102050213 = activosCorrientes['esf_10102050213']
-let esf_10102050214 = activosCorrientes['esf_10102050214']
-let esf_10102050215 = activosCorrientes['esf_10102050215']
-let esf_10102050216 = activosCorrientes['esf_10102050216']
-let esf_10102050217 = activosCorrientes['esf_10102050217']
-let esf_10102050218 = activosCorrientes['esf_10102050218']
-let esf_10102050219 = activosCorrientes['esf_10102050219']
-let esf_10102050220 = activosCorrientes['esf_10102050220']
-let esf_10102050221 = activosCorrientes['esf_10102050221']
-let esf_1010206 = activosCorrientes['esf_1010206']
-let esf_101020601 = activosCorrientes['esf_101020601']
-let esf_101020602 = activosCorrientes['esf_101020602']
-let esf_101020603 = activosCorrientes['esf_101020603']
-let esf_101020604 = activosCorrientes['esf_101020604']
-let esf_1010207 = activosCorrientes['esf_1010207']
-let esf_10103 = activosCorrientes['esf_10103']
-let esf_1010301 = activosCorrientes['esf_1010301']
-let esf_1010302 = activosCorrientes['esf_1010302']
-let esf_1010303 = activosCorrientes['esf_1010303']
-let esf_1010304 = activosCorrientes['esf_1010304']
-let esf_1010305 = activosCorrientes['esf_1010305']
-let esf_1010306 = activosCorrientes['esf_1010306']
-let esf_1010307 = activosCorrientes['esf_1010307']
-let esf_1010308 = activosCorrientes['esf_1010308']
-let esf_1010309 = activosCorrientes['esf_1010309']
-let esf_1010310 = activosCorrientes['esf_1010310']
-let esf_1010311 = activosCorrientes['esf_1010311']
-let esf_1010312 = activosCorrientes['esf_1010312']
-let esf_1010313 = activosCorrientes['esf_1010313']
-let esf_10104 = activosCorrientes['esf_10104']
-let esf_1010401 = activosCorrientes['esf_1010401']
-let esf_1010402 = activosCorrientes['esf_1010402']
-let esf_1010403 = activosCorrientes['esf_1010403']
-let esf_1010404 = activosCorrientes['esf_1010404']
-let esf_10105 = activosCorrientes['esf_10105']
-let esf_1010501 = activosCorrientes['esf_1010501']
-let esf_1010502 = activosCorrientes['esf_1010502']
-let esf_1010503 = activosCorrientes['esf_1010503']
-let esf_10106 = activosCorrientes['esf_10106']
-let esf_10107 = activosCorrientes['esf_10107']
-let esf_10108 = activosCorrientes['esf_10108']
+  for (const row of props.values) {
+    const key = row.nombrecampo
+    if (!key || !key.startsWith("esf_")) continue
 
-/* PERIODO ANTERIOR */
-let esf_1_ant = activosCorrientesAnt['esf_1_ant']
-let esf_101_ant = activosCorrientesAnt['esf_101_ant']
-let esf_102_ant = activosCorrientesAnt['esf_102_ant']
-let esf_10101_ant = activosCorrientesAnt['esf_10101_ant']
-let esf_1010101_ant = activosCorrientesAnt['esf_1010101_ant']
-let esf_1010102_ant = activosCorrientesAnt['esf_1010102_ant']
-let esf_1010103_ant = activosCorrientesAnt['esf_1010103_ant']
-let esf_10102_ant = activosCorrientesAnt['esf_10102_ant']
-let esf_1010201_ant = activosCorrientesAnt['esf_1010201_ant']
-let esf_101020101_ant = activosCorrientesAnt['esf_101020101_ant']
-let esf_10102010101_ant = activosCorrientesAnt['esf_10102010101_ant']
-let esf_10102010102_ant = activosCorrientesAnt['esf_10102010102_ant']
-let esf_10102010103_ant = activosCorrientesAnt['esf_10102010103_ant']
-let esf_10102010104_ant = activosCorrientesAnt['esf_10102010104_ant']
-let esf_10102010105_ant = activosCorrientesAnt['esf_10102010105_ant']
-let esf_10102010106_ant = activosCorrientesAnt['esf_10102010106_ant']
-let esf_101020102_ant = activosCorrientesAnt['esf_101020102_ant']
-let esf_10102010201_ant = activosCorrientesAnt['esf_10102010201_ant']
-let esf_10102010202_ant = activosCorrientesAnt['esf_10102010202_ant']
-let esf_10102010203_ant = activosCorrientesAnt['esf_10102010203_ant']
-let esf_10102010204_ant = activosCorrientesAnt['esf_10102010204_ant']
-let esf_10102010205_ant = activosCorrientesAnt['esf_10102010205_ant']
-let esf_10102010206_ant = activosCorrientesAnt['esf_10102010206_ant']
-let esf_10102010207_ant = activosCorrientesAnt['esf_10102010207_ant']
-let esf_10102010208_ant = activosCorrientesAnt['esf_10102010208_ant']
-let esf_10102010209_ant = activosCorrientesAnt['esf_10102010209_ant']
-let esf_10102010210_ant = activosCorrientesAnt['esf_10102010210_ant']
-let esf_10102010211_ant = activosCorrientesAnt['esf_10102010211_ant']
-let esf_10102010212_ant = activosCorrientesAnt['esf_10102010212_ant']
-let esf_10102010213_ant = activosCorrientesAnt['esf_10102010213_ant']
-let esf_10102010214_ant = activosCorrientesAnt['esf_10102010214_ant']
-let esf_10102010215_ant = activosCorrientesAnt['esf_10102010215_ant']
-let esf_10102010216_ant = activosCorrientesAnt['esf_10102010216_ant']
-let esf_10102010217_ant = activosCorrientesAnt['esf_10102010217_ant']
-let esf_10102010218_ant = activosCorrientesAnt['esf_10102010218_ant']
-let esf_10102010219_ant = activosCorrientesAnt['esf_10102010219_ant']
-let esf_10102010220_ant = activosCorrientesAnt['esf_10102010220_ant']
-let esf_10102010221_ant = activosCorrientesAnt['esf_10102010221_ant']
-let esf_10102010222_ant = activosCorrientesAnt['esf_10102010222_ant']
-let esf_10102010223_ant = activosCorrientesAnt['esf_10102010223_ant']
-let esf_101020103_ant = activosCorrientesAnt['esf_101020103_ant']
-let esf_10102010301_ant = activosCorrientesAnt['esf_10102010301_ant']
-let esf_10102010302_ant = activosCorrientesAnt['esf_10102010302_ant']
-let esf_10102010303_ant = activosCorrientesAnt['esf_10102010303_ant']
-let esf_10102010304_ant = activosCorrientesAnt['esf_10102010304_ant']
-let esf_1010202_ant = activosCorrientesAnt['esf_1010202_ant']
-let esf_101020201_ant = activosCorrientesAnt['esf_101020201_ant']
-let esf_10102020101_ant = activosCorrientesAnt['esf_10102020101_ant']
-let esf_10102020102_ant = activosCorrientesAnt['esf_10102020102_ant']
-let esf_10102020103_ant = activosCorrientesAnt['esf_10102020103_ant']
-let esf_10102020104_ant = activosCorrientesAnt['esf_10102020104_ant']
-let esf_10102020105_ant = activosCorrientesAnt['esf_10102020105_ant']
-let esf_10102020106_ant = activosCorrientesAnt['esf_10102020106_ant']
-let esf_101020202_ant = activosCorrientesAnt['esf_101020202_ant']
-let esf_10102020201_ant = activosCorrientesAnt['esf_10102020201_ant']
-let esf_10102020202_ant = activosCorrientesAnt['esf_10102020202_ant']
-let esf_10102020203_ant = activosCorrientesAnt['esf_10102020203_ant']
-let esf_10102020204_ant = activosCorrientesAnt['esf_10102020204_ant']
-let esf_10102020205_ant = activosCorrientesAnt['esf_10102020205_ant']
-let esf_10102020206_ant = activosCorrientesAnt['esf_10102020206_ant']
-let esf_10102020207_ant = activosCorrientesAnt['esf_10102020207_ant']
-let esf_10102020208_ant = activosCorrientesAnt['esf_10102020208_ant']
-let esf_10102020209_ant = activosCorrientesAnt['esf_10102020209_ant']
-let esf_10102020210_ant = activosCorrientesAnt['esf_10102020210_ant']
-let esf_10102020211_ant = activosCorrientesAnt['esf_10102020211_ant']
-let esf_10102020212_ant = activosCorrientesAnt['esf_10102020212_ant']
-let esf_10102020213_ant = activosCorrientesAnt['esf_10102020213_ant']
-let esf_10102020214_ant = activosCorrientesAnt['esf_10102020214_ant']
-let esf_10102020215_ant = activosCorrientesAnt['esf_10102020215_ant']
-let esf_10102020216_ant = activosCorrientesAnt['esf_10102020216_ant']
-let esf_10102020217_ant = activosCorrientesAnt['esf_10102020217_ant']
-let esf_10102020218_ant = activosCorrientesAnt['esf_10102020218_ant']
-let esf_10102020219_ant = activosCorrientesAnt['esf_10102020219_ant']
-let esf_10102020220_ant = activosCorrientesAnt['esf_10102020220_ant']
-let esf_10102020221_ant = activosCorrientesAnt['esf_10102020221_ant']
-let esf_10102020222_ant = activosCorrientesAnt['esf_10102020222_ant']
-let esf_10102020223_ant = activosCorrientesAnt['esf_10102020223_ant']
-let esf_1010203_ant = activosCorrientesAnt['esf_1010203_ant']
-let esf_101020302_ant = activosCorrientesAnt['esf_101020302_ant']
-let esf_10102030201_ant = activosCorrientesAnt['esf_10102030201_ant']
-let esf_10102030202_ant = activosCorrientesAnt['esf_10102030202_ant']
-let esf_10102030203_ant = activosCorrientesAnt['esf_10102030203_ant']
-let esf_10102030204_ant = activosCorrientesAnt['esf_10102030204_ant']
-let esf_10102030205_ant = activosCorrientesAnt['esf_10102030205_ant']
-let esf_10102030206_ant = activosCorrientesAnt['esf_10102030206_ant']
-let esf_10102030207_ant = activosCorrientesAnt['esf_10102030207_ant']
-let esf_10102030208_ant = activosCorrientesAnt['esf_10102030208_ant']
-let esf_10102030209_ant = activosCorrientesAnt['esf_10102030209_ant']
-let esf_10102030210_ant = activosCorrientesAnt['esf_10102030210_ant']
-let esf_10102030211_ant = activosCorrientesAnt['esf_10102030211_ant']
-let esf_10102030212_ant = activosCorrientesAnt['esf_10102030212_ant']
-let esf_10102030213_ant = activosCorrientesAnt['esf_10102030213_ant']
-let esf_10102030214_ant = activosCorrientesAnt['esf_10102030214_ant']
-let esf_10102030215_ant = activosCorrientesAnt['esf_10102030215_ant']
-let esf_10102030216_ant = activosCorrientesAnt['esf_10102030216_ant']
-let esf_10102030217_ant = activosCorrientesAnt['esf_10102030217_ant']
-let esf_10102030218_ant = activosCorrientesAnt['esf_10102030218_ant']
-let esf_10102030219_ant = activosCorrientesAnt['esf_10102030219_ant']
-let esf_10102030220_ant = activosCorrientesAnt['esf_10102030220_ant']
-let esf_10102030221_ant = activosCorrientesAnt['esf_10102030221_ant']
-let esf_10102030222_ant = activosCorrientesAnt['esf_10102030222_ant']
-let esf_10102030223_ant = activosCorrientesAnt['esf_10102030223_ant']
-let esf_1010204_ant = activosCorrientesAnt['esf_1010204_ant']
-let esf_101020401_ant = activosCorrientesAnt['esf_101020401_ant']
-let esf_101020402_ant = activosCorrientesAnt['esf_101020402_ant']
-let esf_101020403_ant = activosCorrientesAnt['esf_101020403_ant']
-let esf_1010205_ant = activosCorrientesAnt['esf_1010205_ant']
-let esf_101020501_ant = activosCorrientesAnt['esf_101020501_ant']
-let esf_10102050101_ant = activosCorrientesAnt['esf_10102050101_ant']
-let esf_10102050102_ant = activosCorrientesAnt['esf_10102050102_ant']
-let esf_101020502_ant = activosCorrientesAnt['esf_101020502_ant']
-let esf_10102050201_ant = activosCorrientesAnt['esf_10102050201_ant']
-let esf_10102050202_ant = activosCorrientesAnt['esf_10102050202_ant']
-let esf_10102050203_ant = activosCorrientesAnt['esf_10102050203_ant']
-let esf_10102050204_ant = activosCorrientesAnt['esf_10102050204_ant']
-let esf_10102050207_ant = activosCorrientesAnt['esf_10102050207_ant']
-let esf_10102050208_ant = activosCorrientesAnt['esf_10102050208_ant']
-let esf_10102050209_ant = activosCorrientesAnt['esf_10102050209_ant']
-let esf_10102050210_ant = activosCorrientesAnt['esf_10102050210_ant']
-let esf_10102050211_ant = activosCorrientesAnt['esf_10102050211_ant']
-let esf_10102050212_ant = activosCorrientesAnt['esf_10102050212_ant']
-let esf_10102050213_ant = activosCorrientesAnt['esf_10102050213_ant']
-let esf_10102050214_ant = activosCorrientesAnt['esf_10102050214_ant']
-let esf_10102050215_ant = activosCorrientesAnt['esf_10102050215_ant']
-let esf_10102050216_ant = activosCorrientesAnt['esf_10102050216_ant']
-let esf_10102050217_ant = activosCorrientesAnt['esf_10102050217_ant']
-let esf_10102050218_ant = activosCorrientesAnt['esf_10102050218_ant']
-let esf_10102050219_ant = activosCorrientesAnt['esf_10102050219_ant']
-let esf_10102050220_ant = activosCorrientesAnt['esf_10102050220_ant']
-let esf_10102050221_ant = activosCorrientesAnt['esf_10102050221_ant']
-let esf_1010206_ant = activosCorrientesAnt['esf_1010206_ant']
-let esf_101020601_ant = activosCorrientesAnt['esf_101020601_ant']
-let esf_101020602_ant = activosCorrientesAnt['esf_101020602_ant']
-let esf_101020603_ant = activosCorrientesAnt['esf_101020603_ant']
-let esf_101020604_ant = activosCorrientesAnt['esf_101020604_ant']
-let esf_1010207_ant = activosCorrientesAnt['esf_1010207_ant']
-let esf_10103_ant = activosCorrientesAnt['esf_10103_ant']
-let esf_1010301_ant = activosCorrientesAnt['esf_1010301_ant']
-let esf_1010302_ant = activosCorrientesAnt['esf_1010302_ant']
-let esf_1010303_ant = activosCorrientesAnt['esf_1010303_ant']
-let esf_1010304_ant = activosCorrientesAnt['esf_1010304_ant']
-let esf_1010305_ant = activosCorrientesAnt['esf_1010305_ant']
-let esf_1010306_ant = activosCorrientesAnt['esf_1010306_ant']
-let esf_1010307_ant = activosCorrientesAnt['esf_1010307_ant']
-let esf_1010308_ant = activosCorrientesAnt['esf_1010308_ant']
-let esf_1010309_ant = activosCorrientesAnt['esf_1010309_ant']
-let esf_1010310_ant = activosCorrientesAnt['esf_1010310_ant']
-let esf_1010311_ant = activosCorrientesAnt['esf_1010311_ant']
-let esf_1010312_ant = activosCorrientesAnt['esf_1010312_ant']
-let esf_1010313_ant = activosCorrientesAnt['esf_1010313_ant']
-let esf_10104_ant = activosCorrientesAnt['esf_10104_ant']
-let esf_1010401_ant = activosCorrientesAnt['esf_1010401_ant']
-let esf_1010402_ant = activosCorrientesAnt['esf_1010402_ant']
-let esf_1010403_ant = activosCorrientesAnt['esf_1010403_ant']
-let esf_1010404_ant = activosCorrientesAnt['esf_1010404_ant']
-let esf_10105_ant = activosCorrientesAnt['esf_10105_ant']
-let esf_1010501_ant = activosCorrientesAnt['esf_1010501_ant']
-let esf_1010502_ant = activosCorrientesAnt['esf_1010502_ant']
-let esf_1010503_ant = activosCorrientesAnt['esf_1010503_ant']
-let esf_10106_ant = activosCorrientesAnt['esf_10106_ant']
-let esf_10107_ant = activosCorrientesAnt['esf_10107_ant']
-let esf_10108_ant = activosCorrientesAnt['esf_10108_ant']
+    let val = Number(row.valor) || 0
 
+    out[key] = val
+  }
+
+  return out
+})
+
+const activosCorrientesAntData = computed(() => {
+  const out = {}
+
+  for (const row of props.values) {
+    const key = row.nombrecampo
+    if (!key || !key.startsWith("esf_")) continue
+
+    let val = Number(row.valor) || 0
+
+    out[key] = val
+  }
+
+  return out
+})
+
+const activosCorrientes = reactive({})
+
+const ensureCell = (grupo, col) => {
+  const gKey = String(grupo)
+  const cKey = String(col)
+
+  if (!activosCorrientes[gKey]) activosCorrientes[gKey] = {}
+
+  if (!activosCorrientes[gKey][cKey]) {
+    const readonly = READONLY_GROUPS.has(gKey) || READONLY_COLS.has(cKey)
+
+    activosCorrientes[gKey][cKey] = {
+      readonly,
+      value: 0,
+    }
+  }
+
+  return activosCorrientes[gKey][cKey]
+}
+
+const recalcHojaFromBase = baseData => {
+  const base = baseData.value
+
+  Object.entries(base).forEach(([key, num]) => {
+    const [, grupo, col] = key.split("_")
+
+    const cell = ensureCell(grupo, col)
+
+    // Solo asignar el valor base si la celda aún no tiene un valor asignado por el usuario.
+    // Comentar la línea de asignación directa de base a la celda si ya tiene un valor
+    if (cell.value === null || cell.value === undefined) {
+      cell.value = num
+    }
+  })
+}
+
+// Orquestador: recalcula TODO el modelo interno
+const recalcAll = () => {
+  recalcHojaFromBase(activosCorrientesData)
+  recalcHojaFromBase(activosCorrientesAntData)
+}
+
+watchEffect(() => {
+  recalcAll()
+
+  // syncEcpToStore()
+  // usePerformanceMetrics("TxtEstadosDeCambiosEnElPatrimonio")
+})
+
+/*
 let values = ref([])
 
 let convertirNegativo_1010313_ant = async id => { esf_1010313_ant.value = (Number(esf_1010313_ant.value) > 0) ? Number(esf_1010313_ant.value) * -1 : Number(esf_1010313_ant.value) }
@@ -769,6 +551,8 @@ onMounted(() => {
 onMounted(() => {
   handleActionClick_ant(1)
 })
+
+ */
 </script>
 
 <template>

@@ -26,6 +26,7 @@ import { useReportStore } from "@/@store/reportStore"
 
 
 import { jsPDF } from "jspdf"
+import autoTable from "jspdf-autotable"
 
 export const descargarExcel = async () => {
   const reportStore = useReportStore()
@@ -132,17 +133,17 @@ export const descargarExcel = async () => {
   }, 1000)
 }
 
-export const descargarPDF = async () => {
+export const descargarPDF = async (empresa, periodo) => {
   const reportStore = useReportStore()
 
   let listaModulos = [];
 
   setTimeout(async () => {
     let arrayEfe = [
-      reportStore.getReportData("actividadesdeoperacionifluc"),
-      reportStore.getReportData("actividadesdeinversionifluc"),
-      reportStore.getReportData("actividadesdefinanciamientoifluc"),
-      reportStore.getReportData("conciliacionganancianetaifluc"),
+      reportStore.getReportData("Actividadesdeoperacion"),
+      reportStore.getReportData("Actividadesdeinversion"),
+      reportStore.getReportData("Actividadesdefinanciamiento"),
+      reportStore.getReportData("Conciliacion"),
     ]
     let efeData = copiarPropiedadesDeArray(arrayEfe)
     let efeFormateado = formatearEfe(efeData, EFE_DATA_JSON)
@@ -153,32 +154,32 @@ export const descargarPDF = async () => {
     listaModulos.push(listEFE['EFE'])
 
     let arrayEri = [
-      reportStore.getReportData("costosifluc"),
-      reportStore.getReportData("ingresosifluc"),
-      reportStore.getReportData("otrosingresosifluc"),
-      reportStore.getReportData("gastosdeventasifluc"),
-      reportStore.getReportData("gastosadministrativosifluc"),
-      reportStore.getReportData("gastosfinancierosifluc"),
-      reportStore.getReportData("otrosgastosifluc"),
-      reportStore.getReportData("resultadosifluc"),
-      reportStore.getReportData("operacionesdiscontinuadasifluc"),
-      reportStore.getReportData("otrosresultadosintegralifluc"),
-      reportStore.getReportData("resultadosparticipacioncontroladoraifluc"),
+      reportStore.getReportData("Costos"),
+      reportStore.getReportData("Ingresos"),
+      reportStore.getReportData("Otrosingresos"),
+      reportStore.getReportData("Gastosdeventas"),
+      reportStore.getReportData("Gastosadministrativos"),
+      reportStore.getReportData("Gastosfinancieros"),
+      reportStore.getReportData("Otrosgastos"),
+      reportStore.getReportData("Resultados"),
+      reportStore.getReportData("Operacionesdiscontinuadas"),
+      reportStore.getReportData("Otrosresultadosintegrales"),
+      reportStore.getReportData("Participacioncontroladora"),
     ]
     let eriData = copiarPropiedadesDeArray(arrayEri)
     let eriFormateado = formatearEri(eriData, ERI_DATA_JSON)
     let arrayEriAnt = [
-      reportStore.getReportData("costosifluc_ant", true),
-      reportStore.getReportData("ingresosifluc_ant", true),
-      reportStore.getReportData("otrosingresosifluc_ant", true),
-      reportStore.getReportData("gastosdeventasifluc_ant", true),
-      reportStore.getReportData("gastosadministrativosifluc_ant", true),
-      reportStore.getReportData("gastosfinancierosifluc_ant", true),
-      reportStore.getReportData("otrosgastosifluc_ant", true),
-      reportStore.getReportData("resultadosifluc_ant", true),
-      reportStore.getReportData("operacionesdiscontinuadasifluc_ant", true),
-      reportStore.getReportData("otrosresultadosintegralifluc_ant", true),
-      reportStore.getReportData("resultadosparticipacioncontroladoraifluc_ant", true),
+      reportStore.getReportData("Costos", true),
+      reportStore.getReportData("Ingresos", true),
+      reportStore.getReportData("Otrosingresos", true),
+      reportStore.getReportData("Gastosdeventas", true),
+      reportStore.getReportData("Gastosadministrativos", true),
+      reportStore.getReportData("Gastosfinancieros", true),
+      reportStore.getReportData("Otrosgastos", true),
+      reportStore.getReportData("Resultados", true),
+      reportStore.getReportData("Operacionesdiscontinuadas", true),
+      reportStore.getReportData("Otrosresultadosintegrales", true),
+      reportStore.getReportData("Participacioncontroladora", true),
     ]
     let eriDataFinal = copiarPropiedadesDeArray(arrayEriAnt)
 
@@ -189,20 +190,20 @@ export const descargarPDF = async () => {
     listaModulos.push(listERI['ERI'])
 
     let arrayEsf = [
-      reportStore.getReportData("activoscorrientesifluc"),
-      reportStore.getReportData("activosnocorrientesifluc"),
-      reportStore.getReportData("pasivoscorrientesifluc"),
-      reportStore.getReportData("pasivosnocorrientesifluc"),
-      reportStore.getReportData("patrimonioifluc"),
+      reportStore.getReportData("Activoscorrientes"),
+      reportStore.getReportData("Activosnocorrientes"),
+      reportStore.getReportData("Pasivoscorrientes"),
+      reportStore.getReportData("Pasivosnocorrientes"),
+      reportStore.getReportData("Patrimonio"),
     ]
     let esfData = copiarPropiedadesDeArray(arrayEsf)
     let esfFormateado = formatearEsf(esfData, ESF_DATA_JSON)
     let arrayEsfAnt = [
-      reportStore.getReportData("activoscorrientesifluc_ant", true),
-      reportStore.getReportData("activosnocorrientesifluc_ant", true),
-      reportStore.getReportData("pasivoscorrientesifluc_ant", true),
-      reportStore.getReportData("pasivosnocorrientesifluc_ant", true),
-      reportStore.getReportData("patrimonioifluc_ant", true),
+      reportStore.getReportData("Activoscorrientes", true),
+      reportStore.getReportData("Activosnocorrientes", true),
+      reportStore.getReportData("Pasivoscorrientes", true),
+      reportStore.getReportData("Pasivosnocorrientes", true),
+      reportStore.getReportData("Patrimonio", true),
     ]
     let esfDataFinal = copiarPropiedadesDeArray(arrayEsfAnt)
     let listESF = {
@@ -212,8 +213,6 @@ export const descargarPDF = async () => {
     listaModulos.push(listESF['ESF'])
 
     let listaEfe = obtenerValoresSinAnt(listEFE['EFE'])
-    const empresa = reportStore.reportData['empresareporteifluc']
-    const periodo = reportStore.reportData['periodosreporteifluc']
 
     const docEfe = new jsPDF();
 
@@ -243,7 +242,7 @@ export const descargarPDF = async () => {
       dato.actual || ""
     ]);
 
-    docEfe.autoTable({
+    autoTable(docEfe, {
       head: headersEfe,
       body: rowsEfe,
       startY: 30,
@@ -310,7 +309,7 @@ export const descargarPDF = async () => {
       dato.actual || ""
     ]);
 
-    docEfeMI.autoTable({
+    autoTable(docEfeMI, {
       head: headersEfeMI,
       body: rowsEfeMI,
       startY: 30,
@@ -366,7 +365,7 @@ export const descargarPDF = async () => {
       ["Código", "Nombre", "Actual"]
     ];
     const rowsEfeHibrido = filteredRowsEFEHibrido.map(dato => [dato.codigo, dato.nombre, dato.actual]);
-    docEfeHibrido.autoTable({
+    autoTable(docEfeHibrido, {
       head: headersEFEHibrido,
       body: rowsEfeHibrido,
       theme: 'grid',
@@ -420,7 +419,7 @@ export const descargarPDF = async () => {
       ["Código", "Nombre", "Actual", "Anterior"]
     ];
     const rowsEri = filteredRowsERI.map(dato => [dato.codigo, dato.nombre, dato.actual, dato.anterior]);
-    docEri.autoTable({
+    autoTable(docEri, {
       head: headersEri,
       body: rowsEri,
       theme: 'grid',
@@ -479,7 +478,7 @@ export const descargarPDF = async () => {
       ["Código", "Nombre", "Actual", "Anterior"]
     ];
     const rowsEsf = filteredRows.map(dato => [dato.codigo, dato.nombre, dato.actual, dato.anterior]);
-    docEsf.autoTable({
+    autoTable(docEsf, {
       head: headersEsf,
       body: rowsEsf,
       startY: 40,
@@ -516,7 +515,13 @@ export const descargarPDF = async () => {
 
 
     // ECP
-    const dataObject = reportStore.getReportData('ecpifluc')
+    const dataObject = reportStore.getReportData('Ecp')
+
+    if (!dataObject) {
+      console.warn('No se encontraron datos ECP en el store para la clave "Ecp"')
+      return
+    }
+
     const docEcp = new jsPDF({
       orientation: "landscape",
       unit: "mm",
@@ -583,7 +588,7 @@ export const descargarPDF = async () => {
     ];
 
     // Configuración de autoTable
-    docEcp.autoTable({
+    autoTable(docEcp, {
       head: headersEcp,
       body: rowsEcp,
       theme: 'grid',

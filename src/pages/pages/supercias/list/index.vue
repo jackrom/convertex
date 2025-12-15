@@ -1,15 +1,24 @@
 <script setup>
-import { useSuperciasListStore } from "@/views/pages/supercias/useSuperciasListStore"
+import { useReportesListStore } from "@/views/pages/supercias/useReportesListStore"
 import { useEmpresaListStore } from "@/views/pages/empresas/useEmpresaListStore"
 import { usePeriodoListStore } from "@/views/pages/periodos/usePeriodoListStore"
-import { ref, watchEffect, computed } from 'vue'
+import { ref, watchEffect, computed, onMounted } from 'vue'
 import ConfirmDialogReporte from "@core/components/ConfirmDialogReporte.vue"
 import { useReportStore } from "@/@store/reportStore"
 import { borrarDataDeOtrosPeriodos } from "@core/utils/formatters"
 import { descargarPDF, descargarExcel, generarEsfTxt, generarEriTxt, generarEfeTxt, generarEcpTxt } from "@core/utils/Export2Excel"
-
 import { saveAs } from 'file-saver'
+import { useRouter } from 'vue-router'
+import { useIndexedDB } from '@/composables/useIndexedDB'
 
+// ───────────────────────────────
+// IndexedDB
+// ───────────────────────────────
+const { getAll, addItem, clearStore } = useIndexedDB()
+
+// ───────────────────────────────
+// Estado de carga para acciones
+// ───────────────────────────────
 const loadingsXls = ref([])
 const loadingsPdf = ref([])
 const loadingsTxt = ref([])
@@ -18,6 +27,9 @@ const loadingsInformeSocietario = ref([])
 const totalReporteSupercias = ref(0)
 const router = useRouter()
 
+// ───────────────────────────────
+// userData / sub
+// ───────────────────────────────
 let userData = null
 try {
   const raw = sessionStorage.getItem('userData')
@@ -29,19 +41,20 @@ try {
   userData = null
 }
 
-console.log('userData', userData)
-
 const aplicaciones = ref(userData?.applications ?? [])
-
-// ───────────────────────────────
-// sub de Keycloak (es string, NO JSON)
-// ───────────────────────────────
 const userId = sessionStorage.getItem('sub') || null
 
-console.log('userId', userId)
-
-
+// ───────────────────────────────
+// Stores
+// ───────────────────────────────
 const reportStore = useReportStore()
+const empresaListStore = useEmpresaListStore()
+const periodoListStore = usePeriodoListStore()
+const reporteListStore = useReportesListStore()
+
+// ───────────────────────────────
+// Estado de la vista
+// ───────────────────────────────
 const reportes = ref([])
 const empresas = ref([])
 const searchQuery = ref('')
@@ -49,53 +62,116 @@ const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPage = ref(1)
 
-// const totalReporteSupercias = ref(0)
 const loadings = ref([])
-
 const indice = ref([])
 let message = ref(false)
 let messageText = ref('')
 const counter = ref([])
 
-const empresaListStore = useEmpresaListStore()
-const periodoListStore = usePeriodoListStore()
-const reporteSuperciasListStore = useSuperciasListStore()
-
-const fetchReportes = async () => {
+// ───────────────────────────────
+// Helpers IndexedDB para reportes
+// ───────────────────────────────
+const syncReportesToIndexedDB = async lista => {
   try {
-    const response = await reporteSuperciasListStore.fetchReportes({ user: userId })
+    await clearStore('reportes')
 
-    console.log('respuesta reportes', response.data.data)
-
-    reportes.value = response.data.data
+    for (const rep of lista) {
+      // asumimos que cada reporte tiene un id único (reporteId o id)
+      const key = rep.id ?? rep.reporteId
+      if (!key) {
+        console.warn('[IndexedDB] Reporte sin id/reporteId, se omite:', rep)
+        continue
+      }
+      await addItem('reportes', { ...rep, _localSyncedAt: new Date().toISOString() }, key)
+    }
   } catch (error) {
-    console.error('Error en fetchEmpresas (index.vue):', error)
+    console.error('Error sincronizando reportes en IndexedDB:', error)
   }
 }
 
-watchEffect(fetchReportes)
+const loadReportesFromIndexedDB = async () => {
+  try {
+    const stored = await getAll('reportes', null, 1000)
 
-console.log("reportes: ", reportes.value)
+    if (stored.length > 0) {
+      reportes.value = stored
+      totalReporteSupercias.value = stored.length
+      totalPage.value = Math.max(1, Math.ceil(totalReporteSupercias.value / rowPerPage.value))
+    } else {
+      await fetchReportesFromServer()
+    }
+  } catch (error) {
+    console.error('Error al cargar reportes desde IndexedDB:', error)
+    await fetchReportesFromServer()
+  }
+}
 
+// ───────────────────────────────
+// Fetch desde la API + sync IndexedDB
+// ───────────────────────────────
+const fetchReportesFromServer = async () => {
+  if (!userId) {
+    console.warn('[Reportes] No hay userId en sesión')
+    reportes.value = []
+    totalReporteSupercias.value = 0
+    totalPage.value = 1
+
+    return
+  }
+
+  try {
+    const response = await reporteListStore.fetchReportes({ user: userId })
+
+    console.log(response)
+
+    reportes.value = response?.data.data
+    totalReporteSupercias.value = reportes.value.length
+    totalPage.value = Math.max(1, Math.ceil(totalReporteSupercias.value / rowPerPage.value))
+
+    // Sincronizar en IndexedDB
+    await syncReportesToIndexedDB(reportes.value)
+  } catch (error) {
+    console.error('Error en fetchReportesFromServer (reportes index.vue):', error)
+  }
+}
+
+// ───────────────────────────────
+// Montaje inicial: primero IndexedDB, luego API si hace falta
+// ───────────────────────────────
+onMounted(() => {
+  loadReportesFromIndexedDB()
+})
+
+// Asegurar que currentPage no supere totalPage
 watchEffect(() => {
   if (currentPage.value > totalPage.value)
     currentPage.value = totalPage.value
 })
 
+// ───────────────────────────────
+// Paginación (solo texto, no corta el array)
+// ───────────────────────────────
 const paginationData = computed(() => {
-  const firstIndex = reportes.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = reportes.value.length + (currentPage.value - 1) * rowPerPage.value
+  const firstIndex = reportes.value.length
+    ? (currentPage.value - 1) * rowPerPage.value + 1
+    : 0
 
-  return `Mostrando ${ firstIndex } a ${ lastIndex } de ${ totalReporteSupercias.value } registros`
+  const lastIndex = reportes.value.length
+    ? Math.min(currentPage.value * rowPerPage.value, totalReporteSupercias.value)
+    : 0
+
+  return `Mostrando ${firstIndex} a ${lastIndex} de ${totalReporteSupercias.value} registros`
 })
 
+// ───────────────────────────────
 // Export Functions
+// ───────────────────────────────
 const downloadReporteXls = async (rep, index) => {
   try {
     loadings.value[index] = true
     await Promise.all([
-      reporteSuperciasListStore.fetchReporteIflucActual(rep),
-      reporteSuperciasListStore.fetchReporteIflucAnterior(rep),
+      reporteListStore.fetchReporteIflucActual(rep),
+      reporteListStore.fetchReporteIflucAnterior(rep),
     ])
 
     const activos = reportStore.getReportData('activoscorrientesifluc')
@@ -111,18 +187,24 @@ const downloadReporteXls = async (rep, index) => {
   }
 }
 
-const downloadReportePdf = async (rep, index) => {
+const downloadReportePdf = async (reporte, index) => {
+  console.log('downloadReportePdf', reporte, index)
+
   try {
-    loadings.value[index] = true
-    await Promise.all([
-      reporteSuperciasListStore.fetchReporteIflucActual(rep),
-      reporteSuperciasListStore.fetchReporteIflucAnterior(rep),
-    ])
-    await descargarPDF()
+    loadingsPdf.value[index] = true
+
+    // 1) Hidratar datos ACTUALES (primero IndexedDB, luego API si no hay nada)
+    await useReportesListStore().hydrateReportFromIndexedDBOrApi(reporte)
+
+    // 2) Hidratar datos ANTERIORES (IndexedDB o API)
+    await useReportesListStore().hydrateReportAnteriorFromIndexedDBOrApi(reporte)
+
+    // 3) Generar el PDF usando lo que ya está en reportStore
+    await descargarPDF(reporte.empresa, reporte.periodo)
   } catch (error) {
     console.error('Error al descargar el reporte PDF:', error)
   } finally {
-    loadings.value[index] = false
+    loadingsPdf.value[index] = false
   }
 }
 
@@ -130,8 +212,8 @@ const downloadReporteTxt = async (rep, index) => {
   try {
     loadings.value[index] = true
     await Promise.all([
-      reporteSuperciasListStore.fetchReporteIflucActual(rep),
-      reporteSuperciasListStore.fetchReporteIflucAnterior(rep),
+      reporteListStore.fetchReporteIflucActual(rep),
+      reporteListStore.fetchReporteIflucAnterior(rep),
     ])
     await generarEsfTxt()
     await generarEriTxt()
@@ -148,8 +230,8 @@ const downloadReporteTurboNotas = async (rep, index) => {
   try {
     loadings.value[index] = true
     await Promise.all([
-      reporteSuperciasListStore.fetchReporteIflucActual(rep),
-      reporteSuperciasListStore.fetchReporteIflucAnterior(rep),
+      reporteListStore.fetchReporteIflucActual(rep),
+      reporteListStore.fetchReporteIflucAnterior(rep),
     ])
 
     const activos = reportStore.getReportData('activoscorrientesifluc')
@@ -163,21 +245,20 @@ const downloadReporteTurboNotas = async (rep, index) => {
   }
 }
 
-
+// ───────────────────────────────
+// Cargar reporte TXT en la pantalla de edición
+// ───────────────────────────────
 const loadReporteTxt = (reporte, index) => {
-  console.log(reporte)
-
   loadings.value[index] = true
   indice.value[index] = 60
   counter.value[index] = setInterval(() => {
-    indice.value[index] --
+    indice.value[index]--
   }, 1000)
 
   message.value = true
   messageText.value = "Iniciando carga de reporte solicitado"
 
   borrarDatosOtrosPeriodos()
-
   buscarReporte(reporte)
 }
 
@@ -191,10 +272,10 @@ const buscarReporte = async reporte => {
 
   /*
   await Promise.all([
-    reporteSuperciasListStore.fetchReporteIflucActual(reporte),
-    reporteSuperciasListStore.fetchReporteIflucAnterior(reporte),
+    reporteListStore.fetchReporteIflucActual(reporte),
+    reporteListStore.fetchReporteIflucAnterior(reporte),
   ])
-   */
+  */
 
   messageText.value = "Carga de reporte completada"
   await router.replace('/pages/supercias/txt')
@@ -202,13 +283,14 @@ const buscarReporte = async reporte => {
 
 const cargarReporteSeleccionado = async reporte => {
   await Promise.all([
-    reporteSuperciasListStore.fetchReporteIflucActual(reporte),
-    reporteSuperciasListStore.fetchReporteIflucAnterior(reporte),
+    reporteListStore.fetchReporteIflucActual(reporte),
+    reporteListStore.fetchReporteIflucAnterior(reporte),
   ])
 }
 
-
+// ───────────────────────────────
 // Confirm Dialog Management
+// ───────────────────────────────
 const isConfirmDialogOpen = ref(false)
 const idReporte = ref(0)
 </script>
@@ -265,10 +347,12 @@ const idReporte = ref(0)
             <tbody>
               <tr
                 v-for="(reporte, index) in reportes"
-                :key="reporte.reporteId"
+                :key="reporte.reporteId || reporte.id"
               >
                 <td class="font-weight-semibold">
-                  {{ reporte.empresa?.nombre }}<br>RUC: <span style="font-size:12px;">{{ reporte.empresa?.ruc }}</span>
+                  {{ reporte.empresa?.nombre }}<br>
+                  RUC:
+                  <span style="font-size:12px;">{{ reporte.empresa?.ruc }}</span>
                 </td>
                 <td>{{ reporte.periodo?.periodo }}</td>
                 <td>txt convertex</td>
@@ -281,7 +365,10 @@ const idReporte = ref(0)
                     v-if="loadings[index] || loadingsXls[index] || loadingsTxt[index] || loadingsPdf[index] || loadingsTurboNotas[index] || loadingsInformeSocietario[index]"
                     class="text-error"
                     style="margin-right: 10px;"
-                  >Espere ... {{ indice[index] }}</span>
+                  >
+                    Espere ... {{ indice[index] }}
+                  </span>
+
                   <VBtn
                     icon
                     :loading="loadings[index]"
@@ -296,6 +383,7 @@ const idReporte = ref(0)
                       icon="tabler-edit"
                     />
                   </VBtn>
+
                   <VBtn
                     icon
                     :loading="loadingsXls[index]"
@@ -310,6 +398,7 @@ const idReporte = ref(0)
                       icon="tabler-file-type-xls"
                     />
                   </VBtn>
+
                   <VBtn
                     icon
                     :loading="loadingsTxt[index]"
@@ -324,6 +413,7 @@ const idReporte = ref(0)
                       icon="tabler-file-type-txt"
                     />
                   </VBtn>
+
                   <VBtn
                     icon
                     :loading="loadingsPdf[index]"
@@ -331,8 +421,7 @@ const idReporte = ref(0)
                     size="x-small"
                     color="default"
                     variant="text"
-                    @click="downloadReportePdf(reporte, index)"
-                  >
+                    @click="downloadReportePdf(reporte, index)">
                     <VIcon
                       size="22"
                       icon="tabler-file-type-pdf"

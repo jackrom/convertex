@@ -1,5 +1,7 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { ref, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import {
   emailValidator,
   requiredValidator,
@@ -15,6 +17,7 @@ const props = defineProps({
 const emit = defineEmits([
   'update:isDrawerOpen',
   'userData',
+  'empresa-creada',
 ])
 
 const isFormValid = ref(false)
@@ -40,38 +43,37 @@ const closeNavigationDrawer = () => {
 }
 
 const onSubmit = () => {
-
   refForm.value?.validate().then(({ valid }) => {
-    if (valid) {
-      emit('userData', {
-        id: ruc.value,
-        nombre: nombre.value,
-        ruc: ruc.value,
-        email: email.value,
-        gerente: gerente.value,
-        direccion: direccion.value,
-        telefono: telefono.value,
-        ciudad: ciudad.value,
-        provincia: provincia.value,
-        origen: 'ifluc',
-        userId: JSON.parse(sessionStorage.getItem('userData')).id,
-        activo: 1,
-      })
-      emit('update:isDrawerOpen', false)
-      // eslint-disable-next-line vue/custom-event-name-casin
-      nextTick(() => {
-        refForm.value?.reset()
-        refForm.value?.resetValidation()
-        // router.replace(route.query.to ? String(route.query.to) : '/pages/periodos/list')
+    if (!valid)
+      return
 
+    const userDataSession = JSON.parse(sessionStorage.getItem('userData') || '{}')
 
-      })
-    }
+    emit('userData', {
+      id: ruc.value,             // usamos el RUC como id (coherente con IndexedDB keyPath 'id')
+      nombre: nombre.value,
+      ruc: ruc.value,
+      email: email.value,
+      gerente: gerente.value,
+      direccion: direccion.value,
+      telefono: telefono.value,
+      ciudad: ciudad.value,
+      provincia: provincia.value,
+      origen: 'convertex',
+      userid: userDataSession.keycloak_user_id,
+    })
 
+    emit('update:isDrawerOpen', false)
+
+    nextTick(() => {
+      refForm.value?.reset()
+      refForm.value?.resetValidation()
+    })
+
+    // Avisar al padre para que refresque empresas (desde API + sincronizar IndexedDB)
     setTimeout(() => {
       emit('empresa-creada', true)
     }, 1500)
-
   })
 }
 
@@ -110,7 +112,7 @@ const handleDrawerModelValueUpdate = val => {
           size="18"
           icon="tabler-x"
         />
-      </VBTn>
+      </VBtn>
     </div>
 
     <PerfectScrollbar :options="{ wheelPropagation: false }">
@@ -123,7 +125,7 @@ const handleDrawerModelValueUpdate = val => {
             @submit.prevent="onSubmit"
           >
             <VRow>
-              <!-- 👉 Full name -->
+              <!-- 👉 Nombre -->
               <VCol cols="12">
                 <VTextField
                   v-model="nombre"
@@ -141,70 +143,67 @@ const handleDrawerModelValueUpdate = val => {
                 />
               </VCol>
 
-              <!-- 👉 company -->
+              <!-- 👉 RUC -->
               <VCol cols="12">
                 <VTextField
                   v-model="ruc"
                   :rules="[requiredValidator]"
-                  label="ruc"
+                  label="RUC"
                 />
               </VCol>
 
-              <!-- 👉 Country -->
+              <!-- 👉 Gerente -->
               <VCol cols="12">
                 <VTextField
                   v-model="gerente"
                   :rules="[requiredValidator]"
-                  label="gerente"
+                  label="Gerente"
                 />
               </VCol>
 
-              <!-- 👉 Contact -->
+              <!-- 👉 Dirección -->
               <VCol cols="12">
                 <VTextField
                   v-model="direccion"
                   type="text"
                   :rules="[requiredValidator]"
-                  label="direccion"
+                  label="Dirección"
                 />
               </VCol>
 
-              <!-- 👉 Contact -->
+              <!-- 👉 Teléfono -->
               <VCol cols="12">
                 <VTextField
                   v-model="telefono"
                   type="text"
                   :rules="[requiredValidator]"
-                  label="telefono"
+                  label="Teléfono"
                 />
               </VCol>
 
-              <!-- 👉 Contact -->
+              <!-- 👉 Ciudad -->
               <VCol cols="12">
                 <VTextField
                   v-model="ciudad"
                   type="text"
                   :rules="[requiredValidator]"
-                  label="ciudad"
+                  label="Ciudad"
                 />
               </VCol>
 
-              <!-- 👉 Contact -->
+              <!-- 👉 Provincia -->
               <VCol cols="12">
                 <VTextField
                   v-model="provincia"
                   type="text"
                   :rules="[requiredValidator]"
-                  label="provincia"
+                  label="Provincia"
                 />
               </VCol>
 
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
-                <VBtn
-                  type="submit"
-                  class="me-3"
-                >
+                <VBtn type="submit" class="me-3">
                   Crear Empresa
                 </VBtn>
                 <VBtn

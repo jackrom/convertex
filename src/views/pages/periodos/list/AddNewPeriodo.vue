@@ -2,10 +2,11 @@
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { requiredValidator } from '@validators'
 import { useEmpresaListStore } from '@/views/pages/empresas/useEmpresaListStore'
-import { useSuperciasListStore } from '@/views/pages/supercias/useSuperciasListStore'
-import { usePeriodoListStore } from '@/views/pages/periodos/usePeriodoListStore'
-import { obtenerDatosReporte, obtenerDatosUsuario } from '@core/utils/reportes'
+import { useReportesListStore } from '@/views/pages/supercias/useReportesListStore'
+import { obtenerDatosReporte } from '@core/utils/reportes'
 import { onMounted, nextTick, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useIndexedDB } from '@/composables/useIndexedDB'
 
 const props = defineProps({
   isDrawerOpen: {
@@ -14,27 +15,20 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits([
-  'update:isDrawerOpen',
-  'userData',
-])
+const emit = defineEmits(['update:isDrawerOpen', 'userData'])
 
 const empresaListStore = useEmpresaListStore()
-const superciasListStore = useSuperciasListStore()
-const periodoListStore = usePeriodoListStore()
+const reportesListStore = useReportesListStore()
+
+const { getAll } = useIndexedDB()
 
 const isFormValid = ref(false)
 const refForm = ref()
 
 const periodo = ref('')
-const periodos = ref([])
+const periodos = ref([]) // todos los periodos activos (todas las empresas)
 
-const empresa = ref({
-  title: 'Tu Empresa',
-  value: '1717170110',
-  periodosifluc: [],
-})
-
+const empresa = ref(null)
 const empresas = ref([])
 
 const aniosPosibles = ref([2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025])
@@ -45,8 +39,6 @@ const totalPage = ref(1)
 
 const route = useRoute()
 const router = useRouter()
-
-const userId = sessionStorage.getItem('sub') || null
 
 const loadings = ref(false)
 const countdown = ref(60)
@@ -59,86 +51,80 @@ const closeNavigationDrawer = () => {
     refForm.value?.reset()
     refForm.value?.resetValidation()
     periodo.value = ''
+    empresa.value = null
+    anios.value = [...aniosPosibles.value]
   })
 }
 
-// 👉 Fetch empresas del usuario
+let userData = null
+try {
+  const raw = sessionStorage.getItem('userData')
+
+  userData = raw ? JSON.parse(raw) : null
+} catch (err) {
+  console.error('No se pudo parsear userData de sessionStorage:', err)
+  sessionStorage.removeItem('userData')
+  userData = null
+}
+
+// sub: NO se parsea, es un string plano
+const userId = sessionStorage.getItem('sub') || null
+
+// 👉 Fetch empresas del usuario (Intenta primero IndexedDB)
 const fetchEmpresas = async () => {
   if (!userId) return
 
   try {
-    const response = await empresaListStore.fetchEmpresas({ user: userId })
-    const companies = response?.data?.data || []
+    let companies = []
+
+    const storedEmpresas = await getAll('empresasconvertexs', null, 1000)
+
+    if (Array.isArray(storedEmpresas) && storedEmpresas.length > 0) {
+      companies = storedEmpresas
+    } else {
+      const response = await empresaListStore.fetchEmpresas({ user: userId })
+
+      companies = response?.data || response?.data?.data || []
+    }
 
     empresas.value = companies.map(obj => ({
       title: obj.nombre,
-      value: obj.ruc,
-      periodos: obj.periodosifluc || [],
+      value: obj.ruc, // este RUC se compara con periodo.empresaid
     }))
   } catch (error) {
     console.error('Error al obtener empresas (AddNewPeriodo.vue):', error)
   }
 }
 
-// 👉 Fetch periodos globales del usuario (para filtrar años)
+// 👉 Fetch periodos desde IndexedDB para calcular años disponibles
 const fetchPeriodos = async () => {
-  if (!userId) return
-
   try {
-    const response = await periodoListStore.fetchPeriodos({ user: userId })
+    const storedPeriodos = await getAll('periodosconvertexs', null, 1000)
+    const lista = Array.isArray(storedPeriodos) ? storedPeriodos : []
 
-    // Solo para verificar una vez la forma de la respuesta
-    console.log('periodos API (AddNewPeriodo):', response)
+    const activos = lista.filter(p => !p.deletedat)
 
-    // Soportar ambos casos: que el store devuelva {data: {...}} o directamente {...}
-    const data = response?.data ?? response
+    periodos.value = activos
+    totalPage.value = 1
 
-    if (!data) {
-      console.error('Respuesta vacía en fetchPeriodos (AddNewPeriodo.vue)')
-      anios.value = [...aniosPosibles.value]
-
-      return
-    }
-
-    const {
-      periodos: lista = [],
-      totalPage: tp = 1,
-      totalPeriodos: tot = 0,
-    } = data
-
-    // array de periodos
-    periodos.value = Array.isArray(lista) ? lista : []
-
-    // paginación
-    totalPage.value = tp || 1
-
-    // calcular años disponibles
-    if (Array.isArray(periodos.value)) {
-      const periodosOcupados = periodos.value.map(obj => obj.periodo)
-
-      anios.value = aniosPosibles.value.filter(anio => !periodosOcupados.includes(anio))
-    } else {
-      anios.value = [...aniosPosibles.value]
-    }
+    // Por defecto, todos los años disponibles.
+    // El filtro POR EMPRESA se hace en getEmpresa().
+    anios.value = [...aniosPosibles.value]
   } catch (error) {
-    console.error('Error fetchPeriodos (AddNewPeriodo.vue):', error)
-
-    // en caso de error, por lo menos deja todos los años disponibles
+    console.error('Error leyendo periodos desde IndexedDB (AddNewPeriodo.vue):', error)
     anios.value = [...aniosPosibles.value]
   }
 }
 
-
-// 👉 Ejecutar al montar
-watchEffect(() => {
+// 👉 Ejecutar al montar (una sola vez)
+onMounted(() => {
   fetchEmpresas()
   fetchPeriodos()
 })
 
-// 👉 Asegurar que currentPage no supere totalPage
-watchEffect([currentPage, totalPage], () => {
-  if (currentPage.value > totalPage.value)
-    currentPage.value = totalPage.value
+// 👉 Asegurar que currentPage no supere totalPage (por si lo usas luego)
+watch([currentPage, totalPage], () => {
+  if (currentPage.value > totalPage.value) currentPage.value = totalPage.value
 })
 
 // 👉 Manejo del reporte
@@ -156,45 +142,35 @@ const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (!valid) return
 
-    if (!empresa.value?.value || !periodo.value) return
+    if (!empresa.value || !empresa.value.value || !periodo.value) {
+      console.error('Empresa o periodo no seleccionados correctamente')
+
+      return
+    }
 
     loadings.value = true
-    localStorage.setItem('empresanueva', JSON.stringify(empresa.value.value))
 
-    const userDataStr = sessionStorage.getItem('userData')
-    const userData = userDataStr ? JSON.parse(userDataStr) : null
+    localStorage.setItem('empresanueva', JSON.stringify(empresa.value.value))
 
     emit('userData', {
       periodo: Number(periodo.value),
-      empresaId: empresa.value.value,
-      userId: userData?.id ?? null,
-    })
-
-    nextTick(() => {
-      setTimeout(() => {
-        const periodoNuevo = JSON.parse(localStorage.getItem('periodonuevo'))
-
-        reporteManagement(periodoNuevo)
-      }, 2000)
+      empresaid: empresa.value.value,
+      userid: userId,
     })
   })
 }
 
 const guardarReporte = reporte => {
-  if (reporte.periodoId > 0) {
-    addNewReporte(reporte)
-    startCountdown()
-    loadings.value = true
-  } else {
-    console.error('Error al guardar el reporte: Periodo ID inválido.')
-    loadings.value = false
-  }
+  console.log("reporte: ", reporte)
+  addNewReporte(reporte)
+  startCountdown()
+  loadings.value = true
 }
 
 const guardarReporteTxt = async periodoNuevo => {
+  console.log('periodoNuevo: ', periodoNuevo)
   try {
-    const user = await obtenerDatosUsuario()
-    const datosReporte = await obtenerDatosReporte(user, periodoNuevo)
+    const datosReporte = await obtenerDatosReporte(userId, periodoNuevo)
 
     guardarReporte(datosReporte)
   } catch (error) {
@@ -203,26 +179,31 @@ const guardarReporteTxt = async periodoNuevo => {
   }
 }
 
-const addNewReporte = reporteData => {
-  superciasListStore.addReporteSupercias(reporteData)
-    .then(res => {
-      console.log('Reporte guardado correctamente: ', res)
-      emit('update:isDrawerOpen', false)
-      router.replace('/pages/supercias/list')
-    })
-    .catch(error => {
-      console.error('Error al guardar reporte en Supercias:', error)
-      loadings.value = false
-      stopCountdown()
-    })
+const addNewReporte = async reporteData => {
+  try {
+    console.log('reporteData: ', reporteData)
+
+    const res = await reportesListStore.addReporteConvertex(reporteData)
+
+    console.log('Reporte guardado correctamente: ', res)
+
+    emit('update:isDrawerOpen', false)
+
+    // Si la lista /pages/supercias/list se alimenta desde el store,
+    // al navegar ya tendrá el nuevo reporte en memoria.
+    await router.replace('/pages/supercias/list')
+  } catch (error) {
+    console.error('Error al guardar reporte en Supercias:', error)
+    loadings.value = false
+    stopCountdown()
+  }
 }
 
 const startCountdown = () => {
   loadings.value = true
   countdown.value = 60
 
-  if (intervalId.value)
-    clearInterval(intervalId.value)
+  if (intervalId.value) clearInterval(intervalId.value)
 
   intervalId.value = setInterval(() => {
     if (countdown.value > 0) {
@@ -241,30 +222,64 @@ const stopCountdown = () => {
   loadings.value = false
 }
 
-// 👉 Cuando cambia la empresa, recalculamos años disponibles
+// 👉 Cuando cambia la empresa, recalculamos años disponibles SOLO para esa empresa
 const getEmpresa = () => {
-  const companies = empresas.value
-  let periodosEmpresa = []
-
-  companies.forEach(compania => {
-    const valueCompania = compania?.value ?? compania
-    if (valueCompania === empresa.value.value) {
-      periodosEmpresa = compania?.periodos ?? []
-    }
-  })
-
-  if (Array.isArray(periodosEmpresa)) {
-    const periodosOcupados = periodosEmpresa.map(obj => obj.periodo)
-
-    anios.value = aniosPosibles.value.filter(anio => !periodosOcupados.includes(anio))
-  } else {
+  if (!empresa.value) {
     anios.value = [...aniosPosibles.value]
+
+    return
   }
+
+  const empresaRuc = empresa.value.value
+
+  // Tomamos solo los periodos de ESA empresa desde IndexedDB
+  const periodosEmpresa = periodos.value.filter(p => p.empresaid === empresaRuc)
+
+  const periodosOcupados = periodosEmpresa.map(obj => obj.periodo)
+
+  anios.value = aniosPosibles.value.filter(anio => !periodosOcupados.includes(anio))
 }
 
 const handleDrawerModelValueUpdate = val => {
   emit('update:isDrawerOpen', val)
 }
+
+watch(
+  () => props.isDrawerOpen,
+  async val => {
+    if (val) {
+      // Al ABRIR el drawer, sincronizamos datos frescos
+      empresa.value = null
+      periodo.value = ''
+      anios.value = [...aniosPosibles.value]
+
+      await fetchPeriodos()
+      await fetchEmpresas()
+
+      nextTick(() => {
+        refForm.value?.resetValidation()
+      })
+    }
+  },
+)
+
+// 👉 Método expuesto para que el PADRE pueda crear el reporte con el periodo recién creado
+const crearReporteParaPeriodo = periodoId => {
+  console.log('periodoId: ', periodoId)
+
+  if (!periodoId || typeof periodoId !== 'number') {
+    console.error('Periodo nuevo inválido:', periodoId)
+    loadings.value = false
+
+    return
+  }
+
+  reporteManagement(periodoId)
+}
+
+defineExpose({
+  crearReporteParaPeriodo,
+})
 </script>
 
 <template>
@@ -292,11 +307,9 @@ const handleDrawerModelValueUpdate = val => {
         size="32"
         class="rounded"
         @click="closeNavigationDrawer"
+        :disabled="loadings"
       >
-        <VIcon
-          size="18"
-          icon="tabler-x"
-        />
+        <VIcon size="18" icon="tabler-x" />
       </VBtn>
     </div>
 
@@ -313,7 +326,7 @@ const handleDrawerModelValueUpdate = val => {
               <VCol cols="12">
                 <VSelect
                   v-model="empresa"
-                  :hint="`${empresa.value}, ${empresa.title}`"
+                  :hint="empresa ? `${empresa.value}, ${empresa.title}` : ''"
                   :items="empresas"
                   :rules="[requiredValidator]"
                   item-title="title"
@@ -324,6 +337,7 @@ const handleDrawerModelValueUpdate = val => {
                   single-line
                   placeholder="Seleccione la empresa"
                   @update:modelValue="getEmpresa"
+                  :disabled="loadings"
                 />
               </VCol>
 
@@ -335,6 +349,7 @@ const handleDrawerModelValueUpdate = val => {
                   :rules="[requiredValidator]"
                   :items="anios"
                   placeholder="Seleccione el periodo"
+                  :disabled="loadings"
                 />
               </VCol>
 
@@ -345,7 +360,7 @@ const handleDrawerModelValueUpdate = val => {
                   class="me-4"
                   style="font-size: 12px; width: 100%;"
                   :loading="loadings"
-                  :disabled="loadings || periodo === ''"
+                  :disabled="loadings || !empresa || periodo === ''"
                 >
                   <template #loader>
                     <span class="custom-loader">

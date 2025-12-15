@@ -1,6 +1,6 @@
 <script setup>
 import { usePeriodoListStore } from "@/views/pages/periodos/usePeriodoListStore"
-import { useSuperciasListStore } from "@/views/pages/supercias/useSuperciasListStore"
+import { useReportesListStore } from "@/views/pages/supercias/useReportesListStore"
 import { ref } from "vue"
 
 const props = defineProps({
@@ -30,7 +30,7 @@ const emit = defineEmits([
 const route = useRoute()
 const router = useRouter()
 const periodoListStore = usePeriodoListStore()
-const superciasListStore = useSuperciasListStore()
+const reportesListStore = useReportesListStore()
 const loading = ref([])
 const reporteActualDelPeriodoAnteriorADuplicar = ref()
 
@@ -51,7 +51,7 @@ const onCancel = () => {
 }
 
 const buscarReporteConDataParaDuplicar = (periodo, index) => {
-  superciasListStore.fetchReporteIflucByPeriodoActual(periodo.id).then(async res => {
+  reportesListStore.fetchReporteIflucByPeriodoActual(periodo.id).then(async res => {
     console.log('res.data', res.data)
     await duplicarReporteTxt(res.data, periodo, index)
   })
@@ -2235,7 +2235,7 @@ const duplicarReporteTxt = async (res, periodo, index) => {
 }
 
 const addNewReporte = (reporteData, index) => {
-  superciasListStore.addReporteSupercias(reporteData)
+  reportesListStore.addReporteSupercias(reporteData)
     .then(res => {
       localStorage.clear()
       loading.value[index] = false

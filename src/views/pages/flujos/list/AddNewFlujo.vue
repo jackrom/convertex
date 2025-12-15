@@ -5,7 +5,7 @@ import {
   requiredValidator,
 } from '@validators'
 import { useEmpresaListStore } from "@/views/pages/empresas/useEmpresaListStore"
-import { useSuperciasListStore } from "@/views/pages/supercias/useSuperciasListStore"
+import { useSuperciasListStore } from "@/views/pages/supercias/useReportesListStore"
 import { usePeriodoListStore } from "@/views/pages/periodos/usePeriodoListStore"
 import {
   obtenerDatosReporte, obtenerDatosUsuario,

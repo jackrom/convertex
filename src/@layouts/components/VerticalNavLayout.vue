@@ -16,6 +16,7 @@ export default defineComponent({
   setup(props, { slots }) {
     const { y: windowScrollY } = useWindowScroll()
     const { width: windowWidth } = useWindowSize()
+
     const {
       _layoutClasses: layoutClasses,
       isLessThanOverlayNavBreakpoint,
@@ -57,6 +58,7 @@ export default defineComponent({
 
     return () => {
       const verticalNavAttrs = toRef(props, 'verticalNavAttrs')
+
       const {
         wrapper: verticalNavWrapper,
         wrapperProps: verticalNavWrapperProps,

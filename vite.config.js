@@ -39,7 +39,7 @@ export default defineConfig({
       },
     }),
     Pages({
-      dirs: [`./${rutaServidor}src/pages`],
+      dirs: [`./${rutaServidor}src/views`],
     }),
     Layouts({
       layoutsDirs: `./${rutaServidor}src/layouts/`,

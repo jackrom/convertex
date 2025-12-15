@@ -939,7 +939,7 @@
 import { ref } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 import { useReportStore } from "@/@store/reportStore"
-import { useSuperciasListStore } from "@/views/pages/supercias/useSuperciasListStore"
+import { useSuperciasListStore } from "@/views/pages/supercias/useReportesListStore"
 
 const superciasListStore = useSuperciasListStore()
 

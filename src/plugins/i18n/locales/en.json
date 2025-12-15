@@ -182,5 +182,13 @@
       "title": "Analytics",
       "subtitle": "Resumen"
     }
+  },
+  "supercias": {
+    "reports": {
+      "esfTitle": "ESF",
+      "eriTitle": "ERI",
+      "efeTitle": "EFE",
+      "ecpTitle": "ECP"
+    }
   }
 }

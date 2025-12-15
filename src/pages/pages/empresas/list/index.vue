@@ -1,12 +1,12 @@
 <script setup>
-import { ref, computed, onMounted, watchEffect } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useEmpresaListStore } from '@/views/pages/empresas/useEmpresaListStore'
 import { avatarText } from '@core/utils/formatters'
-import ConfirmDialogEmpresa from "@core/components/ConfirmDialogEmpresa.vue"
+import ConfirmDialogEmpresa from '@core/components/ConfirmDialogEmpresa.vue'
+import AddNewEmpresaDrawer from '@/views/pages/empresas/list/AddNewEmpresa.vue'
 import { useIndexedDB } from '@/composables/useIndexedDB'
 
-// Helper para manejar IndexedDB
-const { saveData, getData } = useIndexedDB()
+const { addItem, getAll, clearStore } = useIndexedDB()
 
 // Estado reactivo
 const empresaListStore = useEmpresaListStore()
@@ -34,6 +34,7 @@ const isAddNewEmpresaDrawerVisible = ref(false)
 let userData = null
 try {
   const raw = sessionStorage.getItem('userData')
+
   userData = raw ? JSON.parse(raw) : null
 } catch (err) {
   console.error('No se pudo parsear userData de sessionStorage:', err)
@@ -53,49 +54,92 @@ if (aplicaciones.value && aplicaciones.value.length > 0) {
   })
 }
 
+// ─────────────────────────────────────────────
+// Helpers IndexedDB para EMPRESAS
+// ─────────────────────────────────────────────
+const syncEmpresasToIndexedDB = async lista => {
+  try {
+    await clearStore('empresasconvertexs')
+
+    for (const raw of lista) {
+      const empresa = {
+        ...raw,
+
+        // nos aseguramos de que SIEMPRE haya una clave 'id' para el keyPath
+        id: raw.id ?? raw.ruc,
+      }
+
+      await addItem('empresasconvertexs', empresa, empresa.id)
+    }
+  } catch (error) {
+    console.error('Error sincronizando empresas en IndexedDB:', error)
+  }
+}
+
 // Obtener empresas desde IndexedDB o desde el servidor
 const loadEmpresasFromIndexedDB = async () => {
   try {
-    const storedEmpresas = await getData()
-    if (storedEmpresas.length > 0) {
+    const storedEmpresas = await getAll('empresasconvertexs', null, 1000)
+
+    if (Array.isArray(storedEmpresas) && storedEmpresas.length > 0) {
       empresas.value = storedEmpresas
+      totalEmpresas.value = storedEmpresas.length
+      totalPage.value = Math.max(1, Math.ceil(totalEmpresas.value / rowPerPage.value))
     } else {
-      fetchEmpresasFromServer() // Si no están en IndexedDB, cargar desde el servidor
+      await fetchEmpresasFromServer() // Si no están en IndexedDB, cargar desde el servidor
     }
   } catch (error) {
-    console.error("Error al cargar empresas desde IndexedDB:", error)
-    fetchEmpresasFromServer()
+    console.error('Error al cargar empresas desde IndexedDB:', error)
+    await fetchEmpresasFromServer()
   }
 }
 
 const fetchEmpresasFromServer = async () => {
+  if (!userId)
+    return
+
   try {
     const response = await empresaListStore.fetchEmpresas({ user: userId })
 
-    // Asegurarnos de que 'response' sea un array o tener datos válidos
     let companies = []
 
-    if (Array.isArray(response)) {
-      companies = response
-    } else if (response?.data && Array.isArray(response.data)) {
+    // Soportar distintas formas de respuesta
+    if (Array.isArray(response?.data)) {
       companies = response.data
-    } else if (response?.data?.data && Array.isArray(response.data.data)) {
+    } else if (Array.isArray(response?.data?.data)) {
       companies = response.data.data
+    } else if (Array.isArray(response)) {
+      companies = response
+    }
+
+    if (!Array.isArray(companies)) {
+      companies = []
     }
 
     if (companies.length === 0) {
-      console.warn("No se encontraron empresas en la respuesta")
+      console.warn('No se encontraron empresas en la respuesta')
     }
 
-    // Guardamos los datos en IndexedDB
+    // Normalizar id
+    companies = companies.map(c => ({
+      ...c,
+      id: c.id ?? c.ruc,
+    }))
+
     empresas.value = companies
+    totalEmpresas.value = companies.length
+    totalPage.value = Math.max(1, Math.ceil(totalEmpresas.value / rowPerPage.value))
 
-    // Almacenamos los datos en IndexedDB para futuras consultas
-    await saveData(companies)
-
+    // Sincronizar con IndexedDB
+    await syncEmpresasToIndexedDB(companies)
   } catch (error) {
     console.error('Error al obtener empresas desde el servidor:', error)
   }
+}
+
+// Alias para usar en eventos (@empresa-creada, etc.)
+const fetchEmpresas = () => {
+  return fetchEmpresasFromServer()
 }
 
 // Llamada inicial
@@ -106,41 +150,29 @@ onMounted(() => {
 // Función de paginación
 const paginationData = computed(() => {
   const firstIndex = empresas.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = empresas.value.length + (currentPage.value - 1) * rowPerPage.value
-  return `Mostrando ${firstIndex} a ${lastIndex} de ${totalEmpresas.value} registros`
+
+  const lastIndex = empresas.value.length
+    ? Math.min(currentPage.value * rowPerPage.value, totalEmpresas.value)
+    : 0
+
+  return `Mostrando ${ firstIndex } a ${ lastIndex } de ${ totalEmpresas.value } registros`
 })
 
-// Filtros
-const roles = [
-  { title: 'Admin', value: 'admin' },
-  { title: 'Author', value: 'author' },
-  { title: 'Editor', value: 'editor' },
-  { title: 'Maintainer', value: 'maintainer' },
-  { title: 'Subscriber', value: 'subscriber' },
-]
-
-const plans = [
-  { title: 'Basic', value: 'basic' },
-  { title: 'Company', value: 'company' },
-  { title: 'Enterprise', value: 'enterprise' },
-  { title: 'Team', value: 'team' },
-]
-
-const status = [
-  { title: 'Pending', value: 'pending' },
-  { title: 'Active', value: 'active' },
-  { title: 'Inactive', value: 'inactive' },
-]
-
 // Creación de nueva empresa
-const crearNuevaEmpresa = empresaData => {
+const crearNuevaEmpresa = () => {
   limiteexcedido.value = totalEmpresas.value >= storage.value
   isAddNewEmpresaDrawerVisible.value = true
 }
 
-const addNewEmpresa = empresaData => {
-  empresaListStore.addEmpresa(empresaData)
-  fetchEmpresas()
+const addNewEmpresa = async empresaData => {
+  try {
+    await empresaListStore.addEmpresa(empresaData)
+
+    // Tras crear en backend, refrescamos desde servidor y re-sincronizamos IndexedDB
+    await fetchEmpresasFromServer()
+  } catch (error) {
+    console.error('Error al crear empresa:', error)
+  }
 }
 
 // Eliminar empresa
@@ -148,10 +180,11 @@ const isConfirmDialogOpen = ref(false)
 const idEmpresa = ref('0')
 
 const eliminarEmpresa = id => {
+  idEmpresa.value = id
   isConfirmDialogOpen.value = true
 }
 
-// Validación del límite
+// Validación del límite (se mantiene tu lógica original)
 if (limiteexcedido.value) {
   sePermiteEliminar.value = false
 }
@@ -180,24 +213,25 @@ if (aplicacion && aplicacion.fechapago) {
   mes = mes < 10 ? '0' + mes : '' + mes
 
   switch (mes) {
-    case '01': mes = 'Enero'; break
-    case '02': mes = 'Febrero'; break
-    case '03': mes = 'Marzo'; break
-    case '04': mes = 'Abril'; break
-    case '05': mes = 'Mayo'; break
-    case '06': mes = 'Junio'; break
-    case '07': mes = 'Julio'; break
-    case '08': mes = 'Agosto'; break
-    case '09': mes = 'Septiembre'; break
-    case '10': mes = 'Octubre'; break
-    case '11': mes = 'Noviembre'; break
-    case '12': mes = 'Diciembre'; break
+  case '01': mes = 'Enero'; break
+  case '02': mes = 'Febrero'; break
+  case '03': mes = 'Marzo'; break
+  case '04': mes = 'Abril'; break
+  case '05': mes = 'Mayo'; break
+  case '06': mes = 'Junio'; break
+  case '07': mes = 'Julio'; break
+  case '08': mes = 'Agosto'; break
+  case '09': mes = 'Septiembre'; break
+  case '10': mes = 'Octubre'; break
+  case '11': mes = 'Noviembre'; break
+  case '12': mes = 'Diciembre'; break
   }
 
-  fechaProximoPago = `${dia}-${mes}-${anio}`
+  fechaProximoPago = `${ dia }-${ mes }-${ anio }`
 
   const fechaactual = new Date()
   const unDia = 24 * 60 * 60 * 1000
+
   diasFaltantes = Math.ceil((fecha - fechaactual) / unDia)
 }
 </script>
@@ -207,96 +241,190 @@ if (aplicacion && aplicacion.fechapago) {
     <VRow>
       <VCol cols="12">
         <VCard title="Empresas">
-          <template v-slot:subtitle>
+          <template #subtitle>
             <span style="color: #477130;">Usted puede crear hasta: {{ storage }} empresas</span>
             <p v-if="fechaProximoPago">
               Su acceso a Convertex finaliza el: {{ fechaProximoPago }}<br>
               Le quedan {{ diasFaltantes }} días para que renueve su licencia
             </p>
           </template>
+
           <VCardText class="d-flex flex-wrap py-4 gap-4">
             <div class="me-3" style="width: 80px;">
-              <VSelect v-model="rowPerPage" density="compact" variant="outlined" :items="[10, 20, 30, 50]" />
+              <VSelect
+                v-model="rowPerPage"
+                density="compact"
+                variant="outlined"
+                :items="[10, 20, 30, 50]"
+              />
             </div>
+
             <div class="app-user-search-filter d-flex align-center flex-wrap gap-4">
               <div style="width: 10rem;">
-                <VTextField v-model="searchQuery" placeholder="Search" density="compact" />
+                <VTextField
+                  v-model="searchQuery"
+                  placeholder="Search"
+                  density="compact"
+                />
               </div>
-              <VBtn v-if="!limiteexcedido" prepend-icon="tabler-plus" @click="crearNuevaEmpresa">
+
+              <VBtn
+                v-if="!limiteexcedido"
+                prepend-icon="tabler-plus"
+                @click="crearNuevaEmpresa"
+              >
                 Empresa
               </VBtn>
             </div>
           </VCardText>
 
-          <div v-if="limiteexcedido" style="color: red;margin-left:20px;">
+          <div
+            v-if="limiteexcedido"
+            style="color: red;margin-left:20px;"
+          >
             <strong>LIMITE EXCEDIDO:</strong>
             Ha superado el limite permitido de empresas, para actualizar su cuenta, click
-            <a href="http://www.ifluc.com" target="_blank" rel="noopener noreferrer">AQUÍ</a>
+            <a
+              href="http://www.ifluc.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >AQUÍ</a>
           </div>
 
           <VDivider />
 
           <VTable class="text-no-wrap">
             <thead>
-            <tr>
-              <th scope="col">EMPRESA</th>
-              <th scope="col">GERENTE</th>
-              <th scope="col">RUC</th>
-              <th scope="col">CIUDAD</th>
-              <th scope="col">PROVINCIA</th>
-              <th v-if="!limiteexcedido" scope="col">ACCIONES</th>
-            </tr>
+              <tr>
+                <th scope="col">EMPRESA</th>
+                <th scope="col">GERENTE</th>
+                <th scope="col">RUC</th>
+                <th scope="col">CIUDAD</th>
+                <th scope="col">PROVINCIA</th>
+                <th
+                  v-if="!limiteexcedido"
+                  scope="col"
+                >
+                  ACCIONES
+                </th>
+              </tr>
             </thead>
+
             <tbody>
-            <tr v-for="empresa in empresas" :key="empresa.id" style="height: 3.75rem;">
-              <td>
-                <div class="d-flex align-center">
-                  <VAvatar variant="tonal" color="primary" class="me-3" size="38">
-                    <VImg v-if="empresa.avatar" :src="empresa.avatar" />
-                    <span v-else>{{ avatarText(empresa.nombre) }}</span>
-                  </VAvatar>
-                  <div class="d-flex flex-column">
-                    <h6 class="text-uppercase text-base">{{ empresa.nombre }}</h6>
-                    <span class="text-sm text-disabled">{{ empresa.direccion }}</span>
+              <tr
+                v-for="empresa in empresas"
+                :key="empresa.id"
+                style="height: 3.75rem;"
+              >
+                <td>
+                  <div class="d-flex align-center">
+                    <VAvatar
+                      variant="tonal"
+                      color="primary"
+                      class="me-3"
+                      size="38"
+                    >
+                      <VImg
+                        v-if="empresa.avatar"
+                        :src="empresa.avatar"
+                      />
+                      <span v-else>{{ avatarText(empresa.nombre) }}</span>
+                    </VAvatar>
+                    <div class="d-flex flex-column">
+                      <h6 class="text-uppercase text-base">
+                        {{ empresa.nombre }}
+                      </h6>
+                      <span class="text-sm text-disabled">{{ empresa.direccion }}</span>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td>
-                <VAvatar color="primary" icon="tabler-user" variant="tonal" size="30" class="me-4" />
-                <span class="text-capitalize text-base">{{ empresa.gerente }}</span>
-              </td>
-              <td><span class="text-capitalize text-base font-weight-semibold">{{ empresa.ruc }}</span></td>
-              <td><span class="text-base">{{ empresa.ciudad }}</span></td>
-              <td>{{ empresa.provincia }}</td>
-              <td v-if="sePermiteEliminar" class="text-center" style="width: 5rem;">
-                <VBtn icon size="x-small" color="default" variant="text" @click="idEmpresa = empresa.id; eliminarEmpresa(empresa.id);">
-                  <VIcon size="22" icon="tabler-trash" />
-                </VBtn>
-              </td>
-            </tr>
+                </td>
+
+                <td>
+                  <VAvatar
+                    color="primary"
+                    icon="tabler-user"
+                    variant="tonal"
+                    size="30"
+                    class="me-4"
+                  />
+                  <span class="text-capitalize text-base">{{ empresa.gerente }}</span>
+                </td>
+
+                <td>
+                  <span class="text-capitalize text-base font-weight-semibold">{{ empresa.ruc }}</span>
+                </td>
+
+                <td>
+                  <span class="text-base">{{ empresa.ciudad }}</span>
+                </td>
+
+                <td>
+                  {{ empresa.provincia }}
+                </td>
+
+                <td
+                  v-if="sePermiteEliminar"
+                  class="text-center"
+                  style="width: 5rem;"
+                >
+                  <VBtn
+                    icon
+                    size="x-small"
+                    color="default"
+                    variant="text"
+                    @click="idEmpresa = empresa.id; eliminarEmpresa(empresa.id);"
+                  >
+                    <VIcon
+                      size="22"
+                      icon="tabler-trash"
+                    />
+                  </VBtn>
+                </td>
+              </tr>
             </tbody>
+
             <tfoot v-show="!empresas.length">
-            <tr>
-              <td colspan="7" class="text-center">
-                No existen empresas creadas
-              </td>
-            </tr>
+              <tr>
+                <td
+                  colspan="7"
+                  class="text-center"
+                >
+                  No existen empresas creadas
+                </td>
+              </tr>
             </tfoot>
           </VTable>
 
           <VDivider />
 
           <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3 px-5">
-            <span class="text-sm text-disabled">{{ paginationData }}</span>
-            <VPagination v-model="currentPage" size="small" :total-visible="10" :length="totalPage" />
+            <span class="text-sm text-disabled">
+              {{ paginationData }}
+            </span>
+
+            <VPagination
+              v-model="currentPage"
+              size="small"
+              :total-visible="10"
+              :length="totalPage"
+            />
           </VCardText>
         </VCard>
       </VCol>
     </VRow>
 
-    <ConfirmDialogEmpresa v-model:isDialogVisible="isConfirmDialogOpen" confirmation-msg="Estas seguro de que lo que deseas es eliminar esta empresa?, al hacerlo se eliminaran todos los datos relacionados. Esta acción no es reversible" :id-empresa="idEmpresa" @empresa-creada="fetchEmpresas" />
+    <ConfirmDialogEmpresa
+      v-model:isDialogVisible="isConfirmDialogOpen"
+      confirmation-msg="Estas seguro de que lo que deseas es eliminar esta empresa?, al hacerlo se eliminaran todos los datos relacionados. Esta acción no es reversible"
+      :id-empresa="idEmpresa"
+      @empresa-creada="fetchEmpresas"
+    />
 
-    <AddNewEmpresaDrawer v-model:isDrawerOpen="isAddNewEmpresaDrawerVisible" @user-data="addNewEmpresa" @empresa-creada="fetchEmpresas" />
+    <AddNewEmpresaDrawer
+      v-model:isDrawerOpen="isAddNewEmpresaDrawerVisible"
+      @user-data="addNewEmpresa"
+      @empresa-creada="fetchEmpresas"
+    />
   </section>
 </template>
 

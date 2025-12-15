@@ -1,5 +1,5 @@
 <script setup>
-import { useSuperciasListStore } from "@/views/pages/supercias/useSuperciasListStore"
+import { useReportesListStore } from "@/views/pages/supercias/useReportesListStore"
 
 const props = defineProps({
   confirmationMsg: {
@@ -23,7 +23,7 @@ const emit = defineEmits([
 
 const route = useRoute()
 const router = useRouter()
-const reporteListStore = useSuperciasListStore()
+const reporteListStore = useReportesListStore()
 
 const updateModelValue = val => {
   emit('update:isDialogVisible', val)

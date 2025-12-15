@@ -7,7 +7,9 @@ import { getKeycloak, kcHasRole, kcToken } from "@/plugins/keycloak/keycloak"
 // 👇 IMPORTANTE: no olvides tu cliente axios
 import api from "@/plugins/axios/axios"
 
-const rutaServidor = 'pages-empresas-list' // o la que corresponda
+const rutaServidor = 'empresas-EmpresaList'
+
+// const rutaServidor = 'pages-empresas-list'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +26,15 @@ const router = createRouter({
     ...setupLayouts(routes),
   ],
 })
+
+console.log("📌 RUTAS DISPONIBLES:");
+console.table(
+  router.getRoutes().map(r => ({
+    name: r.name,
+    path: r.path,
+    file: r.component?.__file ?? 'layout/redirect/auto',
+  })),
+)
 
 // Caché simple en memoria para no disparar la API en cada navegación
 let entitlementsCache = null

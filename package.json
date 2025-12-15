@@ -29,6 +29,7 @@
         "docx": "^8.5.0",
         "eslint-import-resolver-alias": "^1.1.2",
         "file-saver": "^2.0.5",
+        "idb": "^8.0.3",
         "jose": "^6.1.1",
         "jquery": "^3.6.3",
         "jsdom": "^24.0.0",

@@ -33,8 +33,6 @@ export function useSafeI18n(scope = 'global') {
 
     if (raw !== undefined) {
       // 🔸 La clave existe pero NO es string → avisamos y devolvemos fallback
-      console.warn('[i18n] clave', key, 'no es string. Tipo =', typeof raw, 'Valor =', raw)
-
       return fallback ?? key
     }
 
@@ -47,7 +45,7 @@ export function useSafeI18n(scope = 'global') {
 
       return typeof resValue === 'string' ? resValue : (fallback ?? key)
     } catch (err) {
-      console.warn('[i18n] error con clave', key, err)
+      // console.warn('[i18n] error con clave', key, err)
 
       return fallback ?? key
     }

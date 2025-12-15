@@ -2,7 +2,7 @@ export default [
   { heading: 'Apps & Pages' },
   {
     title: 'Empresas',
-    to: 'pages-empresas-list',
+    to: 'empresas-EmpresaList',
   },
   {
     title: 'Periodos',
@@ -19,6 +19,21 @@ export default [
       { title: 'Reportes', to: 'pages-supercias-list' },
     ],
      */
+  },
+  {
+    title: 'Auditoría',
+    icon: 'mdi-shield-check',
+    to: '/auditoria/audit-dashboard',
+  },
+  {
+    title: 'Performance',
+    icon: 'mdi-speedometer',
+    to: '/auditoria/performance-dashboard',
+  },
+  {
+    title: 'Logs',
+    icon: 'mdi-file-alert-outline',
+    to: '/logs/log-viewer',
   },
   /*
   {

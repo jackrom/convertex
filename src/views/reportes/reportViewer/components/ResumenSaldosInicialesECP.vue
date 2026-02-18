@@ -1,12 +1,22 @@
 <script setup>
-import { computed, defineEmits, defineModel, defineProps } from "vue"
+import { computed, defineEmits, defineModel, defineProps, watchEffect } from "vue"
 
 const props = defineProps({
+  modelValue: { type: Boolean, default: false },
   esfValues: { type: Array, default: () => [] },
   ecpValues: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(["update:showResumenEcpSI"])
+const emit = defineEmits([
+  "update:showResumenEcpSI",
+  "update:modelValue",
+  "update:ecpSICuadre",
+])
+
+const dialog = computed({
+  get: () => props.modelValue,
+  set: v => emit("update:modelValue", v),
+})
 
 // ✅ v-model real del componente (Vue 3.4+)
 const closeDialog = () => {
@@ -334,12 +344,18 @@ const rows = computed(() => {
     return { ...def, saldoEsf, saldoEcp, diferencia }
   })
 })
+
+const ecpSICuadreOk = computed(() => rows.value.every(r => Number(r.diferencia) === 0))
+
+watchEffect(() => {
+  emit("update:ecpSICuadre", ecpSICuadreOk.value)
+})
 </script>
 
 
 <template>
   <VDialog
-    v-model="model"
+    v-model="dialog"
     max-width="960"
   >
     <VCard>

@@ -3,7 +3,7 @@ import { openDB } from "idb"
 
 const DB_NAME = "convertexdb"
 
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 export function useIndexedDBService() {
   const dbPromise = openDB(DB_NAME, DB_VERSION, {
@@ -23,13 +23,8 @@ export function useIndexedDBService() {
       ensureStore("periodos", { keyPath: "id", autoIncrement: true  })
       ensureStore("reportes", { keyPath: "reporteid", autoIncrement: true  })
       ensureStore( "users", { keyPath: 'id' })
-
-      // 🔹 Auditoría (ya la tenías)
       ensureStore("auditoria", { keyPath: "id", autoIncrement: true })
-
-      // 🔹 NUEVO: logs funcionales (useLogger / LogsDashboard)
       ensureStore("logs", { keyPath: "id", autoIncrement: true  })
-
       ensureStore("esfvaluesconvertexs",   { keyPath: "id", autoIncrement: true })
       ensureStore("erivaluesconvertexs",   { keyPath: "id", autoIncrement: true })
       ensureStore("efemdvaluesconvertexs", { keyPath: "id", autoIncrement: true })

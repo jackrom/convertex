@@ -43,6 +43,8 @@ export function usePeriodoService() {
     // CREAR PERIODO
     // ==============================================================
     async create(periodo) {
+      console.log("periodo: ", periodo)
+
       return await trackApi(
         "POST /v1/convertex/periodosconvertex",
         () => api.post("/v1/convertex/periodosconvertex", { periodo }),

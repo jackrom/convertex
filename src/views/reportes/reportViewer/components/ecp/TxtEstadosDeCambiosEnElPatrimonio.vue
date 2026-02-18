@@ -6,6 +6,7 @@ import { useLogger } from "@/composables/useLogger"
 import { usePerformanceStore } from "@/@store/performance.store"
 import { toNumber } from "@/views/reportes/reportViewer/components/functions"
 import { useReportViewerStore } from "@/@store/reportViewer.store"
+import { usePerformanceMetrics } from "@/composables/usePerformanceMetrics"
 
 const props = defineProps({
   // Recibe: 'esf' | 'eri' | 'ecp' | 'efe' desde ReportViewerPage.vue
@@ -61,31 +62,35 @@ const updateActivePanel = val => {
   emit("update:activePanel", 'Estados En El Cambio de Patrimonio')
 }
 
+const normalizeSignedValue = (nombrecampo, value) => {
+  const n = toNumber(value)
+  if (!Number.isFinite(n)) return 0
+
+  if (NEGATIVE_FIELDS.has(nombrecampo)) {
+    return n === 0 ? 0 : -Math.abs(n)
+  }
+
+  return n
+}
+
+
 const onCellInput = (grupo, col, value) => {
   updateActivePanel(props.currentTab)
 
-  const cell = ensureCell(grupo, col)
+  const nombrecampo = `ecp_${grupo}_${col}`
+  const numeric = normalizeSignedValue(nombrecampo, value)
 
+  const cell = ensureCell(grupo, col)
   if (cell.readonly) return
 
-  const numeric = toNumber(value)
-
   cell.value = numeric
-
-  // recalcula derivados internos del ECP
   recalcAll()
-
-  const nombrecampo = `ecp_${grupo}_${col}`
 
   emit("change-value", {
     tipo: "ecp",
     id: nombrecampo,
     valor: String(numeric),
-    row: {
-      nombrecampo,
-      valor: numeric,
-      tablaorigen: "Ecp",
-    },
+    row: { nombrecampo, valor: numeric, tablaorigen: "Ecp" },
   })
 }
 
@@ -378,39 +383,32 @@ const recalcTotals = () => {
 const syncDerivedToStore = () => {
   const base = ecpBaseData.value
 
-  ALL_GROUPS.forEach(grupo => {
-    const g = String(grupo)
+  const GROUPS_TO_SYNC = ["9901", "9902", "99"]
+  const COLS_TO_SYNC = [...COLS_FOR_30, "30", "31", "Total"]
 
-    // Solo nos interesan las columnas calculadas
-    ;["30", "Total"].forEach(col => {
+  for (const g of GROUPS_TO_SYNC) {
+    for (const col of COLS_TO_SYNC) {
       const cell = ecp[g]?.[col]
-      if (!cell) return
+      if (!cell) continue
 
       const key = `ecp_${g}_${col}`
       const newVal = Number(cell.value) || 0
       const oldVal = Number(base[key] ?? 0)
 
-      // Si no cambió respecto a lo que ya tiene el store, no hacemos nada
-      if (newVal === oldVal) return
+      if (newVal === oldVal) continue
 
-      // Emitimos cambio automático hacia el ReportViewerPage -> store
       emit("change-value", {
         tipo: "ecp",
         id: key,
         valor: String(newVal),
-        row: {
-          nombrecampo: key,
-          valor: newVal,
-          tablaorigen: "Ecp",
-        },
-        meta: {
-          autoCalc: true,
-          grupo: g,
-          col,
-        },
+        row: { nombrecampo: key, valor: newVal, tablaorigen: "Ecp" },
+        meta: { autoCalc: true, grupo: g, col },
       })
-    })
-  })
+    }
+  }
+
+  // si además quieres mantener 30 y Total para TODOS los grupos (hojas incluidas):
+  // (lo dejas como lo tenías o lo expandes)
 }
 
 
@@ -440,8 +438,8 @@ const syncEcpToStore = () => {
     })
   })
 
-  reportStore.setReportData({
-    ...reportStore.reportData,
+  store.setReportData({
+    ...store.reportData,
     ecpconvertex,
   })
 
@@ -457,7 +455,7 @@ const syncEcpToStore = () => {
     })
   }
 }
- */
+*/
 
 // ======================================================
 // 6. Hook reactivo: cuando cambian los valores base, recalcular y sincronizar
@@ -469,8 +467,8 @@ watchEffect(() => {
   syncEcpToStore()
   usePerformanceMetrics("TxtEstadosDeCambiosEnElPatrimonio")
 })
+*/
 
- */
 
 const flatEcp = computed(() => {
   const out = {}
@@ -561,16 +559,19 @@ const draft = reactive({})
 // 👇 commit debounced: no golpea el store en cada tecla
 const commitDebounced = useDebounceFn((codigo, tipoStore, storeValues) => {
   const row = storeValues?.[codigo]
-  const valor = String(toNumber(draft[codigo] ?? row?.valor ?? 0))
+  const raw = draft[codigo] ?? row?.valor ?? 0
+
+  const valorNum = normalizeSignedValue(codigo, raw)
 
   emit("change-value", {
     tipo: tipoStore,
     id: codigo,
-    valor,
+    valor: String(valorNum),
     row: row ?? { nombrecampo: codigo },
     meta: { from: "typing" },
   })
 }, 200)
+
 
 // al tipear: actualiza UI inmediato y programa sync al store
 const onType = (codigo, val, tipoStore, storeValues) => {
@@ -583,7 +584,10 @@ const commitNow = (codigo, tipoStore, storeValues) => {
   commitDebounced.cancel?.()
 
   const row = storeValues?.[codigo]
-  const valor = String(toNumber(draft[codigo] ?? row?.valor ?? 0))
+
+  let n = String(toNumber(draft[codigo] ?? row?.valor ?? 0))
+  if (NEGATIVE_FIELDS.has(codigo)) n = n === 0 ? 0 : -Math.abs(n)
+  const valor = String(n)
 
   emit("change-value", {
     tipo: tipoStore,
@@ -2746,14 +2750,14 @@ const hideColumn = prefix => {
             CAMBIOS EN POLITICAS CONTABLES
           </td>
           <td
-            id="th2_5"
+            id="th2_6"
             scope="col"
             width="100"
           >
             990102
           </td>
           <td
-            id="th3_5"
+            id="th3_6"
             scope="col"
             class="text-center"
             width="150"
@@ -2773,7 +2777,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_6"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -2792,7 +2796,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_6"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -2818,7 +2822,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_6"
                 style="min-width:150px;"
               >
                 <div
@@ -2842,7 +2846,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_6"
                 style="min-width:150px;"
               >
                 <div
@@ -2874,7 +2878,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_6"
                 style="min-width:150px;"
               >
                 <div
@@ -2898,7 +2902,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_6"
                 style="min-width:150px;"
               >
                 <div
@@ -2922,7 +2926,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_6"
                 style="min-width:150px;"
               >
                 <div
@@ -2946,7 +2950,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_6"
                 style="min-width:150px;"
               >
                 <div
@@ -2978,7 +2982,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_6"
                 style="min-width:150px;"
               >
                 <div
@@ -3002,7 +3006,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_6"
                 style="min-width:150px;"
               >
                 <div
@@ -3026,7 +3030,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_6"
                 style="min-width:150px;"
               >
                 <div
@@ -3050,7 +3054,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_6"
                 style="min-width:150px;"
               >
                 <div
@@ -3074,7 +3078,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_6"
                 style="min-width:150px;"
               >
                 <div
@@ -3098,7 +3102,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_6"
                 style="min-width:150px;"
               >
                 <div
@@ -3122,7 +3126,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_6"
                 style="min-width:150px;"
               >
                 <div
@@ -3146,7 +3150,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_6"
                 style="min-width:150px;"
               >
                 <div
@@ -3170,7 +3174,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_6"
                 style="min-width:150px;"
               >
                 <div
@@ -3196,7 +3200,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_6"
             style="min-width:150px;"
           >
             <div
@@ -3221,7 +3225,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_6"
             style="min-width:150px;"
           >
             <div
@@ -3245,7 +3249,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_6"
             scope="col"
           >
             <VTextField
@@ -3276,14 +3280,14 @@ const hideColumn = prefix => {
             CORRECCIÓN DE ERRORES:
           </td>
           <td
-            id="th2_5"
+            id="th2_7"
             scope="col"
             width="100"
           >
             990103
           </td>
           <td
-            id="th3_5"
+            id="th3_7"
             scope="col"
             class="text-center"
             width="150"
@@ -3303,7 +3307,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_7"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -3322,7 +3326,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_7"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -3348,7 +3352,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3372,7 +3376,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3404,7 +3408,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3428,7 +3432,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3452,7 +3456,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3476,7 +3480,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3508,7 +3512,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3532,7 +3536,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3556,7 +3560,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3580,7 +3584,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3604,7 +3608,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3628,7 +3632,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3652,7 +3656,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3676,7 +3680,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3700,7 +3704,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_7"
                 style="min-width:150px;"
               >
                 <div
@@ -3726,7 +3730,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_7"
             style="min-width:150px;"
           >
             <div
@@ -3751,7 +3755,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_7"
             style="min-width:150px;"
           >
             <div
@@ -3775,7 +3779,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_7"
             scope="col"
           >
             <VTextField
@@ -4292,14 +4296,14 @@ const hideColumn = prefix => {
             AUMENTO (DISMINUCIÓN) DE CAPITAL SOCIAL
           </td>
           <td
-            id="th2_5"
+            id="th2_9"
             scope="col"
             width="100"
           >
             990201
           </td>
           <td
-            id="th3_5"
+            id="th3_9"
             scope="col"
             class="text-center"
             width="150"
@@ -4319,7 +4323,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_9"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -4338,7 +4342,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_9"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -4364,7 +4368,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4388,7 +4392,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4420,7 +4424,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4444,7 +4448,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4468,7 +4472,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4492,7 +4496,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4524,7 +4528,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4548,7 +4552,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4572,7 +4576,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4596,7 +4600,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4620,7 +4624,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4644,7 +4648,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4668,7 +4672,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4692,7 +4696,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4716,7 +4720,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_9"
                 style="min-width:150px;"
               >
                 <div
@@ -4742,7 +4746,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_9"
             style="min-width:150px;"
           >
             <div
@@ -4767,7 +4771,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_9"
             style="min-width:150px;"
           >
             <div
@@ -4791,7 +4795,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_9"
             scope="col"
           >
             <VTextField
@@ -4822,14 +4826,14 @@ const hideColumn = prefix => {
             APORTES PARA FUTURAS CAPITALIZACIONES
           </td>
           <td
-            id="th2_5"
+            id="th2_10"
             scope="col"
             width="100"
           >
             990202
           </td>
           <td
-            id="th3_5"
+            id="th3_10"
             scope="col"
             class="text-center"
             width="150"
@@ -4849,7 +4853,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_10"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -4868,7 +4872,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_10"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -4894,7 +4898,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_10"
                 style="min-width:150px;"
               >
                 <div
@@ -4918,7 +4922,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_10"
                 style="min-width:150px;"
               >
                 <div
@@ -4950,7 +4954,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_10"
                 style="min-width:150px;"
               >
                 <div
@@ -4974,7 +4978,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_10"
                 style="min-width:150px;"
               >
                 <div
@@ -4998,7 +5002,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5022,7 +5026,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5054,7 +5058,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5078,7 +5082,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5102,7 +5106,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5126,7 +5130,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5150,7 +5154,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5174,7 +5178,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5198,7 +5202,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5222,7 +5226,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5246,7 +5250,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_10"
                 style="min-width:150px;"
               >
                 <div
@@ -5272,7 +5276,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_10"
             style="min-width:150px;"
           >
             <div
@@ -5297,7 +5301,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_10"
             style="min-width:150px;"
           >
             <div
@@ -5321,7 +5325,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_10"
             scope="col"
           >
             <VTextField
@@ -5352,14 +5356,14 @@ const hideColumn = prefix => {
             PRIMA POR EMISIÓN PRIMARIA DE ACCIONES
           </td>
           <td
-            id="th2_5"
+            id="th2_11"
             scope="col"
             width="100"
           >
             990203
           </td>
           <td
-            id="th3_5"
+            id="th3_11"
             scope="col"
             class="text-center"
             width="150"
@@ -5379,7 +5383,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_11"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -5398,7 +5402,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_11"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -5424,7 +5428,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5448,7 +5452,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5480,7 +5484,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5504,7 +5508,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5528,7 +5532,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5552,7 +5556,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5584,7 +5588,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5608,7 +5612,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5632,7 +5636,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5656,7 +5660,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5680,7 +5684,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5704,7 +5708,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5728,7 +5732,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5752,7 +5756,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5776,7 +5780,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_11"
                 style="min-width:150px;"
               >
                 <div
@@ -5802,7 +5806,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_11"
             style="min-width:150px;"
           >
             <div
@@ -5827,7 +5831,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_11"
             style="min-width:150px;"
           >
             <div
@@ -5851,7 +5855,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_11"
             scope="col"
           >
             <VTextField
@@ -5882,34 +5886,33 @@ const hideColumn = prefix => {
             DIVIDENDOS
           </td>
           <td
-            id="th2_5"
+            id="th2_12"
             scope="col"
             width="100"
           >
             990204
           </td>
           <td
-            id="th3_5"
+            id="th3_12"
             scope="col"
             class="text-center"
             width="150"
           >
             <VTextField
               id="ecp_990204_301"
-              label="990204_301"
               type="text"
               inputmode="numeric"
               density="compact"
               variant="outlined"
               hide-details
               :model-value="draft['ecp_990204_301'] ?? (store.values.ecp['ecp_990204_301']?.valor ?? '')"
-              @update:model-value="val => onType('ecp_990204_301', val, 'ecp')"
-              @blur="() => commitNow('ecp_990204_301', 'ecp', store)"
-              @keydown.enter.prevent="() => commitNow('ecp_990204_301', 'ecp', store)"
+              @update:model-value="val => onType('ecp_990204_301', val, 'ecp', store.values.ecp)"
+              @blur="() => commitNow('ecp_990204_301', 'ecp', store.values.ecp)"
+              @keydown.enter.prevent="() => commitNow('ecp_990204_301', 'ecp', store.values.ecp)"
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_12"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -5928,7 +5931,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_12"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -5954,7 +5957,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_12"
                 style="min-width:150px;"
               >
                 <div
@@ -5978,7 +5981,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6010,7 +6013,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6034,7 +6037,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6058,7 +6061,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6082,7 +6085,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6114,7 +6117,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6138,7 +6141,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6162,7 +6165,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6186,7 +6189,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6210,7 +6213,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6234,7 +6237,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6258,7 +6261,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6282,7 +6285,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6306,7 +6309,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_12"
                 style="min-width:150px;"
               >
                 <div
@@ -6332,7 +6335,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_12"
             style="min-width:150px;"
           >
             <div
@@ -6357,7 +6360,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_12"
             style="min-width:150px;"
           >
             <div
@@ -6381,7 +6384,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_12"
             scope="col"
           >
             <VTextField
@@ -6412,14 +6415,14 @@ const hideColumn = prefix => {
             TRANSFERENCIA DE RESULTADOS <br>A OTRAS CUENTAS PATRIMONIALES
           </td>
           <td
-            id="th2_5"
+            id="th2_13"
             scope="col"
             width="100"
           >
             990205
           </td>
           <td
-            id="th3_5"
+            id="th3_13"
             scope="col"
             class="text-center"
             width="150"
@@ -6439,7 +6442,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_13"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -6458,7 +6461,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_13"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -6484,7 +6487,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6508,7 +6511,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6540,7 +6543,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6564,7 +6567,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6588,7 +6591,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6612,7 +6615,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6644,7 +6647,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6668,7 +6671,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6692,7 +6695,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6716,7 +6719,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6740,7 +6743,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6764,7 +6767,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6788,7 +6791,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6812,7 +6815,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6836,7 +6839,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_13"
                 style="min-width:150px;"
               >
                 <div
@@ -6862,7 +6865,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_13"
             style="min-width:150px;"
           >
             <div
@@ -6887,7 +6890,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_13"
             style="min-width:150px;"
           >
             <div
@@ -6911,7 +6914,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_13"
             scope="col"
           >
             <VTextField
@@ -6942,14 +6945,14 @@ const hideColumn = prefix => {
             REALIZACIÓN DE LA RESERVA POR <br>VALUACIÓN DE ACTIVOS FINANCIEROS <br>DISPONIBLES PARA LA VENTA
           </td>
           <td
-            id="th2_5"
+            id="th2_14"
             scope="col"
             width="100"
           >
             990206
           </td>
           <td
-            id="th3_5"
+            id="th3_14"
             scope="col"
             class="text-center"
             width="150"
@@ -6969,7 +6972,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_14"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -6988,7 +6991,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_14"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -7014,7 +7017,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7038,7 +7041,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7070,7 +7073,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7094,7 +7097,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7118,7 +7121,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7142,7 +7145,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7174,7 +7177,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7198,7 +7201,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7222,7 +7225,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7246,7 +7249,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7270,7 +7273,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7294,7 +7297,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7318,7 +7321,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7342,7 +7345,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7366,7 +7369,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_14"
                 style="min-width:150px;"
               >
                 <div
@@ -7392,7 +7395,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_14"
             style="min-width:150px;"
           >
             <div
@@ -7417,7 +7420,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_14"
             style="min-width:150px;"
           >
             <div
@@ -7441,7 +7444,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_14"
             scope="col"
           >
             <VTextField
@@ -7472,14 +7475,14 @@ const hideColumn = prefix => {
             REALIZACIÓN DE LA RESERVA POR <br>VALUACIÓN DE PROPIEDADES, PLANTA Y EQUIPO
           </td>
           <td
-            id="th2_5"
+            id="th2_15"
             scope="col"
             width="100"
           >
             990207
           </td>
           <td
-            id="th3_5"
+            id="th3_15"
             scope="col"
             class="text-center"
             width="150"
@@ -7499,7 +7502,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_15"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -7518,7 +7521,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_15"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -7544,7 +7547,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7568,7 +7571,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7600,7 +7603,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7624,7 +7627,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7648,7 +7651,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7672,7 +7675,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7704,7 +7707,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7728,7 +7731,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7752,7 +7755,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7776,7 +7779,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7800,7 +7803,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7824,7 +7827,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7848,7 +7851,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7872,7 +7875,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7896,7 +7899,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_15"
                 style="min-width:150px;"
               >
                 <div
@@ -7922,7 +7925,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_15"
             style="min-width:150px;"
           >
             <div
@@ -7947,7 +7950,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_15"
             style="min-width:150px;"
           >
             <div
@@ -7971,7 +7974,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_15"
             scope="col"
           >
             <VTextField
@@ -8002,14 +8005,14 @@ const hideColumn = prefix => {
             REALIZACIÓN DE LA RESERVA POR <br>VALUACIÓN DE ACTIVOS INTANGIBLES
           </td>
           <td
-            id="th2_5"
+            id="th2_16"
             scope="col"
             width="100"
           >
             990208
           </td>
           <td
-            id="th3_5"
+            id="th3_16"
             scope="col"
             class="text-center"
             width="150"
@@ -8029,7 +8032,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_16"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -8048,7 +8051,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_16"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -8074,7 +8077,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8098,7 +8101,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8130,7 +8133,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8154,7 +8157,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8178,7 +8181,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8202,7 +8205,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8234,7 +8237,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8258,7 +8261,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8282,7 +8285,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8306,7 +8309,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8330,7 +8333,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8354,7 +8357,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8378,7 +8381,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8402,7 +8405,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8426,7 +8429,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_16"
                 style="min-width:150px;"
               >
                 <div
@@ -8452,7 +8455,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_16"
             style="min-width:150px;"
           >
             <div
@@ -8477,7 +8480,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_16"
             style="min-width:150px;"
           >
             <div
@@ -8501,7 +8504,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_16"
             scope="col"
           >
             <VTextField
@@ -8532,14 +8535,14 @@ const hideColumn = prefix => {
             OTROS CAMBIOS (DETALLAR)
           </td>
           <td
-            id="th2_5"
+            id="th2_17"
             scope="col"
             width="100"
           >
             990209
           </td>
           <td
-            id="th3_5"
+            id="th3_17"
             scope="col"
             class="text-center"
             width="150"
@@ -8559,7 +8562,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_17"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -8578,7 +8581,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_17"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -8604,7 +8607,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8628,7 +8631,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8660,7 +8663,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8684,7 +8687,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8708,7 +8711,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8732,7 +8735,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8764,7 +8767,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8788,7 +8791,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8812,7 +8815,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8836,7 +8839,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8860,7 +8863,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8884,7 +8887,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8908,7 +8911,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8932,7 +8935,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8956,7 +8959,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_17"
                 style="min-width:150px;"
               >
                 <div
@@ -8982,7 +8985,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_17"
             style="min-width:150px;"
           >
             <div
@@ -9007,7 +9010,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_17"
             style="min-width:150px;"
           >
             <div
@@ -9031,7 +9034,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_17"
             scope="col"
           >
             <VTextField
@@ -9062,14 +9065,14 @@ const hideColumn = prefix => {
             RESULTADO INTEGRAL TOTAL DEL AÑO<br> (GANANCIA O PÉRDIDA DEL EJERCICIO)
           </td>
           <td
-            id="th2_5"
+            id="th2_18"
             scope="col"
             width="100"
           >
             990210
           </td>
           <td
-            id="th3_5"
+            id="th3_18"
             scope="col"
             class="text-center"
             width="150"
@@ -9089,7 +9092,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th4_5"
+            id="th4_18"
             scope="col"
             style="width:300px;text-align:center;"
           >
@@ -9108,7 +9111,7 @@ const hideColumn = prefix => {
             />
           </td>
           <td
-            id="th5_5"
+            id="th5_18"
             scope="col"
             class="text-center"
             style="width:300px;text-align:center;"
@@ -9134,7 +9137,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th6_5"
+                id="th6_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9158,7 +9161,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th7_5"
+                id="th7_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9190,7 +9193,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th8_5"
+                id="th8_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9214,7 +9217,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th9_5"
+                id="th9_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9238,7 +9241,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th10_5"
+                id="th10_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9262,7 +9265,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th11_5"
+                id="th11_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9294,7 +9297,7 @@ const hideColumn = prefix => {
           >
             <tr>
               <td
-                id="th12_5"
+                id="th12_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9318,7 +9321,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th13_5"
+                id="th13_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9342,7 +9345,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th14_5"
+                id="th14_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9366,7 +9369,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th15_5"
+                id="th15_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9390,7 +9393,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th16_5"
+                id="th16_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9414,7 +9417,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th17_5"
+                id="th17_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9438,7 +9441,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th18_5"
+                id="th18_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9462,7 +9465,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th19_5"
+                id="th19_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9486,7 +9489,7 @@ const hideColumn = prefix => {
                 </div>
               </td>
               <td
-                id="th20_5"
+                id="th20_18"
                 style="min-width:150px;"
               >
                 <div
@@ -9512,7 +9515,7 @@ const hideColumn = prefix => {
             </tr>
           </td>
           <td
-            id="th21_5"
+            id="th21_18"
             style="min-width:150px;"
           >
             <div
@@ -9537,7 +9540,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th22_5"
+            id="th22_18"
             style="min-width:150px;"
           >
             <div
@@ -9561,7 +9564,7 @@ const hideColumn = prefix => {
             </div>
           </td>
           <td
-            id="th23_5"
+            id="th23_18"
             scope="col"
           >
             <VTextField
@@ -9614,6 +9617,8 @@ const hideColumn = prefix => {
               variant="outlined"
               hide-details
               disabled
+              :model-value="draft['ecp_99_301'] ?? (store.values.ecp['ecp_99_301']?.valor ?? '')"
+              @update:model-value="val => onType('ecp_99_301', val, 'ecp')"
             />
           </td>
           <td

@@ -5,19 +5,20 @@ import { getKeycloak } from '@/plugins/keycloak/keycloak'
 const api = axios.create({
   baseURL: environment.apiUrl,
   timeout: 15000,
+  headers: {
+    'Content-Security-Policy': "default-src 'self'; connect-src 'self' https://login.facilcontabilidad.org; frame-src 'self';",
+  },
 })
 
 // Token de Keycloak antes de cada request
 api.interceptors.request.use(async config => {
   const kc = getKeycloak()
 
-  console.log('kc: ', kc)
+  config.headers['Content-Security-Policy'] = "default-src 'self'; connect-src 'self' https://login.facilcontabilidad.org; frame-src 'self';"
 
   if (kc?.updateToken) {
     try {
       const refreshed = await kc.updateToken(30)
-
-      console.debug('[axios] kc.updateToken(30) result:', refreshed)
     } catch (err) {
       console.error('[axios] kc.updateToken error:', err)
 
@@ -78,6 +79,7 @@ api.interceptors.response.use(
 
       case 403:
         console.warn('[axios] 403 Forbidden: usuario sin permisos suficientes', data)
+
         // Aquí podrías redirigir a "no autorizado"
         // router.push({ name: 'not-authorized' })
         break

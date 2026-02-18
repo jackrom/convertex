@@ -1,10 +1,9 @@
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, watch, computed } from "vue"
 import { usePeriodoStore } from "@/@store/periodo.store"
 import { useEmpresaStore } from "@/@store/empresa.store"
 import { requiredValidator } from "@validators"
 import { usePeriodoLogic } from "@/composables/usePeriodoLogic"
-
 import { useReportesStore } from "@/@store/reportes.store"
 import { useRouter } from "vue-router"
 import { obtenerDatosReporte } from "@core/utils/reportes"
@@ -15,6 +14,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["update:isDrawerOpen", "periodo-creado"])
+
+// ✅ Proxy para que el drawer trabaje SIEMPRE con v-model
+const drawer = computed({
+  get: () => props.isDrawerOpen,
+  set: v => emit("update:isDrawerOpen", v),
+})
 
 const periodoStore = usePeriodoStore()
 const empresaStore = useEmpresaStore()
@@ -27,18 +32,45 @@ const empresaSelect = ref(null)
 const periodoSelect = ref(null)
 const guardando = ref(false)
 
+const esconsolidado = ref(false)
+const switchLocked = ref(false)
+
 const ANIOS = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
 const aniosDisponibles = ref([])
 
-const { userId, storage } = useSessionUser()
+const { userId } = useSessionUser()
 
-async function cargarAnios() {
-  const periodosEmpresa = periodoStore.activos.filter(
-    p => p.empresaid === empresaSelect.value?.value,
-  )
+const periodosEmpresa = computed(() => {
+  const empId = empresaSelect.value?.value
+  if (!empId) return []
+  return periodoStore.activos.filter(p => p.empresaid === empId)
+})
 
-  aniosDisponibles.value = logic.aniosDisponibles(periodosEmpresa, ANIOS)
+function refrescarAniosYReglas() {
+  aniosDisponibles.value = logic.aniosDisponibles(periodosEmpresa.value, ANIOS)
+
+  if (periodoSelect.value != null) {
+    const rules = logic.variantRulesForYear(periodosEmpresa.value, periodoSelect.value)
+
+    if (rules.forcedEsconsolidado === true || rules.forcedEsconsolidado === false) {
+      esconsolidado.value = rules.forcedEsconsolidado
+      switchLocked.value = true
+    } else {
+      switchLocked.value = false
+    }
+  } else {
+    switchLocked.value = false
+  }
 }
+
+watch(empresaSelect, () => {
+  periodoSelect.value = null
+  esconsolidado.value = false
+  switchLocked.value = false
+  refrescarAniosYReglas()
+})
+
+watch(periodoSelect, () => refrescarAniosYReglas())
 
 onMounted(() => {
   if (!empresaStore.loaded) empresaStore.load({ force: true })
@@ -49,47 +81,29 @@ const onSubmit = async () => {
   const { valid } = await refForm.value.validate()
   if (!valid || guardando.value) return
 
+  const rules = logic.variantRulesForYear(periodosEmpresa.value, periodoSelect.value)
+  if (rules.forcedEsconsolidado === "blocked") return
+
   guardando.value = true
-
   try {
-    console.log('empresaSelect', empresaSelect.value)
-    console.log('periodoSelect', periodoSelect.value)
-
     const baseData = {
       periodo: periodoSelect.value,
       empresaid: empresaSelect.value.value,
       userid: sessionStorage.getItem("sub"),
+      esconsolidado: Boolean(esconsolidado.value),
     }
 
-    // 1) Crear periodo y recuperar el objeto creado
     const nuevoPeriodo = await periodoStore.add(baseData)
-
-    console.log('periodo', nuevoPeriodo)
-
     emit("periodo-creado")
 
-    if (!nuevoPeriodo || !nuevoPeriodo.id) {
-      console.warn("[AddPeriodoDrawer] No se pudo identificar el periodo recién creado")
-    } else {
-      try {
-        const periodoData = await obtenerDatosReporte(userId, nuevoPeriodo.id, baseData.empresaid)
-
-        console.log("periodoData", periodoData)
-
-        // 3) Crear reporte + valores + cache en IndexedDB
-        await reportesStore.addReporteConvertex(periodoData)
-      } catch (err) {
-        console.error("[AddPeriodoDrawer] Error creando reporte asociado con valores", err)
-      }
+    if (nuevoPeriodo?.id) {
+      const periodoData = await obtenerDatosReporte(userId, nuevoPeriodo.id, baseData.empresaid)
+      periodoData.reporte.esconsolidado = baseData.esconsolidado
+      await reportesStore.addReporteConvertex(periodoData)
     }
 
-    // 3) Cerrar drawer
-    emit("update:isDrawerOpen", false)
-
-    // 4) Redirigir a la lista de reportes
-    // 👉 Ajusta el name o path según tu router:
-    // router.push({ name: "reportes-list" })
-    await router.push("/reportes/reportlist") // por ejemplo, si tu ruta es /reportes
+    drawer.value = false
+    await router.push("/reportes/reportlist")
   } finally {
     guardando.value = false
   }
@@ -97,27 +111,22 @@ const onSubmit = async () => {
 </script>
 
 <template>
+  <!-- ✅ aquí el cambio clave: v-model="drawer" -->
   <VNavigationDrawer
-    :model-value="props.isDrawerOpen"
+    v-model="drawer"
     width="400"
     location="end"
     temporary
-    @update:model-value="val => emit('update:isDrawerOpen', val)"
   >
     <div class="d-flex align-center pa-6">
       <h6 class="text-h6">Nuevo Periodo</h6>
       <VSpacer />
-      <VBtn
-        icon
-        variant="text"
-        @click="emit('update:isDrawerOpen', false)">
-        <VIcon icon="tabler-x"/>
+      <VBtn icon variant="text" @click="drawer = false">
+        <VIcon icon="tabler-x" />
       </VBtn>
     </div>
 
-    <VForm
-      ref="refForm"
-      @submit.prevent="onSubmit">
+    <VForm ref="refForm" @submit.prevent="onSubmit">
       <VContainer>
         <VRow>
           <VCol cols="12">
@@ -127,7 +136,6 @@ const onSubmit = async () => {
               label="Empresa"
               :rules="[requiredValidator]"
               return-object
-              @update:modelValue="cargarAnios"
             />
           </VCol>
 
@@ -141,12 +149,19 @@ const onSubmit = async () => {
           </VCol>
 
           <VCol cols="12">
-            <VBtn
-              type="submit"
-              class="w-100"
-              :loading="guardando"
-              :disabled="guardando"
-            >
+            <VSwitch
+              v-model="esconsolidado"
+              :disabled="switchLocked"
+              inset
+              color="primary"
+              label="Es consolidado"
+              hint="Si está activo, este período creará un reporte consolidado."
+              persistent-hint
+            />
+          </VCol>
+
+          <VCol cols="12">
+            <VBtn type="submit" class="w-100" :loading="guardando" :disabled="guardando">
               Crear Periodo
             </VBtn>
           </VCol>

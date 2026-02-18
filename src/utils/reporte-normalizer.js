@@ -1,17 +1,17 @@
 export function normalizeReporte(raw) {
+
   return {
-    id: raw.id,
-    periodoId: raw.periodoId ?? raw.periodoid ?? null,
-    empresaId: raw.empresaId ?? raw.empresaid ?? raw.empresa_id ?? null,
+    reporteid: raw.reporteid,
+    periodoid: raw.periodoId ?? raw.periodoid ?? null,
+    empresaid: raw.empresaId ?? raw.empresaid ?? raw.empresaid ?? null,
 
-    ecp: raw.ecp ?? {},
-    eri: raw.eri ?? {},
-    esf: raw.esf ?? {},
-    notas: raw.notas ?? [],
-    sector: raw.sector ?? null,
+    values: raw.values ?? {},
 
+    empresa: raw.empresa ?? {},
+    periodo: raw.periodo ?? {},
+    esconsolidado: !!raw.esconsolidado,
     origen: raw.origen ?? "api",
-    updatedAt: raw.updatedAt ?? null,
-    createdAt: raw.createdAt ?? null,
+    updatedat: raw.updatedat ?? null,
+    createdat: raw.createdat ?? null,
   }
 }

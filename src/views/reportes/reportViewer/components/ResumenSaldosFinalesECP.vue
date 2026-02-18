@@ -2,11 +2,21 @@
 import { computed, defineEmits, defineModel, defineProps } from "vue"
 
 const props = defineProps({
+  modelValue: { type: Boolean, default: false },
   esfValues: { type: Array, default: () => [] },
   ecpValues: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(["update:showResumenEcpSF"])
+const emit = defineEmits([
+  "update:showResumenEcpSF",
+  "update:modelValue",
+  "update:ecpSFCuadre",
+])
+
+const dialog = computed({
+  get: () => props.modelValue,
+  set: v => emit("update:modelValue", v),
+})
 
 // ✅ v-model real del componente (Vue 3.4+)
 const closeDialog = () => {
@@ -22,57 +32,75 @@ const valores_Pat_301 = [
   "esf_3010501",
   "esf_3010502",
 ]
+
 const valores_Pat_302 = [
   "esf_302",
 ]
+
 const valores_Pat_303 = [
   "esf_303",
 ]
+
 const valores_Pat_30401 = [
   "esf_30401",
 ]
+
 const valores_Pat_30402 = [
   "esf_30402",
 ]
+
 const valores_Pat_30501 = [
   "esf_30501",
 ]
+
 const valores_Pat_30502 = [
   "esf_30502",
 ]
+
 const valores_Pat_30503 = [
   "esf_30503",
 ]
+
 const valores_Pat_30504 = [
   "esf_30504",
 ]
+
 const valores_Pat_30601 = [
   "esf_30601",
 ]
+
 const valores_Pat_30602 = [
   "esf_30602",
 ]
+
 const valores_Pat_30603 = [
   "esf_30603",
 ]
+
 const valores_Pat_30604 = [
   "esf_30604",
 ]
+
 const valores_Pat_30605 = [
   "esf_30605",
 ]
+
 const valores_Pat_30606 = [
   "esf_30606",
 ]
+
 const valores_Pat_30607 = [
   "esf_30607",
 ]
+
 const valores_Pat_30701 = [
   "esf_30701",
 ]
+
 const valores_Pat_30702 = [
   "esf_30702",
 ]
+
 const valores_Pat_31 = [
   "esf_31",
 ]
@@ -80,97 +108,77 @@ const valores_Pat_31 = [
 // SEGUN ECP
 const valores_Pat_99_301 = [
   "ecp_99_301",
-  "ecp_99_301",
-  "ecp_99_301",
 ]
+
 const valores_Pat_99_302 = [
   "ecp_99_302",
-  "ecp_99_302",
-  "ecp_99_302",
 ]
+
 const valores_Pat_99_303 = [
   "ecp_99_303",
-  "ecp_99_303",
-  "ecp_99_303",
 ]
+
 const valores_Pat_99_30401 = [
   "ecp_99_30401",
-  "ecp_99_30401",
-  "ecp_99_30401",
 ]
+
 const valores_Pat_99_30402 = [
   "ecp_99_30402",
-  "ecp_99_30402",
-  "ecp_99_30402",
 ]
+
 const valores_Pat_99_30501 = [
   "ecp_99_30501",
-  "ecp_99_30501",
-  "ecp_99_30501",
 ]
+
 const valores_Pat_99_30502 = [
   "ecp_99_30502",
-  "ecp_99_30502",
-  "ecp_99_30502",
 ]
+
 const valores_Pat_99_30503 = [
   "ecp_99_30503",
-  "ecp_99_30503",
-  "ecp_99_30503",
 ]
+
 const valores_Pat_99_30504 = [
   "ecp_99_30504",
-  "ecp_99_30504",
-  "ecp_99_30504",
 ]
+
 const valores_Pat_99_30601 = [
   "ecp_99_30601",
-  "ecp_99_30601",
-  "ecp_99_30601",
 ]
+
 const valores_Pat_99_30602 = [
   "ecp_99_30602",
-  "ecp_99_30602",
-  "ecp_99_30602",
 ]
+
 const valores_Pat_99_30603 = [
   "ecp_99_30603",
-  "ecp_99_30603",
-  "ecp_99_30603",
 ]
+
 const valores_Pat_99_30604 = [
   "ecp_99_30604",
-  "ecp_99_30604",
-  "ecp_99_30604",
 ]
+
 const valores_Pat_99_30605 = [
   "ecp_99_30605",
-  "ecp_99_30605",
-  "ecp_99_30605",
 ]
+
 const valores_Pat_99_30606 = [
   "ecp_99_30606",
-  "ecp_99_30606",
-  "ecp_99_30606",
 ]
+
 const valores_Pat_99_30607 = [
   "ecp_99_30607",
-  "ecp_99_30607",
-  "ecp_99_30607",
 ]
+
 const valores_Pat_99_30701 = [
   "ecp_99_30701",
-  "ecp_99_30701",
-  "ecp_99_30701",
 ]
+
 const valores_Pat_99_30702 = [
   "ecp_99_30702",
-  "ecp_99_30702",
-  "ecp_99_30702",
 ]
+
 const valores_Pat_99_31 = [
-  "ecp_99_31",
-  "ecp_99_31",
   "ecp_99_31",
 ]
 
@@ -334,12 +342,18 @@ const rows = computed(() => {
     return { ...def, saldoEsf, saldoEcp, diferencia }
   })
 })
+
+const ecpSFCuadreOk = computed(() => rows.value.every(r => Number(r.diferencia) === 0))
+
+watchEffect(() => {
+  emit("update:ecpSFCuadre", ecpSFCuadreOk.value)
+})
 </script>
 
 
 <template>
   <VDialog
-    v-model="model"
+    v-model="dialog"
     max-width="960"
   >
     <VCard>
@@ -363,8 +377,8 @@ const rows = computed(() => {
             <tr>
               <th>SALDOS INICIALES</th>
               <th>CÓDIGO</th>
-              <th>SALDO INICIAL SEGÚN ESF</th>
-              <th>SALDO INICIAL SEGÚN ECP</th>
+              <th>SALDO FINAL SEGÚN ESF</th>
+              <th>SALDO FINAL SEGÚN ECP</th>
               <th>DIFERENCIA POR CUADRAR</th>
               <th>CONTROL</th>
             </tr>

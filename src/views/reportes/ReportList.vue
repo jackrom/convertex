@@ -27,13 +27,13 @@ let message = ref(false)
 let messageText = ref('')
 const counter = ref([])
 
-const { lista: reportes, loaded } = storeToRefs(reportStore)
+const { reportes: reportes, loaded } = storeToRefs(reportStore)
 
 onMounted(async () => {
   if (!loaded.value) await reportStore.load({ force: true })
 })
 
-console.log(reportes)
+console.log('reportes: ', reportes)
 
 // ----------------------
 // Acciones
@@ -117,6 +117,7 @@ const editarReporte = rep => {
               <tr>
                 <th>Empresa</th>
                 <th>Periodo</th>
+                <th>Tipo EEFF</th>
                 <th>Fecha</th>
                 <th style="width:180px">
                   Acciones
@@ -143,6 +144,24 @@ const editarReporte = rep => {
                   <small>{{ rep.empresa?.ruc }}</small>
                 </td>
                 <td>{{ rep.periodo?.periodo }}</td>
+                <td>
+                  <VChip
+                    v-if="rep.esconsolidado"
+                    size="x-small"
+                    color="primary"
+                    variant="flat"
+                  >
+                    Consolidado
+                  </VChip>
+                  <VChip
+                    v-else
+                    size="x-small"
+                    color="secondary"
+                    variant="flat"
+                  >
+                    Individual
+                  </VChip>
+                </td>
                 <td>{{ rep.createdat }}</td>
 
                 <td class="d-flex gap-2">

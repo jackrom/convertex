@@ -6,7 +6,6 @@ import { normalizePeriodo } from "@/utils/periodo-normalizer"
 import { useSessionUser } from "@/composables/useSessionUser"
 import { useAudit } from "@/composables/useAudit"
 
-
 import { useReportesService } from "@/services/reportes.service"
 import { useReportesStore } from "@/@store/reportes.store"
 import { obtenerDatosReporte } from "@core/utils/reportes"
@@ -71,11 +70,25 @@ export const usePeriodoStore = defineStore("periodos", {
       this.loaded = false
       await this.load()
 
-      // ---- Intentar obtener el periodo recién creado ----
       const body = res?.data
+      const rows = Array.isArray(body?.data) ? body.data : []
 
-      // 1) Intento directo desde la respuesta de la API
-      let creado = body?.data[0]
+      // intenta encontrar el periodo exacto por empresa + periodo (+ userid si aplica)
+      let creado =
+        rows.find(r =>
+          r &&
+          r.empresaid === periodoNuevo.empresaid &&
+          Number(r.periodo) === Number(periodoNuevo.periodo) &&
+          (r.userid ? r.userid === periodoNuevo.userid : true),
+        )
+
+      // fallback: el de mayor id (normalmente el recién insertado)
+      if (!creado && rows.length) {
+        creado = [...rows].sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0))[0]
+      }
+
+      console.log("rows devueltos:", rows)
+      console.log("creado resuelto:", creado)
 
       console.log("creado: ", creado)
 
@@ -133,10 +146,13 @@ export const usePeriodoStore = defineStore("periodos", {
       const siguientePeriodo = Number(origen.periodo) + 1
 
       // Seguridad extra: si ya existe el periodo siguiente, no duplicar
+      const origenEsConsolidado = Boolean(origen.esconsolidado)
+
       const yaExiste = this.periodos.some(
         p =>
           p.empresaid === origen.empresaid &&
           Number(p.periodo) === siguientePeriodo &&
+          Boolean(p.esconsolidado) === origenEsConsolidado &&
           !p.deletedat,
       )
 
@@ -153,6 +169,7 @@ export const usePeriodoStore = defineStore("periodos", {
           periodo: siguientePeriodo,
           empresaid: origen.empresaid,
           userid: userId,
+          esconsolidado: origen.esconsolidado,
         })
 
         if (!nuevoPeriodo || !nuevoPeriodo.id) {
@@ -167,6 +184,8 @@ export const usePeriodoStore = defineStore("periodos", {
           nuevoPeriodo.id,
           origen.empresaid,
         )
+
+        periodoData.reporte.esconsolidado = Boolean(origen.esconsolidado)
 
         // 3) Buscar el reporte del período origen y sus values
         let prevValuesPerTipo = null

@@ -104,6 +104,7 @@ const confirmarDuplicar = async () => {
               <tr>
                 <th>Empresa</th>
                 <th>Periodo</th>
+                <th>Tipo EEFF</th>
                 <th>Creado</th>
                 <th class="text-center">
                   Acciones
@@ -112,14 +113,14 @@ const confirmarDuplicar = async () => {
             </thead>
 
             <tbody>
-            <tr v-if="isLoading">
-              <td
-                colspan="4"
-                class="text-center py-6"
-              >
-                Cargando reportes...
-              </td>
-            </tr>
+              <tr v-if="isLoading">
+                <td
+                  colspan="4"
+                  class="text-center py-6"
+                >
+                  Cargando reportes...
+                </td>
+              </tr>
               <tr
                 v-else
                 v-for="p in periodos"
@@ -129,7 +130,28 @@ const confirmarDuplicar = async () => {
                   {{ p.empresa?.nombre || p.empresaid }}
                 </td>
 
-                <td>{{ p.periodo }}</td>
+                <td>
+                  {{ p.periodo }}
+                </td>
+
+                <td>
+                  <VChip
+                    v-if="p.esconsolidado"
+                    size="x-small"
+                    color="primary"
+                    variant="flat"
+                  >
+                    Consolidado
+                  </VChip>
+                  <VChip
+                    v-else
+                    size="x-small"
+                    color="secondary"
+                    variant="flat"
+                  >
+                    Individual
+                  </VChip>
+                </td>
 
                 <td>{{ p.createdat }}</td>
 
@@ -142,8 +164,8 @@ const confirmarDuplicar = async () => {
                     class="mr-1"
                     :disabled="p.isDuplicated"
                     :title="p.isDuplicated
-                      ? 'Ya existe el periodo siguiente para esta empresa'
-                      : `Duplicar periodo ${p.periodo}`"
+                      ? `Ya existe el periodo ${Number(p.periodo) + 1} (${p.esconsolidado ? 'Consolidado' : 'Individual'})`
+                      : `Duplicar periodo ${p.periodo} (${p.esconsolidado ? 'Consolidado' : 'Individual'})`"
                     @click="pedirDuplicar(p)"
                   >
                     <VIcon icon="tabler-copy" />

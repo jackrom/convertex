@@ -8,6 +8,7 @@ import { normalizeReporte } from "@/utils/reporte-normalizer"
 import { useReportViewerService } from "@/services/reporte-viewer.service"
 
 import { useUiSnackbarStore } from "@/@store/uiSnackbar.store"
+import {computed} from "vue";
 
 function buildPlainSnapshot(reporte, values) {
   const base = {
@@ -22,6 +23,41 @@ function buildPlainSnapshot(reporte, values) {
 
   return JSON.parse(JSON.stringify(base))
 }
+
+function buildIndexByNombrecampo(list = []) {
+  const m = Object.create(null)
+  for (const r of list) {
+    if (r?.nombrecampo) m[r.nombrecampo] = r
+  }
+
+  return m
+}
+
+function toNum(v) {
+  const n = Number(v)
+
+  return Number.isFinite(n) ? n : 0
+}
+
+function sumCodes(index, codes) {
+  // dedupe para no sumar 3 veces si el array trae repetidos
+  const unique = new Set(codes)
+  let acc = 0
+  for (const c of unique) acc += toNum(index[c]?.valor)
+
+  return acc
+}
+
+function allRowsCuadran(esfIndex, ecpIndex, rowDefs) {
+  for (const def of rowDefs) {
+    const saldoEsf = sumCodes(esfIndex, def.esfCodigos)
+    const saldoEcp = sumCodes(ecpIndex, def.ecpCodigos)
+    if (toNum(saldoEsf) - toNum(saldoEcp) !== 0) return false
+  }
+
+  return true
+}
+
 
 
 export const useReportViewerStore = defineStore("reportViewer", {
@@ -85,6 +121,309 @@ export const useReportViewerStore = defineStore("reportViewer", {
   },
 
   actions: {
+    // Función para calcular el cuadre de ESF
+    calculateEsfCuadre() {
+      // Inicializamos las variables de totales
+      let totals = {
+        activosCorrientes: 0,
+        activosNoCorrientes: 0,
+        pasivosCorrientes: 0,
+        pasivosNoCorrientes: 0,
+        patrimonioActual: 0,
+        activosCorrientesAnt: 0,
+        activosNoCorrientesAnt: 0,
+        pasivosCorrientesAnt: 0,
+        pasivosNoCorrientesAnt: 0,
+        patrimonioAnt: 0,
+      }
+
+      // Función para acumular los valores
+      const accumulateValues = field => {
+        if (!field || !field.tablaorigen || !field.valor) return
+
+        // Sumar valores según tablaorigen
+        switch (field.tablaorigen) {
+        case 'Activoscorrientes':
+          totals.activosCorrientes += Number(field.valor)
+          break
+        case 'Activosnocorrientes':
+          totals.activosNoCorrientes += Number(field.valor)
+          break
+        case 'Pasivoscorrientes':
+          totals.pasivosCorrientes += Number(field.valor)
+          break
+        case 'Pasivosnocorrientes':
+          totals.pasivosNoCorrientes += Number(field.valor)
+          break
+        case 'Patrimonio':
+          totals.patrimonioActual += Number(field.valor)
+          break
+        case 'ActivoscorrientesAnt':
+          totals.activosCorrientesAnt += Number(field.valor)
+          break
+        case 'ActivosnocorrientesAnt':
+          totals.activosNoCorrientesAnt += Number(field.valor)
+          break
+        case 'PasivoscorrientesAnt':
+          totals.pasivosCorrientesAnt += Number(field.valor)
+          break
+        case 'PasivosnocorrientesAnt':
+          totals.pasivosNoCorrientesAnt += Number(field.valor)
+          break
+        case 'PatrimonioAnt':
+          totals.patrimonioAnt += Number(field.valor)
+          break
+        default:
+          break
+        }
+      }
+
+      // Sumar los valores de todos los campos de esfValues
+      const esfList = this.reporte?.values.esfvalues || []
+
+      esfList.forEach(field => accumulateValues(field))
+
+      // Calcular los totales de activos, pasivos y patrimonio
+      const totalActivo = (totals.activosCorrientes + totals.activosNoCorrientes) - (totals.activosCorrientesAnt + totals.activosNoCorrientesAnt)
+      const totalPasivo = (totals.pasivosCorrientes + totals.pasivosNoCorrientes) - (totals.pasivosCorrientesAnt + totals.pasivosNoCorrientesAnt)
+      const totalPatrimonio = totals.patrimonioActual - totals.patrimonioAnt
+
+      // Verificar si el cuadre es correcto (activos = pasivos + patrimonio)
+      const cuadreCorrecto = totalActivo === (totalPasivo + totalPatrimonio)
+
+      // Retornar el resultado del cuadre
+      return cuadreCorrecto ? 1 : 0 // Retorna 1 si el cuadre es correcto, 0 si es incorrecto
+    },
+
+    // Función para calcular el cuadre de EFE
+    calculateEfeCuadre() {
+      // Inicializamos las variables de totales
+      let totals = {
+        operaciones: 0,
+        inversion: 0,
+        financiamiento: 0,
+        conciliacion: 0,
+      }
+
+      // Función para acumular los valores
+      const accumulateValues = field => {
+
+        if (!field || !field.tablaorigen || !field.valor) return
+
+        switch (field.tablaorigen) {
+        case 'Actividadesdeoperacion':
+          totals.operaciones += Number(field.valor)
+          break
+        case 'Actividadesdeinversion':
+          totals.inversion += Number(field.valor)
+          break
+        case 'Actividadesdefinanciamiento':
+          totals.financiamiento += Number(field.valor)
+          break
+        case 'Conciliacion':
+          totals.financiamiento += Number(field.valor)
+          break
+        default:
+          break
+        }
+      }
+
+      const efeList = this.reporte?.values.efemdvalues || []
+
+      efeList.forEach(field => accumulateValues(field))
+
+      const cuadreCorrecto = (totals.operaciones + totals.inversion + totals.financiamiento + totals.conciliacion) === 0
+
+      return cuadreCorrecto ? 1 : 0
+    },
+
+    // Función para calcular el cuadre de ERI
+    calculateEriCuadre() {
+      // Inicializamos los totales de cada categoría para el periodo actual y anterior
+      let totals = {
+        ingresos: 0,
+        costos: 0,
+        otrosIngresos: 0,
+        gastosVentas: 0,
+        gastosAdministrativos: 0,
+        gastosFinancieros: 0,
+        otrosGastos: 0,
+        resultados: 0,
+        operacionesDiscontinuadas: 0,
+        participacionControladora: 0,
+        otrosResultadosIntegrales: 0,
+
+        ingresosAnt: 0,
+        costosAnt: 0,
+        otrosIngresosAnt: 0,
+        gastosVentasAnt: 0,
+        gastosAdministrativosAnt: 0,
+        gastosFinancierosAnt: 0,
+        otrosGastosAnt: 0,
+        resultadosAnt: 0,
+        operacionesDiscontinuadasAnt: 0,
+        participacionControladoraAnt: 0,
+        otrosResultadosIntegralesAnt: 0,
+      }
+
+      // Función para acumular los valores
+      const accumulateValues = field => {
+        if (!field || !field.tablaorigen || !field.valor) return
+
+        // Verificar si es el periodo anterior o actual
+        const isPeriodoAnterior = field.nombrecampo.endsWith("_ant")
+
+        // Acumular valores según tablaorigen y periodo
+        switch (field.tablaorigen) {
+        case 'Ingresos':
+          totals.ingresos += Number(field.valor)
+          break
+        case 'IngresosAnt':
+          totals.ingresosAnt += Number(field.valor)
+          break
+        case 'Costos':
+          totals.costos += Number(field.valor)
+          break
+        case 'CostosAnt':
+          totals.costosAnt += Number(field.valor)
+          break
+        case 'Otrosingresos':
+          totals.otrosIngresos += Number(field.valor)
+          break
+        case 'OtrosingresosAnt':
+          totals.otrosIngresosAnt += Number(field.valor)
+          break
+        case 'Gastosdeventas':
+          totals.gastosVentas += Number(field.valor)
+          break
+        case 'GastosdeventasAnt':
+          totals.gastosVentasAnt += Number(field.valor)
+          break
+        case 'Gastosadministrativos':
+          totals.gastosAdministrativos += Number(field.valor)
+          break
+        case 'GastosadministrativosAnt':
+          totals.gastosAdministrativosAnt += Number(field.valor)
+          break
+        case 'Gastosfinancieros':
+          totals.gastosFinancieros += Number(field.valor)
+          break
+        case 'GastosfinancierosAnt':
+          totals.gastosFinancierosAnt += Number(field.valor)
+          break
+        case 'Otrosgastos':
+          totals.otrosGastos += Number(field.valor)
+          break
+        case 'OtrosgastosAnt':
+          totals.otrosGastosAnt += Number(field.valor)
+          break
+        case 'Resultados':
+          totals.resultados += Number(field.valor)
+          break
+        case 'ResultadosAnt':
+          totals.resultadosAnt += Number(field.valor)
+          break
+        case 'Operacionesdiscontinuadas':
+          totals.operacionesDiscontinuadas += Number(field.valor)
+          break
+        case 'OperacionesdiscontinuadasAnt':
+          totals.operacionesDiscontinuadasAnt += Number(field.valor)
+          break
+        case 'Participacioncontroladora':
+          totals.participacionControladora += Number(field.valor)
+          break
+        case 'ParticipacioncontroladoraAnt':
+          totals.participacionControladoraAnt += Number(field.valor)
+          break
+        case 'Otrosresultadosintegrales':
+          totals.otrosResultadosIntegrales += Number(field.valor)
+          break
+        case 'OtrosresultadosintegralesAnt':
+          totals.otrosResultadosIntegralesAnt += Number(field.valor)
+          break
+        default:
+          break
+        }
+      }
+
+      // Sumar los valores de todos los campos ERI
+      const eriList = this.reporte?.values.erivalues || []
+
+      eriList.forEach(field => accumulateValues(field))
+
+      // Verificar si el cuadre es correcto para cada categoria
+      const cuadreCorrectoActual = totals.ingresos + totals.costos + totals.otrosIngresos + totals.gastosVentas + totals.gastosAdministrativos + totals.gastosFinancieros + totals.otrosGastos + totals.resultados + totals.operacionesDiscontinuadas + totals.participacionControladora + totals.otrosResultadosIntegrales
+
+      const cuadreCorrectoAnterior = totals.ingresosAnt + totals.costosAnt + totals.otrosIngresosAnt + totals.gastosVentasAnt + totals.gastosAdministrativosAnt + totals.gastosFinancierosAnt + totals.otrosGastosAnt + totals.resultadosAnt + totals.operacionesDiscontinuadasAnt + totals.participacionControladoraAnt + totals.otrosResultadosIntegralesAnt
+
+      // Retornar el resultado del cuadre si ambos periodos cuadran
+      const cuadreCorrecto = (cuadreCorrectoActual - cuadreCorrectoAnterior) === 0
+
+      return cuadreCorrecto ? 1 : 0
+    },
+
+    // Función para calcular el cuadre de ECP
+    calculateEcpCuadre() {
+      const esfList = this.reporte?.values?.esfvalues ?? []
+      const ecpList = this.reporte?.values?.ecpvalues ?? []
+
+      const esfIndex = buildIndexByNombrecampo(esfList)
+      const ecpIndex = buildIndexByNombrecampo(ecpList)
+
+      // ========= DEFINICIONES (base) =========
+      // ESF: saldos iniciales = sufijo _ant, saldos finales = sin sufijo
+      // ECP: saldos iniciales = ecp_990101/02/03_XXXX, saldos finales = ecp_99_XXXX
+
+      const rowDefsSI = [
+        { codigo: "301", esfCodigos: ["esf_30101_ant","esf_30102_ant","esf_30103_ant","esf_30104_ant","esf_3010501_ant","esf_3010502_ant"], ecpCodigos: ["ecp_990101_301","ecp_990102_301","ecp_990103_301"] },
+        { codigo: "302", esfCodigos: ["esf_302_ant"], ecpCodigos: ["ecp_990101_302","ecp_990102_302","ecp_990103_302"] },
+        { codigo: "303", esfCodigos: ["esf_303_ant"], ecpCodigos: ["ecp_990101_303","ecp_990102_303","ecp_990103_303"] },
+        { codigo: "30401", esfCodigos: ["esf_30401_ant"], ecpCodigos: ["ecp_990101_30401","ecp_990102_30401","ecp_990103_30401"] },
+        { codigo: "30402", esfCodigos: ["esf_30402_ant"], ecpCodigos: ["ecp_990101_30402","ecp_990102_30402","ecp_990103_30402"] },
+        { codigo: "30501", esfCodigos: ["esf_30501_ant"], ecpCodigos: ["ecp_990101_30501","ecp_990102_30501","ecp_990103_30501"] },
+        { codigo: "30502", esfCodigos: ["esf_30502_ant"], ecpCodigos: ["ecp_990101_30502","ecp_990102_30502","ecp_990103_30502"] },
+        { codigo: "30503", esfCodigos: ["esf_30503_ant"], ecpCodigos: ["ecp_990101_30503","ecp_990102_30503","ecp_990103_30503"] },
+        { codigo: "30504", esfCodigos: ["esf_30504_ant"], ecpCodigos: ["ecp_990101_30504","ecp_990102_30504","ecp_990103_30504"] },
+        { codigo: "30601", esfCodigos: ["esf_30601_ant"], ecpCodigos: ["ecp_990101_30601","ecp_990102_30601","ecp_990103_30601"] },
+        { codigo: "30602", esfCodigos: ["esf_30602_ant"], ecpCodigos: ["ecp_990101_30602","ecp_990102_30602","ecp_990103_30602"] },
+        { codigo: "30603", esfCodigos: ["esf_30603_ant"], ecpCodigos: ["ecp_990101_30603","ecp_990102_30603","ecp_990103_30603"] },
+        { codigo: "30604", esfCodigos: ["esf_30604_ant"], ecpCodigos: ["ecp_990101_30604","ecp_990102_30604","ecp_990103_30604"] },
+        { codigo: "30605", esfCodigos: ["esf_30605_ant"], ecpCodigos: ["ecp_990101_30605","ecp_990102_30605","ecp_990103_30605"] },
+        { codigo: "30606", esfCodigos: ["esf_30606_ant"], ecpCodigos: ["ecp_990101_30606","ecp_990102_30606","ecp_990103_30606"] },
+        { codigo: "30607", esfCodigos: ["esf_30607_ant"], ecpCodigos: ["ecp_990101_30607","ecp_990102_30607","ecp_990103_30607"] },
+        { codigo: "30701", esfCodigos: ["esf_30701_ant"], ecpCodigos: ["ecp_990101_30701","ecp_990102_30701","ecp_990103_30701"] },
+        { codigo: "30702", esfCodigos: ["esf_30702_ant"], ecpCodigos: ["ecp_990101_30702","ecp_990102_30702","ecp_990103_30702"] },
+        { codigo: "31", esfCodigos: ["esf_31_ant"], ecpCodigos: ["ecp_990101_31","ecp_990102_31","ecp_990103_31"] },
+      ]
+
+      const rowDefsSF = [
+        { codigo: "301", esfCodigos: ["esf_30101","esf_30102","esf_30103","esf_30104","esf_3010501","esf_3010502"], ecpCodigos: ["ecp_99_301"] },
+        { codigo: "302", esfCodigos: ["esf_302"], ecpCodigos: ["ecp_99_302"] },
+        { codigo: "303", esfCodigos: ["esf_303"], ecpCodigos: ["ecp_99_303"] },
+        { codigo: "30401", esfCodigos: ["esf_30401"], ecpCodigos: ["ecp_99_30401"] },
+        { codigo: "30402", esfCodigos: ["esf_30402"], ecpCodigos: ["ecp_99_30402"] },
+        { codigo: "30501", esfCodigos: ["esf_30501"], ecpCodigos: ["ecp_99_30501"] },
+        { codigo: "30502", esfCodigos: ["esf_30502"], ecpCodigos: ["ecp_99_30502"] },
+        { codigo: "30503", esfCodigos: ["esf_30503"], ecpCodigos: ["ecp_99_30503"] },
+        { codigo: "30504", esfCodigos: ["esf_30504"], ecpCodigos: ["ecp_99_30504"] },
+        { codigo: "30601", esfCodigos: ["esf_30601"], ecpCodigos: ["ecp_99_30601"] },
+        { codigo: "30602", esfCodigos: ["esf_30602"], ecpCodigos: ["ecp_99_30602"] },
+        { codigo: "30603", esfCodigos: ["esf_30603"], ecpCodigos: ["ecp_99_30603"] },
+        { codigo: "30604", esfCodigos: ["esf_30604"], ecpCodigos: ["ecp_99_30604"] },
+        { codigo: "30605", esfCodigos: ["esf_30605"], ecpCodigos: ["ecp_99_30605"] },
+        { codigo: "30606", esfCodigos: ["esf_30606"], ecpCodigos: ["ecp_99_30606"] },
+        { codigo: "30607", esfCodigos: ["esf_30607"], ecpCodigos: ["ecp_99_30607"] },
+        { codigo: "30701", esfCodigos: ["esf_30701"], ecpCodigos: ["ecp_99_30701"] },
+        { codigo: "30702", esfCodigos: ["esf_30702"], ecpCodigos: ["ecp_99_30702"] },
+        { codigo: "31", esfCodigos: ["esf_31"], ecpCodigos: ["ecp_99_31"] },
+      ]
+
+      const siOk = allRowsCuadran(esfIndex, ecpIndex, rowDefsSI)
+      const sfOk = allRowsCuadran(esfIndex, ecpIndex, rowDefsSF)
+
+      return (siOk && sfOk) ? 1 : 0
+    },
+
     // Helper interno para mantener this.reporte.values en sync
     _syncReporteValues() {
       if (!this.reporte) return

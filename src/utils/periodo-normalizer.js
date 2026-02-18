@@ -4,6 +4,7 @@ export function normalizePeriodo(raw) {
     periodo: Number(raw.periodo),
     empresaid: raw.empresaid,
     empresa: raw.empresa ?? null,
+    esconsolidado: !!raw.esconsolidado,
     createdat: raw.createdat ?? null,
     deletedat: raw.deletedat ?? null,
   }

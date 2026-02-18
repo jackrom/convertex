@@ -34,6 +34,15 @@ const store = useReportViewerStore()
 
 const activePanel = ref(null)
 
+const roundTo = (n, decimals = 2) => {
+  const num = Number(n)
+  if (!Number.isFinite(num)) return 0
+
+  const p = 10 ** decimals
+
+  return Math.round((num + Number.EPSILON) * p) / p
+}
+
 const updateActivePanel = newPanel => {
   console.log("newPanel", newPanel)
   console.log("currentTab", props.currentTab)
@@ -106,6 +115,7 @@ const efeStoreValues = computed(
 // ---------------------------------------------
 const toNumber = value => {
   const n = Number(value)
+
   return Number.isFinite(n) ? n : 0
 }
 
@@ -484,8 +494,8 @@ const groups = computed(() => {
           r.sumActual = 0
           r.sumAnterior = 0
         } else {
-          r.sumActual = toNumber(r.actual?.valor)
-          r.sumAnterior = toNumber(r.anterior?.valor)
+          r.sumActual = roundTo(toNumber(r.actual?.valor), 2)
+          r.sumAnterior = roundTo(toNumber(r.anterior?.valor), 2)
         }
       }
 
@@ -497,8 +507,8 @@ const groups = computed(() => {
           const parentCode = code.slice(0, len)
           const parent = group.rowsByCodigo[parentCode]
           if (parent) {
-            parent.sumActual += r.sumActual
-            parent.sumAnterior += r.sumAnterior
+            parent.sumActual = roundTo(parent.sumActual + r.sumActual, 2)
+            parent.sumAnterior = roundTo(parent.sumAnterior + r.sumAnterior, 2)
             break
           }
         }
@@ -596,13 +606,14 @@ const isReadOnlyField = (row, which) => {
 // Helpers de visualización de valor
 // ---------------------------------------------
 const getDisplayValue = (field, sumValue, hasChildren) => {
-  if (hasChildren) return sumValue
+  if (hasChildren) return roundTo(sumValue, 2)
   if (!field) return null
 
   const raw = toNumber(field.valor)
 
-  return normalizeForField(field.nombrecampo, raw)
+  return roundTo(normalizeForField(field.nombrecampo, raw), 2)
 }
+
 
 // ---------------------------------------------
 // Sincronizar ESF -> ERI (mapeos directos)
@@ -810,6 +821,7 @@ const onInput = (group, row, which, rawValue) => {
 
   let numericVal = toNumber(rawValue)
   numericVal = normalizeForField(field.nombrecampo, numericVal)
+  numericVal = roundTo(numericVal, 2)
 
   emit("change-value", {
     tipo: tStore, // 'esf' | 'eri' | 'ecp' | 'efemd'

@@ -1,223 +1,466 @@
 <script setup>
-import { computed } from "vue"
-import { formatMoney, isZero } from "./functions"
+import { computed, watchEffect } from "vue"
+import { formatMoney, isZero, toNumber, round2 } from "./functions"
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false }, // v-model
-  efeCuadre: { type: Boolean, default: false },
-
   esfValues: { type: Array, default: () => [] },
   eriValues: { type: Array, default: () => [] },
   efeValues: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(["update:modelValue", "update:efeCuadre"])
+const emit = defineEmits([
+  "update:modelValue",
+  "update:efeCuadre",
+])
 
-// -------------------------
-// Índices reactivos
-// -------------------------
-const esfByName = computed(() => {
-  const m = {}
-  for (const r of props.esfValues) if (r?.nombrecampo) m[r.nombrecampo] = r
-  return m
-})
+const cuadreEfe = computed(() => isZero(diferenciaEFEvsESF.value))
+const cuadreOperacion = computed(() => isZero(diferenciaOperacion.value))
 
-const eriByName = computed(() => {
-  const m = {}
-  for (const r of props.eriValues) if (r?.nombrecampo) m[r.nombrecampo] = r
-  return m
-})
-
-const efeByName = computed(() => {
-  const m = {}
-  for (const r of props.efeValues) if (r?.nombrecampo) m[r.nombrecampo] = r
-  return m
-})
-
-// -------------------------
-// v-model proxy (Vuetify VDialog)
-// -------------------------
 const dialog = computed({
   get: () => props.modelValue,
   set: v => emit("update:modelValue", v),
 })
 
-// -------------------------
-// Arrays de códigos
-// -------------------------
-const efe9501 = [
-  "efe_md_95010105","efe_md_95010104","efe_md_95010103","efe_md_95010102","efe_md_95010101",
-  "efe_md_95010202","efe_md_95010201","efe_md_95010203","efe_md_95010204","efe_md_95010205",
-  "efe_md_950103","efe_md_950104","efe_md_950105","efe_md_950106","efe_md_950107","efe_md_950108",
-]
-
-const efe9502 = [
-  "efe_md_950201","efe_md_950202","efe_md_950203","efe_md_950204","efe_md_950205","efe_md_950206",
-  "efe_md_950207","efe_md_950208","efe_md_950209","efe_md_950210","efe_md_950211","efe_md_950212",
-  "efe_md_950213","efe_md_950214","efe_md_950215","efe_md_950216","efe_md_950217","efe_md_950218",
-  "efe_md_950219","efe_md_950220","efe_md_950221",
-]
-
-const efe9503 = [
-  "efe_md_950301","efe_md_950302","efe_md_950303","efe_md_950304","efe_md_950305",
-  "efe_md_950306","efe_md_950307","efe_md_950308","efe_md_950309","efe_md_950310",
-]
-
-const efe9504 = ["efe_md_950401"]
-
-const efe97 = [
-  "efe_md_9701","efe_md_9702","efe_md_9703","efe_md_9704","efe_md_9705","efe_md_9706",
-  "efe_md_9707","efe_md_9708","efe_md_9709","efe_md_9710","efe_md_9711",
-]
-
-const efe98 = [
-  "efe_md_9801","efe_md_9802","efe_md_9803","efe_md_9804","efe_md_9805",
-  "efe_md_9806","efe_md_9807","efe_md_9808","efe_md_9809","efe_md_9810",
-]
-
-// ✅ AJUSTA ESTOS CÓDIGOS A TU ESF REAL
-// Saldo inicial (ESF periodo anterior) de efectivo y equivalentes
-const esfCashInicial = [
-  // ejemplo: "esf_10101_ant", "esf_1010101_ant", ...
-]
-
-// Saldo final (ESF periodo actual) de efectivo y equivalentes
-const esfCashFinal = [
-  // ejemplo: "esf_10101", "esf_1010101", ...
-]
+/**
+ * Regex tolerante: efe_md_9501010101
+ */
+const EFE_RE = /^efe(?:_)?md_(\d+)$/i
 
 // -------------------------
-// Helpers
+// MAPAS REACTIVOS (desde props.*Values)
 // -------------------------
-const getValor = (tipo, codigo) => {
-  let row
-  if (tipo === "esf") row = esfByName.value[codigo]
-  else if (tipo === "eri") row = eriByName.value[codigo]
-  else if (tipo === "efe") row = efeByName.value[codigo]
-  else row = null
+const makeMapByNombrecampo = (list) =>
+  computed(() => {
+    const m = {}
+    for (const r of list || []) {
+      const k = String(r?.nombrecampo ?? "").toLowerCase()
+      if (!k) continue
+      m[k] = r
+    }
+
+    return m
+  })
+
+const esfMap = makeMapByNombrecampo(props.esfValues)
+const eriMap = makeMapByNombrecampo(props.eriValues)
+const efeMap = makeMapByNombrecampo(props.efeValues)
+
+const get = (mapRef, key) => toNumber(mapRef.value?.[String(key).toLowerCase()]?.valor)
+
+// -------------------------
+// JERARQUÍA EFE (padre = suma de hijos si existen)
+// Regla:
+// - Si el nodo tiene hijos con valores != 0 => usa suma de hijos
+// - Si NO hay hijos con valores (o no existen) => usa su propio valor
+// Esto permite: llenar solo el padre o solo los hijos, y el resumen cuadra.
+// -------------------------
+function buildEfeHierarchy(values) {
+  const nodes = {}
+
+  // 1) crear nodos por código (solo los existentes en data)
+  for (const row of values || []) {
+    const name = String(row?.nombrecampo ?? "").toLowerCase()
+    const m = name.match(EFE_RE)
+    if (!m) continue
+
+    const code = m[1] // "9501010101"
+    if (!nodes[code]) {
+      nodes[code] = {
+        code,
+        own: 0,
+        sum: 0,
+        childSum: 0,
+        childNonZero: false,
+        hasChildren: false,
+      }
+    }
+    nodes[code].own += toNumber(row.valor)
+  }
+
+  const codes = Object.keys(nodes)
+  if (!codes.length) return nodes
+
+  // 2) marcar padres (misma lógica que tu ESF: startsWith)
+  for (const parent of codes) {
+    for (const child of codes) {
+      if (child.length <= parent.length) continue
+      if (child.startsWith(parent)) {
+        nodes[parent].hasChildren = true
+        break
+      }
+    }
+  }
+
+  // 3) propagar de abajo hacia arriba
+  const sorted = [...codes].sort((a, b) => {
+    const lenDiff = b.length - a.length
+    if (lenDiff !== 0) return lenDiff
+
+    return a.localeCompare(b)
+  })
+
+  for (const code of sorted) {
+    const node = nodes[code]
+
+    // si tiene hijos con valores => suma hijos; caso contrario => propio
+    node.sum = node.hasChildren
+      ? (node.childNonZero ? node.childSum : node.own)
+      : node.own
+
+    // propagar al padre inmediato existente (mismo patrón que ESF)
+    for (let len = code.length - 1; len > 0; len--) {
+      const parentCode = code.slice(0, len)
+      const parent = nodes[parentCode]
+      if (parent) {
+        parent.childSum += node.sum
+        if (!isZero(node.sum)) parent.childNonZero = true
+        break
+      }
+    }
+  }
+
+  return nodes
+}
+
+const efeHierarchy = computed(() => buildEfeHierarchy(props.efeValues))
+const efeNodeSum = code => round2(efeHierarchy.value?.[String(code)]?.sum ?? 0)
+
+// ✅ Índices reactivos: cuando cambia cualquier .valor en esfValues/ecpValues, se recalcula
+const esfByName = computed(() => {
+  const m = {}
+  for (const r of props.esfValues) {
+    if (r?.nombrecampo) m[r.nombrecampo] = r
+  }
+
+  return m
+})
+
+const getValor = codigo => {
+  const row = esfByName.value[codigo]
 
   return row ? Number(row.valor || 0) : 0
 }
 
-const sumaCodigos = (tipo, codigos) =>
-  codigos.reduce((acc, c) => acc + getValor(tipo, c), 0)
-
 // -------------------------
-// Cálculos del resumen (reactivos)
+// CÁLCULOS DEL RESUMEN (ya NO necesitas listas gigantes)
 // -------------------------
-const v9501 = computed(() => sumaCodigos("efe", efe9501))
-const v9502 = computed(() => sumaCodigos("efe", efe9502))
-const v9503 = computed(() => sumaCodigos("efe", efe9503))
-const v9504 = computed(() => sumaCodigos("efe", efe9504))
+const v9501 = computed(() => efeNodeSum("9501"))
+const v9502 = computed(() => efeNodeSum("9502"))
+const v9503 = computed(() => efeNodeSum("9503"))
+const v9504 = computed(() => efeNodeSum("9504"))
+const v9505 = computed(() => round2(v9501.value + v9502.value + v9503.value + v9504.value))
 
-// 9505 = 9501 + 9502 + 9503 + 9504
-const v9505 = computed(() => v9501.value + v9502.value + v9503.value + v9504.value)
+// 96 + 97 + 98
+const v96   = computed(() => get(eriMap, "eri_607"))
+const v97v  = computed(() => efeNodeSum("97"))
+const v98v  = computed(() => efeNodeSum("98"))
+const v9820 = computed(() => round2(v96.value + v97v.value + v98v.value))
 
-// 9506 = saldo inicial según ESF
-const v9506 = computed(() => sumaCodigos("esf", esfCashInicial))
+// ✅ AJUSTA a tu ESF real (efectivo y equivalentes)
+const esfCashInicial = [
+  "esf_10101",
+]
 
-// 9507 = 9505 + 9506
-const v9507 = computed(() => v9505.value + v9506.value)
+const esfCashFinal = [
+  "esf_10101",
+]
 
-// Saldo final según ESF
-const esfSaldoFinal = computed(() => sumaCodigos("esf", esfCashFinal))
+const sumEsf = codes => round2((codes || []).reduce((acc, c) => acc + get(esfMap, c), 0))
 
-// Diferencia por cuadrar: EFE vs ESF
-const diferencia = computed(() => v9507.value - esfSaldoFinal.value)
+const v9506 = computed(() => sumEsf(esfCashInicial))
+const v9507 = computed(() => round2(v9505.value + v9506.value))
 
-// 9820 = 96 + 97 + 98
-const v96 = computed(() => getValor("eri", "eri_607"))
-const v97 = computed(() => sumaCodigos("efe", efe97))
-const v98 = computed(() => sumaCodigos("efe", efe98))
-const v9820 = computed(() => v96.value + v97.value + v98.value)
+const esf1010101 = computed(() => getValor("esf_1010101"))
+const esf1010102 = computed(() => getValor("esf_1010102"))
+const esf1010103 = computed(() => getValor("esf_1010103"))
 
-// Emitir cuadre en tiempo real
+// const esfSaldoFinal = computed(() => sumEsf(esfCashFinal))
+
+const esfSaldoFinal = computed(() => round2(esf1010101.value + esf1010102.value + esf1010103.value))
+
+const diferenciaEFEvsESF = computed(() => round2(v9507.value - esfSaldoFinal.value))
+const diferenciaOperacion = computed(() => round2(v9501.value - v9820.value))
+
 watchEffect(() => {
-  emit("update:efeCuadre", isZero(diferencia.value))
+  emit("update:efeCuadre", cuadreEfe.value)
 })
 
-const closeDialog = () => {
-  dialog.value = false
-}
+// 🔎 Debug útil (se actualiza al editar)
+watchEffect(() => {
+  // comenta cuando ya esté OK
+  console.log("[ResumenEFE] 9501/9502/9503/9504 =>", v9501.value, v9502.value, v9503.value, v9504.value)
+})
+
+const closeDialog = () => { dialog.value = false }
 </script>
 
+
 <template>
-  <VDialog v-model="dialog" max-width="960">
-    <VCard>
-      <VCardTitle class="d-flex justify-space-between align-center">
-        <span>Resumen EFE</span>
+  <VDialog
+    v-model="dialog"
+    max-width="980"
+  >
+    <VCard class="efe-card">
+      <div class="efe-header">
+        <div class="efe-title">
+          Resumen EFE
+        </div>
 
-        <VBtn icon="tabler-x" variant="text" density="comfortable" @click="closeDialog" />
-      </VCardTitle>
+        <VBtn
+          icon="tabler-x"
+          variant="text"
+          density="comfortable"
+          @click="closeDialog"
+        />
+      </div>
 
-      <VCardSubtitle>
-        Se actualiza automáticamente según los valores del Estado de Flujos de Efectivo.
-      </VCardSubtitle>
+      <div class="efe-table">
+        <!-- HEADER -->
+        <div class="efe-row efe-row--head">
+          <div class="efe-col efe-col--concepto">CONCEPTO</div>
+          <div class="efe-col efe-col--cuenta">CUENTA</div>
+          <div class="efe-col efe-col--valor">PERIODO ACTUAL</div>
+        </div>
 
-      <VCardText>
-        <VTable density="comfortable">
-          <thead>
-            <tr>
-              <th>CONCEPTO</th>
-              <th class="text-right">CUENTA</th>
-              <th class="text-right">VALOR PERÍODO ACTUAL</th>
-            </tr>
-          </thead>
+        <!-- FILAS (bloque 9505-9507-ESF) -->
+        <div class="efe-row">
+          <div class="efe-col efe-col--concepto">(=) Flujo neto del período según EFE</div>
+          <div class="efe-col efe-col--cuenta"><span class="efe-account">9505</span></div>
+          <div class="efe-col efe-col--valor">
+            <VTextField
+              class="efe-input"
+              density="compact"
+              variant="outlined"
+              hide-details
+              readonly
+              :model-value="formatMoney(v9505)"
+            />
+          </div>
+        </div>
 
-          <tbody>
-            <tr>
-              <td>(=) Flujo neto del período según EFE</td>
-              <td class="text-right">9505</td>
-              <td class="text-right">{{ formatMoney(v9505) }}</td>
-            </tr>
+        <div class="efe-row">
+          <div class="efe-col efe-col--concepto">(+) Saldo inicial de efectivo y equivalentes según ESF</div>
+          <div class="efe-col efe-col--cuenta"><span class="efe-account">9506</span></div>
+          <div class="efe-col efe-col--valor">
+            <VTextField
+              class="efe-input"
+              density="compact"
+              variant="outlined"
+              hide-details
+              readonly
+              :model-value="formatMoney(v9506)"
+            />
+          </div>
+        </div>
 
-            <tr>
-              <td>(+) Saldo inicial de efectivo y equivalentes según ESF</td>
-              <td class="text-right">9506</td>
-              <td class="text-right">{{ formatMoney(v9506) }}</td>
-            </tr>
+        <div class="efe-row">
+          <div class="efe-col efe-col--concepto">Saldo final de efectivo y equivalentes según EFE</div>
+          <div class="efe-col efe-col--cuenta"><span class="efe-account">9507</span></div>
+          <div class="efe-col efe-col--valor">
+            <VTextField
+              class="efe-input"
+              density="compact"
+              variant="outlined"
+              hide-details
+              readonly
+              :model-value="formatMoney(v9507)"
+            />
+          </div>
+        </div>
 
-            <tr>
-              <td>(=) Saldo final de efectivo y equivalentes según EFE</td>
-              <td class="text-right">9507</td>
-              <td class="text-right">{{ formatMoney(v9507) }}</td>
-            </tr>
+        <div class="efe-row">
+          <div class="efe-col efe-col--concepto">Saldo final de efectivo y equivalentes según ESF</div>
+          <div class="efe-col efe-col--cuenta"></div>
+          <div class="efe-col efe-col--valor">
+            <VTextField
+              class="efe-input"
+              density="compact"
+              variant="outlined"
+              hide-details
+              readonly
+              :model-value="formatMoney(esfSaldoFinal)"
+            />
+          </div>
+        </div>
 
-            <tr>
-              <td>(=) Saldo final de efectivo y equivalentes según ESF</td>
-              <td class="text-right">ESF</td>
-              <td class="text-right">{{ formatMoney(esfSaldoFinal) }}</td>
-            </tr>
+        <!-- DIFERENCIA 1 -->
+        <div class="efe-row efe-row--divider">
+          <div class="efe-col efe-col--concepto efe-diff-label">DIFERENCIA POR CUADRAR</div>
+          <div class="efe-col efe-col--cuenta"></div>
+          <div class="efe-col efe-col--valor">
+            <div
+              class="efe-diff-box"
+              :class="isZero(diferenciaEFEvsESF) ? 'efe-diff-box--ok' : 'efe-diff-box--bad'"
+            >
+              <div class="efe-diff-tag">(+) 9507</div>
+              <div class="efe-diff-inner">
+                {{ formatMoney(diferenciaEFEvsESF) }}
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <tr>
-              <td>Actividades de Operación Método Directo</td>
-              <td class="text-right">9501</td>
-              <td class="text-right">{{ formatMoney(v9501) }}</td>
-            </tr>
+        <!-- BLOQUE OPERACION -->
+        <div class="efe-row">
+          <div class="efe-col efe-col--concepto">Actividades de Operación Método Directo</div>
+          <div class="efe-col efe-col--cuenta"><span class="efe-account">9501</span></div>
+          <div class="efe-col efe-col--valor">
+            <VTextField
+              class="efe-input"
+              density="compact"
+              variant="outlined"
+              hide-details
+              readonly
+              :model-value="formatMoney(v9501)"
+            />
+          </div>
+        </div>
 
-            <tr>
-              <td>Actividades de Operación Método Indirecto</td>
-              <td class="text-right">9820</td>
-              <td class="text-right">{{ formatMoney(v9820) }}</td>
-            </tr>
-          </tbody>
-        </VTable>
+        <div class="efe-row">
+          <div class="efe-col efe-col--concepto">Actividades de Operación Método Indirecto</div>
+          <div class="efe-col efe-col--cuenta"><span class="efe-account">9820</span></div>
+          <div class="efe-col efe-col--valor">
+            <VTextField
+              class="efe-input"
+              density="compact"
+              variant="outlined"
+              hide-details
+              readonly
+              :model-value="formatMoney(v9820)"
+            />
+          </div>
+        </div>
 
-        <VDivider class="my-4" />
+        <!-- DIFERENCIA 2 -->
+        <div class="efe-row efe-row--divider">
+          <div class="efe-col efe-col--concepto efe-diff-label">DIFERENCIA POR CUADRAR</div>
+          <div class="efe-col efe-col--cuenta"></div>
+          <div class="efe-col efe-col--valor">
+            <div
+              class="efe-diff-box"
+              :class="isZero(diferenciaOperacion) ? 'efe-diff-box--ok' : 'efe-diff-box--bad'"
+            >
+              <div class="efe-diff-tag">(+) </div>
+              <div class="efe-diff-inner">
+                {{ formatMoney(diferenciaOperacion) }}
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <div class="text-subtitle-2 mb-2">DIFERENCIA POR CUADRAR</div>
-
-        <VSheet
-          class="pa-3"
-          :style="{
-            backgroundColor: isZero(diferencia) ? '#E3F5E3' : '#FDE2E2',
-            textAlign: 'center',
-          }"
-        >
-          <div class="text-caption text-medium-emphasis">Diferencia (EFE - ESF)</div>
-          <div class="text-h6">{{ formatMoney(diferencia) }}</div>
-        </VSheet>
-      </VCardText>
+      </div>
     </VCard>
   </VDialog>
 </template>
+
+<style scoped>
+.efe-card{
+  padding: 16px 18px 18px;
+}
+
+.efe-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom: 10px;
+}
+
+.efe-title{
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.efe-close{
+  border-radius: 6px;
+  letter-spacing: .5px;
+}
+
+.efe-table{
+  width: 100%;
+}
+
+.efe-row{
+  display:grid;
+  grid-template-columns: 1fr 120px 260px;
+  gap: 18px;
+  align-items:center;
+  padding: 10px 0;
+}
+
+.efe-row--head{
+  padding-top: 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+
+.efe-row--divider{
+  padding-top: 14px;
+  padding-bottom: 14px;
+  border-top: 1px solid rgba(0,0,0,.08);
+}
+
+.efe-col{
+  min-width: 0;
+}
+
+.efe-col--cuenta{
+  text-align:right;
+  font-weight: 600;
+}
+
+.efe-col--valor{
+  display:flex;
+  justify-content:flex-end;
+}
+
+.efe-account{
+  color: #D87E3A; /* naranja como la imagen */
+  font-weight: 700;
+}
+
+.efe-input :deep(input){
+  text-align: left; /* en la imagen se ve alineado a la izquierda dentro del input */
+}
+
+.efe-input{
+  width: 220px;
+}
+
+.efe-diff-label{
+  font-size: 12px;
+  letter-spacing: .8px;
+  color: rgba(0,0,0,.55);
+}
+
+.efe-diff-box{
+  width: 260px;
+  padding: 12px 12px 10px;
+  position: relative;
+}
+
+.efe-diff-box--ok{
+  background: #dcead7; /* verde suave */
+}
+
+.efe-diff-box--bad{
+  background: #fde2e2; /* rojo suave */
+}
+
+.efe-diff-tag{
+  position:absolute;
+  top: 6px;
+  left: 12px;
+  font-size: 12px;
+  color: rgba(0,0,0,.45);
+}
+
+.efe-diff-inner{
+  margin-top: 10px;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-weight: 600;
+  color: rgba(0,0,0,.65);
+}
+</style>

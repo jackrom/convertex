@@ -1,4 +1,5 @@
 import { useReportStore } from "@/@store/reportStore"
+import { fillReportTemplatesFromFlatArray } from "@/views/reportes/reportViewer/components/mapeo/helpers/reportesFill"
 
 export const obtenerDatosUsuario = () => {
   return JSON.parse(sessionStorage.getItem('userData'))
@@ -1887,7 +1888,6 @@ export const buildEcp = (tipo, usuario, periodo, empresa, reporte) => {
   }
 }
 
-
 export const obtenerDatosReporte = async (id, periodo, empresa) => {
 
   console.log(periodo)
@@ -1985,6 +1985,105 @@ export const obtenerDatosReporte = async (id, periodo, empresa) => {
     operacionesdiscontinuadasconvertex_ant,
     otrosresultadosintegralconvertex_ant,
     resultadosparticipacioncontroladoraconvertex_ant,
+  }
+}
+
+export const obtenerDatosReporteDesdeArrayMapeo = async (id, periodo, empresa, flatValues) => {
+  const reporte = {
+    userid: id,
+    periodoid: periodo,
+    empresaid: empresa,
+    nombre_reporte: "convertex",
+    // opcional: si quieres guardar el modulo (archivo) como metadata
+    // modulo: flatValues?.[0]?.modulo ?? null,
+  }
+
+  // 1) Plantillas (igual que ya haces)
+  const activoscorrientesconvertex = await buildActivosCorrientes("actual", id, periodo, empresa, null)
+  const activosnocorrientesconvertex = await buildActivosNoCorrientes("actual", id, periodo, empresa, null)
+  const pasivoscorrientesconvertex = await buildPasivosCorrientes("actual", id, periodo, empresa, null)
+  const pasivosnocorrientesconvertex = await buildPasivosNoCorrientes("actual", id, periodo, empresa, null)
+  const patrimonioconvertex = await buildPatrimonio("actual", id, periodo, empresa, null)
+
+  const costosconvertex = await buildCostos("actual", id, periodo, empresa, null)
+  const ingresosconvertex = await buildIngresos("actual", id, periodo, empresa, null)
+  const otrosingresosconvertex = await buildOtrosIngresos("actual", id, periodo, empresa, null)
+
+  const gastosdeventasconvertex = await buildGastosDeVentas("actual", id, periodo, empresa, null)
+  const gastosadministrativosconvertex = await buildGastosAdministrativos("actual", id, periodo, empresa, null)
+  const gastosfinancierosconvertex = await buildGastosFinancieros("actual", id, periodo, empresa, null)
+  const otrosgastosconvertex = await buildOtrosGastos("actual", id, periodo, empresa, null)
+
+  const resultadosconvertex = await buildResultados("actual", id, periodo, empresa, null)
+  const operacionesdiscontinuadasconvertex = await buildOperacionesDiscontinuadas("actual", id, periodo, empresa, null)
+  const otrosresultadosintegralconvertex = await buildOtrosResultadosIntegral("actual", id, periodo, empresa, null)
+  const resultadosparticipacioncontroladoraconvertex = await buildResultadosParticipacionControladora("actual", id, periodo, empresa, null)
+
+  const actividadesdeoperacionconvertex = await buildActividadesDeOperacion("actual", id, periodo, empresa, null)
+  const actividadesdeinversionconvertex = await buildActividadesDeInversion("actual", id, periodo, empresa, null)
+  const actividadesdefinanciamientoconvertex = await buildActividadesDeFinanciamiento("actual", id, periodo, empresa, null)
+  const conciliacionganancianetaconvertex = await buildConciliacion("actual", id, periodo, empresa, null)
+
+  const ecpconvertex = await buildEcp("actual", id, periodo, empresa, null)
+
+  // 2) Llenar TODO desde el array plano (solo "actual")
+  const templates = [
+    activoscorrientesconvertex,
+    activosnocorrientesconvertex,
+    pasivoscorrientesconvertex,
+    pasivosnocorrientesconvertex,
+    patrimonioconvertex,
+    costosconvertex,
+    ingresosconvertex,
+    otrosingresosconvertex,
+    gastosdeventasconvertex,
+    gastosadministrativosconvertex,
+    gastosfinancierosconvertex,
+    otrosgastosconvertex,
+    resultadosconvertex,
+    operacionesdiscontinuadasconvertex,
+    otrosresultadosintegralconvertex,
+    resultadosparticipacioncontroladoraconvertex,
+    actividadesdeoperacionconvertex,
+    actividadesdeinversionconvertex,
+    actividadesdefinanciamientoconvertex,
+    conciliacionganancianetaconvertex,
+    ecpconvertex,
+  ]
+
+  const { notFoundCount, notFound } = fillReportTemplatesFromFlatArray(flatValues, templates)
+
+  if (notFoundCount) {
+    console.warn("[obtenerDatosReporteDesdeArray] Códigos no ubicados en plantillas:", notFoundCount)
+    // si quieres verlos:
+    // console.log(notFound)
+  }
+
+  // 3) Retornar igual que tu función actual (sin periodo anterior, a menos que tengas data)
+  return {
+    reporte,
+    periodo,
+    activoscorrientesconvertex,
+    activosnocorrientesconvertex,
+    pasivoscorrientesconvertex,
+    pasivosnocorrientesconvertex,
+    patrimonioconvertex,
+    costosconvertex,
+    ingresosconvertex,
+    otrosingresosconvertex,
+    gastosdeventasconvertex,
+    gastosadministrativosconvertex,
+    gastosfinancierosconvertex,
+    otrosgastosconvertex,
+    resultadosconvertex,
+    operacionesdiscontinuadasconvertex,
+    otrosresultadosintegralconvertex,
+    resultadosparticipacioncontroladoraconvertex,
+    actividadesdeoperacionconvertex,
+    actividadesdeinversionconvertex,
+    actividadesdefinanciamientoconvertex,
+    conciliacionganancianetaconvertex,
+    ecpconvertex,
   }
 }
 

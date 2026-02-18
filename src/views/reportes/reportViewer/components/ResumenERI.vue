@@ -1,6 +1,6 @@
 <script setup>
 import { formatMoney, round2, isZero, toNumber } from "./functions"
-import { computed, ref, defineProps, defineEmits } from "vue"
+import { computed, ref, defineProps, defineEmits, watchEffect } from "vue"
 import { useReportViewerStore } from "@/@store/reportViewer.store"
 
 const props = defineProps({
@@ -9,15 +9,28 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  modelValue: {
+    type: Boolean,
+    default: false,
+  },
   values: {
     type: Array,
     default: () => [],
   },
 })
 
+const emit = defineEmits([
+  "update:showEriResumen",
+  "update:eriCuadre",
+  "update:modelValue",
+])
+
 const store = useReportViewerStore()
 
-const emit = defineEmits(["update:showEriResumen", "update:eriCuadre"])
+const dialog = computed({
+  get: () => props.modelValue,
+  set: v => emit("update:modelValue", v),
+})
 
 const showEriResumen = ref(false)
 
@@ -300,12 +313,22 @@ const eriResumen = computed(() => {
     diferenciaResultadoPeriodoAnterior,
   }
 })
+
+const eriCuadreOk = computed(() =>
+  isZero(eriResumen.value.diferenciaResultadoPeriodoActual) &&
+  isZero(eriResumen.value.diferenciaResultadoPeriodoAnterior),
+)
+
+// 🔥 En tiempo real (aunque el dialog esté cerrado)
+watchEffect(() => {
+  emit("update:eriCuadre", eriCuadreOk.value)
+})
 </script>
 
 <template>
   <!-- Diálogo resumen ERI -->
   <VDialog
-    v-model="showEriResumen"
+    v-model="dialog"
     max-width="960"
     @input="val => {
       emit('update:showEriResumen', val);

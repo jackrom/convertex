@@ -11,13 +11,36 @@ export function useReporteLogic() {
     }
   }
 
+
   function validarReporte(reporte) {
     if (!reporte.periodoId) throw new Error("Reporte sin periodoId")
     if (!reporte.empresaId) throw new Error("Reporte sin empresaId")
   }
 
+  function reportesActivos(reportes) {
+    return reportes.filter(r => !r.deletedat)
+  }
+
+  function marcarDuplicados(reportes) {
+    return reportes.map(r => {
+      const siguiente = r.reporteid + 1
+
+      return {
+        ...r,
+        isDuplicated: reportes.some(
+          q =>
+            q.empresaid === r.empresaid &&
+            q.reporteid === siguiente &&
+            !q.deletedat,
+        ),
+      }
+    })
+  }
+
   return {
     mergeConTxt,
     validarReporte,
+    reportesActivos,
+    marcarDuplicados,
   }
 }

@@ -2,11 +2,11 @@ export default [
   { heading: 'Apps & Pages' },
   {
     title: 'Empresas',
-    to: 'pages-empresas-list',
+    to: { name: 'pages-empresas-list' },
   },
   {
     title: 'Periodos',
-    to: 'pages-periodos-list',
+    to: { name: 'pages-periodos-list' },
   },
   {
     title: 'Reportes',

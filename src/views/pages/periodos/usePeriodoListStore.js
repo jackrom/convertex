@@ -7,16 +7,16 @@ export const usePeriodoListStore = defineStore('PeriodoListStore', {
   actions: {
 
     // 👉 Fetch users data
-    fetchPeriodos(params) { return axios.get(`${environment.apiUrl}/periodosifluc/byuser`, { params }) },
+    fetchPeriodos(params) { return axios.get(`${environment.apiUrl}/v1/convertex/periodosconvertex/by-user`, { params }) },
 
-    fetchPeriodosWithFlowValid(params) { return axios.get(`${environment.apiUrl}/periodosifluc/byuser/flowvalid`, { params }) },
+    fetchPeriodosWithFlowValid(params) { return axios.get(`${environment.apiUrl}/v1/convertex/periodosconvertex/byuser/flowvalid`, { params }) },
 
     // 👉 Add User
     addPeriodo(periodoData) {
       console.log('nuevoPeriodoData: ', periodoData)
 
       return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/periodosifluc`, {
+        axios.post(`${environment.apiUrl}/v1/convertex/periodosconvertex`, {
           periodo: periodoData,
         }).then(response => {
           console.log('ID NUEVO PERIODO CREADO: ', response.data.id)
@@ -30,7 +30,7 @@ export const usePeriodoListStore = defineStore('PeriodoListStore', {
     // 👉 fetch single user
     fetchPeriodo(id) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/periodosifluc/${id}`).then(response => {
+        axios.get(`${environment.apiUrl}/v1/convertex/periodosconvertex/${id}`).then(response => {
           resolve(response)
         }).catch(error => reject(error))
       })
@@ -39,7 +39,7 @@ export const usePeriodoListStore = defineStore('PeriodoListStore', {
     // 👉 fetch single user
     eliminarPeriodoSeleccionado(id) {
       return new Promise((resolve, reject) => {
-        axios.delete(`${environment.apiUrl}/periodosifluc/${id}`).then(response => {
+        axios.delete(`${environment.apiUrl}/v1/convertex/periodosconvertex/${id}`).then(response => {
           resolve(response)
         }).catch(error => reject(error))
       })

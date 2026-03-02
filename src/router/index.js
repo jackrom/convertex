@@ -1,56 +1,90 @@
 import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHistory } from 'vue-router'
-import { isUserLoggedIn } from './utils'
 import routes from '~pages'
-import { canNavigate } from '@layouts/plugins/casl'
+import { getKeycloak, kcHasRole } from '@/plugins/keycloak'
+import api from '@/plugins/axios'
+import { isUserLoggedIn } from "@/router/utils"
+import { canNavigate } from "@layouts/plugins/casl" // <-- FALTABA ESTE IMPORT
 
-const rutaServidor = '/'
+const rootRedirect = { name: 'pages-periodos-list' }
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // We are redirecting to different pages based on role.
-    // NOTE: Role is just for UI purposes. ACL is based on abilities.
-    {
-      path: rutaServidor,
-      redirect: to => {
-        const userData = JSON.parse(sessionStorage.getItem('userData') || '{}')
+    { path: '/', redirect: () => rootRedirect },
 
-        const userRole = userData && userData['roleId'] ? userData['roleId'] : null
-
-        if (userRole === 1 || userRole === 2)
-          return { name: 'dashboards-analytics' }
-        if (userRole > 2)
-          return { name: 'access-control' }
-
-        return { name: 'login', query: to.query }
-      },
-    },
-    {
-      path: '/pages/user-profile',
-      redirect: () => ({ name: 'pages-user-profile-tab', params: { tab: 'profile' } }),
-    },
-    {
-      path: '/pages/account-settings',
-      redirect: () => ({ name: 'pages-account-settings-tab', params: { tab: 'account' } }),
-    },
     ...setupLayouts(routes),
   ],
 })
 
+// Caché simple en memoria para no disparar la API en cada navegación
+let entitlementsCache = null
 
-// Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
-router.beforeEach(to => {
-  const isLoggedIn = isUserLoggedIn()
+async function getEntitlements() {
+  if (!entitlementsCache) {
+    const { data } = await api.get('/v1/users/me/entitlements')
 
-  if (canNavigate(to)) {
-    if (to.meta.redirectIfLoggedIn && isLoggedIn)
-      return '/'
-  } else {
-    if (isLoggedIn)
-      return { name: 'not-authorized' }
-    else
-      return { name: 'login', query: { to: to.name !== 'index' ? to.fullPath : undefined } }
+    console.log('entitlements data: ', data)
+    entitlementsCache = data.apps || []
   }
+
+  return entitlementsCache
+}
+
+router.beforeEach(async (to, from) => {
+  console.log('➡️ beforeEach FROM', from.fullPath, 'TO', to.fullPath)
+
+  const keycloak = getKeycloak()
+
+  console.log('   keycloak.authenticated =', keycloak?.authenticated)
+
+  // Rutas públicas
+  if (to.meta?.public) {
+    console.log('   ✅ meta.public => permitiendo')
+
+    return true
+  }
+
+  // No autenticado → login
+  if (!keycloak?.authenticated) {
+    console.log('   ❌ no autenticado → login()')
+    await keycloak.login({ redirectUri: window.location.href })
+
+    return false
+  }
+
+  // Rol
+  const needRole = to.meta?.needRole
+  if (needRole && !kcHasRole(needRole)) {
+    console.log('   ❌ falta rol', needRole, '→ not-authorized')
+
+    return { name: 'not-authorized' }
+  }
+
+  // Convertex activo
+  if (to.meta?.requiresConvertex) {
+    try {
+      const apps = await getEntitlements()
+      const convertex = apps.find(a => a.key === 'convertex')
+
+      console.log('   requiresConvertex → convertex =', convertex)
+
+      if (!convertex || !convertex.isActive) {
+        console.log('   ❌ convertex inactivo → not-authorized')
+
+        return { name: 'not-authorized' }
+      }
+    } catch (err) {
+      console.error('   💥 error entitlements', err)
+
+      return { name: 'error-entitlements' }
+    }
+  }
+
+  console.log('   ✅ beforeEach OK')
+
+  return true
 })
+
+
 export default router

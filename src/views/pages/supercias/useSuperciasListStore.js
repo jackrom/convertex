@@ -8,20 +8,20 @@ const reportStore = useReportStore()
 export const useSuperciasListStore = defineStore('SuperciasListStore', {
   actions: {
     // 👉 Fetch users data
-    fetchReportesIfluc(params) { return axios.get(`${environment.apiUrl}/reportesifluc/byuser`, { params }) },
+    fetchReportesConvertex(params) { return axios.get(`${environment.apiUrl}/reportesifluc/byuser`, { params }) },
 
     // 👉 Add Reporte
     addReporteSupercias(periodoData) {
 
       return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/reportesifluc`, {
+        axios.post(`${environment.apiUrl}/v1/convertex/reportesconvertex/reportesifluc`, {
           reporte: periodoData.reporte,
         })
           .then(response => {
 
             const reporteId = (response.data && response.data.reporteId) ? response.data.reporteId : JSON.parse(localStorage.getItem('reporteId'))
             console.log("reporteId", reporteId)
-            const userId = periodoData.activoscorrientesifluc?.userId || JSON.parse(sessionStorage.getItem('userData')).id
+            const userId = periodoData.activoscorrientesifluc?.userId || JSON.parse(sessionStorage.getItem('sub'))
             const empresaId = periodoData.activoscorrientesifluc?.empresaId || JSON.parse(sessionStorage.getItem('empresanueva'))
             const periodoId = periodoData.activoscorrientesifluc?.periodoId || JSON.parse(sessionStorage.getItem('periodonuevo'))
             const promises = []
@@ -118,14 +118,14 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
 
 
     // 👉 fetch single reporte actual
-    fetchReporteIflucActual(reporte) {
+    fetchReporteConvertexActual(reporte) {
       console.log(reporte)
       localStorage.setItem('reporteId', JSON.stringify(reporte['reporteId']))
 
       const reportStore = useReportStore()
 
       return axios
-        .get(`${environment.apiUrl}/reportesifluc/actualnew/${reporte['reporteId']}`)
+        .get(`${environment.apiUrl}/v1/convertex/reportesconvertex/actualnew/${reporte['reporteId']}`)
         .then(response => {
           console.log(response)
           response.data.empresaId = reporte['empresaId']
@@ -149,11 +149,11 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
         })
     },
 
-    fetchReporteIflucAnterior(reporte) {
+    fetchReporteConvertexAnterior(reporte) {
       const reportStore = useReportStore()
 
       return axios
-        .get(`${environment.apiUrl}/reportesifluc/anteriornew/${reporte['reporteId']}`)
+        .get(`${environment.apiUrl}/v1/convertex/reportesconvertex/anteriornew/${reporte['reporteId']}`)
         .then(response => {
           response.data.empresaId = reporte['empresaId']
           response.data.nombre_reporte = "ifluc"
@@ -178,15 +178,15 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
     // 👉 delete single reporte
     eliminarReporteSeleccionado(id) {
       return new Promise((resolve, reject) => {
-        axios.delete(`${environment.apiUrl}/reportesifluc/${id}`).then(response => {
+        axios.delete(`${environment.apiUrl}/v1/convertex/reportesconvertex/${id}`).then(response => {
           resolve(response)
         }).catch(error => reject(error))
       })
     },
 
-    fetchReporteIflucByPeriodoActual(periodoId) {
+    fetchReporteConvertexByPeriodoActual(periodoId) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/reportesIfluc/actual/ByPeriodo/${periodoId}`).then(response => {
+        axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/actual/ByPeriodo/${periodoId}`).then(response => {
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -198,7 +198,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
       console.log("reporteData", reporteData)
 
       return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/turbonotasfc`, { reporte: reporteData }).then(response => {
+        axios.post(`${environment.apiUrl}/v1/convertex/reportesconvertex/turbonotasfc`, { reporte: reporteData }).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -207,7 +207,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
 
     getReporteTurboNotas(reporteId) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/turbonotasfc/${reporteId}`).then(response => {
+        axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/turbonotasfc/${reporteId}`).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -218,7 +218,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
       reporteData.reporteId = reporteData.entidad.reporteId
 
       return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/informesocietariofc`, { reporte: reporteData }).then(response => {
+        axios.post(`${environment.apiUrl}/v1/convertex/reportesconvertex/informesocietariofc`, { reporte: reporteData }).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -227,19 +227,19 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
 
     getReporteInformeSocietario(reporteId) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/informesocietariofc/${reporteId}`).then(response => {
+        axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/informesocietariofc/${reporteId}`).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
       })
     },
 
-    updateReporteIfluc(reporteData) {
+    updateReporteConvertex(reporteData) {
       reporteData.reporteId = JSON.parse(localStorage.getItem('reporteId'))
       console.log("reporteData: ", reporteData)
 
       return new Promise((resolve, reject) => {
-        axios.put(`${environment.apiUrl}/reportesIfluc`, { reporte: reporteData }).then(response => {
+        axios.put(`${environment.apiUrl}/v1/convertex/reportesconvertex/reportesConvertex`, { reporte: reporteData }).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -252,7 +252,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
       delete reporteData.updatedAt
 
       return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/actividadesdefinanciamientofdifluc`, { reporte: reporteData }).then(response => {
+        axios.post(`${environment.apiUrl}/v1/convertex/reportesconvertex/actividadesdefinanciamientofdifluc`, { reporte: reporteData }).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -261,7 +261,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
 
     getReporteDynamicFlowActividadesDeFinanciamiento(reporteId) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/actividadesdefinanciamientofdifluc/${reporteId}`).then(response => {
+        axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/actividadesdefinanciamientofdifluc/${reporteId}`).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -275,7 +275,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
       delete reporteData.updatedAt
 
       return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/actividadesdeoperacionnfdifluc`, { reporte: reporteData }).then(response => {
+        axios.post(`${environment.apiUrl}/v1/convertex/reportesconvertex/actividadesdeoperacionnfdifluc`, { reporte: reporteData }).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -284,7 +284,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
 
     getReporteDynamicFlowActividadesDeOperacion(reporteId) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/actividadesdeoperacionnfdifluc/${reporteId}`).then(response => {
+        axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/actividadesdeoperacionnfdifluc/${reporteId}`).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -297,7 +297,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
       delete reporteData.updatedAt
 
       return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/actividadesdeinversionfdifluc`, { reporte: reporteData }).then(response => {
+        axios.post(`${environment.apiUrl}/v1/convertex/reportesconvertex/actividadesdeinversionfdifluc`, { reporte: reporteData }).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -306,7 +306,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
 
     getReporteDynamicFlowActividadesDeInversion(reporteId) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/actividadesdeinversionfdifluc/${reporteId}`).then(response => {
+        axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/actividadesdeinversionfdifluc/${reporteId}`).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -319,7 +319,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
       delete reporteData.updatedAt
 
       return new Promise((resolve, reject) => {
-        axios.post(`${environment.apiUrl}/conciliacionfdifluc`, { reporte: reporteData }).then(response => {
+        axios.post(`${environment.apiUrl}/v1/convertex/reportesconvertex/conciliacionfdifluc`, { reporte: reporteData }).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))
@@ -328,7 +328,7 @@ export const useSuperciasListStore = defineStore('SuperciasListStore', {
 
     getReporteDynamicFlowConciliacion(reporteId) {
       return new Promise((resolve, reject) => {
-        axios.get(`${environment.apiUrl}/conciliacionfdifluc/${reporteId}`).then(response => {
+        axios.get(`${environment.apiUrl}/v1/convertex/reportesconvertex/conciliacionfdifluc/${reporteId}`).then(response => {
           resolve(response)
         })
           .catch(error => reject(error))

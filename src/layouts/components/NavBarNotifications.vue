@@ -1,101 +1,94 @@
 <script setup>
 import Notifications from '@core/components/Notifications.vue'
-import { ref, watchEffect, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useEmpresaListStore } from "@/views/pages/empresas/useEmpresaListStore"
 
-// Images
+// (Tus imports de imágenes se pueden quedar igual)
 import avatar3 from '@images/avatars/avatar-3.png'
 import avatar4 from '@images/avatars/avatar-4.png'
 import avatar5 from '@images/avatars/avatar-5.png'
 import paypal from '@images/svg/paypal.svg'
 
-const notifications = [
-  {
-    img: avatar4,
-    title: 'Congratulation Flora! 🎉',
-    subtitle: 'Won the monthly best seller badge',
-    time: 'Today',
-  },
-  {
-    text: 'Tom Holland',
-    title: 'New user registered.',
-    subtitle: '5 hours ago',
-    time: 'Yesterday',
-  },
-  {
-    img: avatar5,
-    title: 'New message received 👋🏻',
-    subtitle: 'You have 10 unread messages',
-    time: '11 Aug',
-  },
-  {
-    img: paypal,
-    title: 'Paypal',
-    subtitle: 'Received Payment',
-    time: '25 May',
-    color: 'error',
-  },
-  {
-    img: avatar3,
-    title: 'Received Order 📦',
-    subtitle: 'New order received from john',
-    time: '19 Mar',
-  },
+// (Si no usas este array, lo puedes borrar)
+const notificationsMock = [
+  { img: avatar4, title: 'Congratulation Flora! 🎉', subtitle: 'Won the monthly best seller badge', time: 'Today' },
+  { text: 'Tom Holland', title: 'New user registered.', subtitle: '5 hours ago', time: 'Yesterday' },
+
+  // ...
 ]
 
+// --- State & store ---
 const empresasEliminadas = ref([])
-const empresasEliminadasListStore = useEmpresaListStore()
-const totalEmpresasEliminadasIfluc = ref(0)
+const empresaListStore = useEmpresaListStore()
+
+const totalEmpresasEliminadasConvertex = ref(0)
 const currentPage = ref(1)
 const totalPage = ref(1)
-const searchQuery = ref('')
-const selectedRole = ref()
-const selectedPlan = ref()
-const selectedStatus = ref()
 const rowPerPage = ref(10)
 
-let userId
-try {
-  userId = JSON.parse(sessionStorage.getItem('userData')).id
-} catch (error) {
-  console.error("Error al obtener userData del sessionStorage:", error)
+// ✅ userId directamente del sessionStorage, sin JSON.parse
+const userId = ref(null)
+const sub = sessionStorage.getItem('sub')
+
+userId.value = sub || null
+
+// --- Fetch ---
+const fetchEmpresasConvertex = async () => {
+  if (!userId.value) {
+    console.warn('No hay sub en sessionStorage, no se puede cargar empresas eliminadas')
+
+    return
+  }
+
+  try {
+    const response = await empresaListStore.fetchEmpresasEliminadasConvertex({
+      user: userId.value,
+      origen: 'convertex',
+    })
+
+    const data = response?.data || response || {}
+
+    empresasEliminadas.value = data.empresas || []
+    totalPage.value = data.totalPage || 1
+    totalEmpresasEliminadasConvertex.value =
+      data.totalEmpresasEliminadasConvertex || empresasEliminadas.value.length
+  } catch (error) {
+    // 👉 Ignorar abortos/timeout para no ensuciar consola
+    if (error.code === 'ECONNABORTED' || error.message === 'Request aborted') {
+      console.warn('Request de empresas eliminadas abortado (redirect / recarga).')
+
+      return
+    }
+
+    console.error('Error al cargar empresas eliminadas de Convertex:', error)
+  }
 }
 
-const fetchEmpresasIfluc = () => {
-  empresasEliminadasListStore.fetchEmpresasEliminadasIfluc({
-    q: searchQuery.value,
-    status: selectedStatus.value,
-    plan: selectedPlan.value,
-    role: selectedRole.value,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: userId,
-    origen: 'ifluc',
-  }).then(response => {
-    // console.log(response)
-    empresasEliminadas.value = response.data.empresas
-    totalPage.value = response.data.totalPage
-    totalEmpresasEliminadasIfluc.value = response.data.totalEmpresasEliminadasIfluc
 
-    // console.log("totalEmpresasEliminadasIfluc: ", totalEmpresasEliminadasIfluc.value)
-  }).catch(error => {
-    console.error(error)
-  })
-}
+// Carga inicial
+watchEffect(fetchEmpresasConvertex())
 
-watchEffect(fetchEmpresasIfluc)
-
-// 👉 watching current page
+// Si cambias de página, recargas
 watchEffect(() => {
   if (currentPage.value > totalPage.value)
     currentPage.value = totalPage.value
+
+  fetchEmpresasConvertex()
 })
 
+// Texto de paginación (si luego lo quieres usar en el template)
 const paginationData = computed(() => {
-  const firstIndex = empresasEliminadas.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = empresasEliminadas.value.length + (currentPage.value - 1) * rowPerPage.value
+  const total = totalEmpresasEliminadasConvertex.value || 0
+  if (!total) return 'No hay registros'
 
-  return `Mostrando ${ firstIndex } a ${ lastIndex } de ${ totalEmpresasEliminadasIfluc.value } registros`
+  const firstIndex = (currentPage.value - 1) * rowPerPage.value + 1
+
+  const lastIndex = Math.min(
+    firstIndex + empresasEliminadas.value.length - 1,
+    total,
+  )
+
+  return `Mostrando ${ firstIndex } a ${ lastIndex } de ${ total } registros`
 })
 </script>
 

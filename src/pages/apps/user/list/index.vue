@@ -73,12 +73,12 @@ const rowPerPage = ref(10)
 
 let userId
 try {
-  userId = JSON.parse(sessionStorage.getItem('userData')).id
+  userId = JSON.parse(sessionStorage.getItem('sub'))
 } catch (error) {
   console.error("Error al obtener userData del sessionStorage:", error)
 }
 
-const fetchEmpresasIfluc = () => {
+const fetchEmpresasConvertex = () => {
   empresasEliminadasListStore.fetchEmpresasEliminadasIfluc({
     q: searchQuery.value,
     status: selectedStatus.value,
@@ -87,7 +87,7 @@ const fetchEmpresasIfluc = () => {
     perPage: rowPerPage.value,
     currentPage: currentPage.value,
     user: userId,
-    origen: 'ifluc',
+    origen: 'convertex',
   }).then(response => {
     console.log(response)
     empresasEliminadas.value = response.data.empresas
@@ -100,7 +100,7 @@ const fetchEmpresasIfluc = () => {
   })
 }
 
-watchEffect(fetchEmpresasIfluc)
+watchEffect(fetchEmpresasConvertex)
 
 // 👉 watching current page
 watchEffect(() => {

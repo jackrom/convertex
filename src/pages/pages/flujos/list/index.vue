@@ -36,8 +36,8 @@ const fetchEmpresas = () => {
     role: selectedRole.value,
     perPage: rowPerPage.value,
     currentPage: currentPage.value,
-    user: JSON.parse(sessionStorage.getItem('userData')).id,
-    origen: "ifluc",
+    user: JSON.parse(sessionStorage.getItem('sub')),
+    origen: "convertex",
   }).then(response => {
     empresas.value = response.data.empresas
     totalPage.value = response.data.totalPage

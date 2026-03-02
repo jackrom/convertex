@@ -2,6 +2,7 @@ export default [
   {
     title: 'Recomendaciones',
     icon: { icon: 'tabler-smart-home' },
-    to: 'dashboards-analytics',
+    to: { name: 'dashboards-analytics' },   // 👈 usar name
+    path: '/pages/analytics',
   },
 ]

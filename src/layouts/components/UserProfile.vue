@@ -1,26 +1,85 @@
 <script setup>
+import { computed } from 'vue'
 import { initialAbility } from '@/plugins/casl/ability'
 import { useAppAbility } from '@/plugins/casl/useAppAbility'
+import { getKeycloak } from '@/plugins/keycloak'
 
 const router = useRouter()
 const ability = useAppAbility()
-const userData = JSON.parse(sessionStorage.getItem('userData') || 'null')
 
-const logout = () => {
+const rawUserData = sessionStorage.getItem('userData')
+const userData = rawUserData ? JSON.parse(rawUserData) : null
 
-  // Remove "userData" from localStorage
+// ─────────────────────────────
+// userData seguro
+// ─────────────────────────────
+const userName = computed(() => {
+  // intenta tomar el nombre “bonito” del perfil,
+  // si no, el username, y como último recurso el valor guardado en sessionStorage
+  return (
+    sessionStorage.getItem('name') ||
+    userData?.profile?.name ||
+    userData?.username ||
+    'Usuario'
+  )
+})
+
+const userRoleLabel = computed(() => 'Usuario')
+
+const openKeycloakProfile = async () => {
+  const kc = getKeycloak()
+
+  if (!kc) {
+    console.error('Keycloak no inicializado')
+
+    return
+  }
+
+  if (typeof kc.accountManagement !== 'function') {
+    console.error('kc.accountManagement no es una función. Objeto kc:', kc)
+
+    return
+  }
+
+  try {
+    // esto redirige al “Account Console” de Keycloak
+    await kc.accountManagement()
+  } catch (err) {
+    console.error('Error al abrir el perfil de Keycloak:', err)
+  }
+}
+
+// ─────────────────────────────
+// Logout con Keycloak
+// ─────────────────────────────
+const logout = async () => {
+  // 1) Limpiar storage del frontend
   sessionStorage.removeItem('userData')
-
-  // Remove "accessToken" from localStorage
   sessionStorage.removeItem('accessToken')
-  router.push('/login').then(() => {
+  sessionStorage.removeItem('userAbilities')
+  localStorage.removeItem('userAbilities') // por si acaso
 
-    // Remove "userAbilities" from localStorage
-    sessionStorage.removeItem('userAbilities')
+  // 2) Resetear CASL
+  ability.update(initialAbility)
 
-    // Reset ability to initial ability
-    ability.update(initialAbility)
-  })
+  // 3) Logout en Keycloak
+  const kc = getKeycloak && getKeycloak()
+
+  if (kc) {
+    try {
+      await kc.logout({
+        redirectUri: window.location.origin, // o `${window.location.origin}/login`
+      })
+
+      // Si todo va bien, Keycloak redirige y no seguimos ejecutando código aquí
+      return
+    } catch (err) {
+      console.error('Error en logout de Keycloak', err)
+    }
+  }
+
+  // 4) Fallback: si no hay kc o falló el logout, volvemos al login del front
+  router.push('/login')
 }
 </script>
 
@@ -47,8 +106,9 @@ const logout = () => {
         icon="tabler-user"
       />
 
-      <!-- SECTION Menu -->
+      <!-- Menu solo si tenemos userData -->
       <VMenu
+        v-if="userData"
         activator="parent"
         width="230"
         location="bottom end"
@@ -84,15 +144,18 @@ const logout = () => {
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              {{ userData.detalles[0].name }}
+              {{ userName }}
             </VListItemTitle>
-            <VListItemSubtitle>{{ (userData.roleId === 2) ? "Usuario" : "Admin" }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ userRoleLabel }}</VListItemSubtitle>
           </VListItem>
 
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem :to="{ name: 'apps-user-view-id', params: { id: userData.id } }">
+          <VListItem
+            link
+            @click="openKeycloakProfile"
+          >
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -101,7 +164,7 @@ const logout = () => {
               />
             </template>
 
-            <VListItemTitle>Profile</VListItemTitle>
+            <VListItemTitle>Perfil</VListItemTitle>
           </VListItem>
 
           <!-- 👉 Settings -->
@@ -143,7 +206,6 @@ const logout = () => {
             <VListItemTitle>FAQ</VListItemTitle>
           </VListItem>
 
-          <!-- Divider -->
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
@@ -163,7 +225,6 @@ const logout = () => {
           </VListItem>
         </VList>
       </VMenu>
-      <!-- !SECTION -->
     </VAvatar>
   </VBadge>
 </template>

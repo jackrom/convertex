@@ -48,6 +48,8 @@ const rowPerPage = ref(1000)
 const route = useRoute()
 const router = useRouter()
 
+const userId = sessionStorage.getItem('sub') || null
+
 // 👉 drawer close
 const closeNavigationDrawer = () => {
   emit('update:isDrawerOpen', false)
@@ -58,32 +60,59 @@ const closeNavigationDrawer = () => {
 }
 
 const fetchEmpresas = () => {
-  empresaListStore.fetchEmpresas({
-    q: searchQuery.value,
-    status: null,
-    plan: null,
-    role: null,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: JSON.parse(sessionStorage.getItem('userData')).id,
-    origen: "ifluc",
-  }).then(response => {
+  empresaListStore.fetchEmpresas({ user: userId })
+    .then(response => {
 
-    const companies = response.data.empresas
-    const e = []
+      console.log(response)
 
-    companies.forEach(obj => {
-      let compania = { title: obj.nombre, value: obj.ruc, periodos: obj.periodosifluc }
-      e.push(compania)
+      const companies = response.data.data
+      const e = []
+
+      companies.forEach(obj => {
+        let compania = { title: obj.nombre, value: obj.ruc, periodos: obj.periodosifluc }
+        e.push(compania)
+      })
+      empresas.value = e
+
+    }).catch(error => {
+      console.error(error)
     })
-    empresas.value = e
-
-  }).catch(error => {
-    console.error(error)
-  })
 }
 
-watchEffect(fetchEmpresas)
+// watchEffect(fetchEmpresas)
+
+// 👉 Fetching periodos
+// 👉 Fetching periodos
+const fetchPeriodos = () => {
+  periodoListStore.fetchPeriodos({
+    user: userId,
+  })
+    .then(response => {
+      console.log('response periodos: ', response)
+
+      const { periodos: lista, totalPage: tp, totalPeriodos: tot } = response.data
+
+      // array de periodos
+      periodos.value = Array.isArray(lista) ? lista : []
+
+      // paginación (aunque aquí no la uses mucho)
+      totalPage.value = tp || 1
+
+      // calcular años disponibles
+      if (Array.isArray(lista)) {
+        const periodosOcupados = lista.map(obj => obj.periodo)
+
+        anios.value = aniosposibles.value.filter(anio => !periodosOcupados.includes(anio))
+      } else {
+        anios.value = [...aniosposibles.value]
+      }
+    })
+    .catch(error => {
+      console.error('Error fetchPeriodos (AddNewPeriodo.vue):', error)
+    })
+}
+
+// watchEffect(fetchPeriodos)
 
 // 👉 watching current page
 watchEffect(() => {
@@ -91,33 +120,10 @@ watchEffect(() => {
     currentPage.value = totalPage.value
 })
 
-// 👉 Fetching periodos
-const fetchPeriodos = () => {
-  periodoListStore.fetchPeriodos({
-    q: searchQuery.value,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: JSON.parse(sessionStorage.getItem('userData')).id,
-    origen: 'ifluc',
-  }).then(response => {
-    console.log("response periodos: ", response)
-    periodos.value = response.data.periodos
-    totalPage.value = response.data.totalPage
-
-    // Verifica si la propiedad empresas existe y es un array
-    if (Array.isArray(response.data.periodos)) {
-      const periodosOcupados = response.data.periodos.map(obj => obj.periodo)
-
-      anios.value = aniosposibles.value.filter(anio => !periodosOcupados.includes(anio))
-    } else {
-      anios.value = [...aniosposibles.value]
-    }
-  }).catch(error => {
-    console.error(error)
-  })
-}
-
-watchEffect(fetchPeriodos)
+onMounted(() => {
+  fetchEmpresas()
+  fetchPeriodos()
+})
 
 const reporteManagement = reporteId => {
   console.log('reporteId: ', reporteId)

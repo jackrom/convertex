@@ -25,7 +25,7 @@ import ECP_DATA_JSON from "@/assets/jsondata/ecp.json"
 import { useReportStore } from "@/@store/reportStore"
 
 
-const { jsPDF } = window.jspdf
+import { jsPDF } from "jspdf"
 
 export const descargarExcel = async () => {
   const reportStore = useReportStore()

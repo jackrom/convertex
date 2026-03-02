@@ -15,81 +15,94 @@ const currentPage = ref(1)
 const totalPage = ref(1)
 const totalEmpresas = ref(0)
 const empresas = ref([])
-const userData = JSON.parse(sessionStorage.getItem('userData') || '{}')
-const aplicaciones = ref(userData ? userData.aplicaciones : [])
 const storage = ref(0)
 const limiteexcedido = ref(false)
 const sePermiteEliminar = ref(true)
 
 const empresasEliminadas = ref([])
 const empresasEliminadasListStore = useEmpresaListStore()
-const totalEmpresasEliminadasIfluc = ref(0)
+const totalEmpresasEliminadasConvertex = ref(0)
 
 const isAddNewEmpresaDrawerVisible = ref(false)
 
-let userId
+let userData = null
 try {
-  userId = JSON.parse(sessionStorage.getItem('userData')).id
-} catch (error) {
-  console.error("Error al obtener userData del sessionStorage:", error)
+  const raw = sessionStorage.getItem('userData')
+
+  userData = raw ? JSON.parse(raw) : null
+} catch (err) {
+  console.error('No se pudo parsear userData de sessionStorage:', err)
+  sessionStorage.removeItem('userData')
+  userData = null
 }
 
+console.log('userData', userData)
+
+const aplicaciones = ref(userData?.applications ?? [])
+
+// ───────────────────────────────
+// sub de Keycloak (es string, NO JSON)
+// ───────────────────────────────
+const userId = sessionStorage.getItem('sub') || null
+
+console.log('userId', userId)
+
 if (aplicaciones.value && aplicaciones.value.length > 0) {
+  console.log(aplicaciones.value)
   aplicaciones.value.forEach(app => {
-    if (app.aplicacionId === 4) {
+    if (app.application?.app_key === 'convertex') {
       storage.value = app.storage
     }
   })
 }
 
 
-// 👉 Fetching empresas
 const fetchEmpresas = () => {
-  empresaListStore.fetchEmpresas({
+  empresaListStore.fetchEmpresas({ user: userId })
+    .then(response => {
+      console.log('respuesta empresas', response.data)
+
+      const { data, meta } = response.data   // 👈 desestructuramos
+
+      empresas.value = data                  // 👈 aquí va el array
+      totalEmpresas.value = data.length
+      totalPage.value = Math.ceil(data.length / 10)
+
+      if (totalEmpresas.value < storage.value) {
+        limiteexcedido.value = false
+      } else {
+        limiteexcedido.value = true
+        sePermiteEliminar.value = false
+      }
+    })
+    .catch(error => {
+      console.error(error)
+    })
+}
+
+
+const fetchEmpresasEliminadasConvertex = () => {
+  empresasEliminadasListStore.fetchEmpresasEliminadasConvertex({
     q: searchQuery.value,
     status: selectedStatus.value,
     plan: selectedPlan.value,
     role: selectedRole.value,
     perPage: rowPerPage.value,
     currentPage: currentPage.value,
-    user: JSON.parse(sessionStorage.getItem('userData')).id,
-    origen: "ifluc",
-  }).then(response => {
-    console.log(response.data.empresas)
-    empresas.value = response.data.empresas
-    totalPage.value = 1
-    totalEmpresas.value = response.data.empresas.length
-
-    if (totalEmpresas.value < storage.value) {
-      limiteexcedido.value = false
-    } else {
-      limiteexcedido.value = true
-      sePermiteEliminar.value = false
-    }
-  }).catch(error => {
-    console.error(error)
+    user: userId,          // 👈 aquí también
+    origen: 'convertex',
   })
+    .then(response => {
+      empresasEliminadas.value = response.data
+      totalEmpresasEliminadasConvertex.value = response.data.totalEmpresasEliminadasConvertex
+    })
+    .catch(error => {
+      console.error(error)
+    })
 }
 
-const fetchEmpresasEliminadasIfluc = () => {
-  empresasEliminadasListStore.fetchEmpresasEliminadasIfluc({
-    q: searchQuery.value,
-    status: selectedStatus.value,
-    plan: selectedPlan.value,
-    role: selectedRole.value,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: userId,
-    origen: 'ifluc',
-  }).then(response => {
-    empresasEliminadas.value = response.data.empresas
-    totalEmpresasEliminadasIfluc.value = response.data.totalEmpresasEliminadasIfluc
-  }).catch(error => {
-    console.error(error)
-  })
-}
 
-watchEffect(fetchEmpresas)
+// watchEffect(fetchEmpresas)
 
 // 👉 watching current page
 watchEffect(() => {
@@ -97,7 +110,13 @@ watchEffect(() => {
     currentPage.value = totalPage.value
 })
 
-watchEffect(fetchEmpresasEliminadasIfluc)
+// watchEffect(fetchEmpresasEliminadasConvertex)
+
+onMounted(() => {
+  fetchEmpresas()
+  fetchEmpresasEliminadasConvertex()
+})
+
 
 // 👉 search filters
 const roles = [
@@ -190,64 +209,50 @@ if (limiteexcedido.value) {
 if (storage.value === 1) {
   sePermiteEliminar.value = false
 }
-if (storage.value === 3 && totalEmpresasEliminadasIfluc.value >= 3) {
+if (storage.value === 3 && totalEmpresasEliminadasConvertex.value >= 3) {
   sePermiteEliminar.value = false
 }
-if (storage.value === 10 && totalEmpresasEliminadasIfluc.value >= 5) {
+if (storage.value === 10 && totalEmpresasEliminadasConvertex.value >= 5) {
   sePermiteEliminar.value = false
 }
 
 
-let aplicacion = aplicaciones.value.find(app => app.aplicacionId === 4)
-const fechaCaducidad = aplicacion.fechapago
-const fecha = new Date(fechaCaducidad)
-const dia = fecha.getDate()
-let mes = (fecha.getMonth() + 1) < 10 ? '0' + (fecha.getMonth() + 1) : (fecha.getMonth() + 1)
-const anio = fecha.getFullYear()
+let aplicacion = aplicaciones.value.find(app => app.aplicacionId === 4 || app.aplicacionid === 4)
 
-switch (mes) {
-case '01':
-  mes = 'Enero'
-  break
-case '02':
-  mes = 'Febrero'
-  break
-case '03':
-  mes = 'Marzo'
-  break
-case '04':
-  mes = 'Abril'
-  break
-case '05':
-  mes = 'Mayo'
-  break
-case '06':
-  mes = 'Junio'
-  break
-case '07':
-  mes = 'Julio'
-  break
-case '08':
-  mes = 'Agosto'
-  break
-case '09':
-  mes = 'Septiembre'
-  break
-case '10':
-  mes = 'Octubre'
-  break
-case '11':
-  mes = 'Noviembre'
-  break
-case '12':
-  mes = 'Diciembre'
-  break
+let fechaProximoPago = ''
+let diasFaltantes = 0
+
+if (aplicacion && aplicacion.fechapago) {
+  const fechaCaducidad = aplicacion.fechapago
+  const fecha = new Date(fechaCaducidad)
+  const dia = fecha.getDate()
+  let mes = fecha.getMonth() + 1
+  const anio = fecha.getFullYear()
+
+  mes = mes < 10 ? '0' + mes : '' + mes
+
+  switch (mes) {
+  case '01': mes = 'Enero'; break
+  case '02': mes = 'Febrero'; break
+  case '03': mes = 'Marzo'; break
+  case '04': mes = 'Abril'; break
+  case '05': mes = 'Mayo'; break
+  case '06': mes = 'Junio'; break
+  case '07': mes = 'Julio'; break
+  case '08': mes = 'Agosto'; break
+  case '09': mes = 'Septiembre'; break
+  case '10': mes = 'Octubre'; break
+  case '11': mes = 'Noviembre'; break
+  case '12': mes = 'Diciembre'; break
+  }
+
+  fechaProximoPago = `${dia}-${mes}-${anio}`
+
+  const fechaactual = new Date()
+  const unDia = 24 * 60 * 60 * 1000
+
+  diasFaltantes = Math.ceil((fecha - fechaactual) / unDia)
 }
-
-const fechaProximoPago = dia + '-' + mes + '-' + anio
-const fechaactual = new Date()
-const unDia = 24 * 60 * 60 * 1000 // Milisegundos en un día
-const diasFaltantes = Math.ceil((fecha - fechaactual) / unDia)
 </script>
 
 <template>
@@ -259,8 +264,10 @@ const diasFaltantes = Math.ceil((fecha - fechaactual) / unDia)
         >
           <template v-slot:subtitle>
             <span style="color: #477130;">Usted puede crear hasta: {{ storage }} empresas</span>
-            <p>Su acceso a iFluc finaliza el: {{ fechaProximoPago }}<br/>
-              Le quedan {{diasFaltantes}} días para que renueve su licencia</p>
+            <p v-if="fechaProximoPago">
+              Su acceso a Convertex finaliza el: {{ fechaProximoPago }}<br>
+              Le quedan {{ diasFaltantes }} días para que renueve su licencia
+            </p>
           </template>
           <VCardText class="d-flex flex-wrap py-4 gap-4">
             <div
@@ -479,4 +486,11 @@ const diasFaltantes = Math.ceil((fecha - fechaactual) / unDia)
   color: #477130;
 }
 </style>
--->
+
+
+
+<route lang="yaml">
+meta:
+layout: vertical-nav
+public: true    # 👈 TEMPORAL
+</route>

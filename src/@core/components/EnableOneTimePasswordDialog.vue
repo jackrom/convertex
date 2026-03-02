@@ -1,5 +1,6 @@
 <script setup>
 import { usePeriodoListStore } from "@/views/pages/periodos/usePeriodoListStore"
+import DialogCloseBtn from "@core/components/DialogCloseBtn.vue"
 
 const props = defineProps({
   mobileNumber: {

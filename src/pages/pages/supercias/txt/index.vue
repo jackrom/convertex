@@ -789,8 +789,8 @@ const fetchEmpresas = () => {
     role: null,
     perPage: rowPerPage.value,
     currentPage: currentPage.value,
-    user: JSON.parse(sessionStorage.getItem('userData')).id,
-    origen: "ifluc",
+    user: JSON.parse(sessionStorage.getItem('sub')),
+    origen: "convertex",
   }).then(response => {
     companies.value = response.data.empresas
     let empresaseleccionada = reportStore.reportData['empresaId']

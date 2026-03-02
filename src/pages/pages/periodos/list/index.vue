@@ -8,7 +8,6 @@ import ConfirmDuplicatePeriodoDialog from "@core/components/ConfirmDuplicatePeri
 import { ref } from "vue"
 
 const router = useRouter()
-const route = useRoute()
 
 const periodoListStore = usePeriodoListStore()
 const empresaListStore = useEmpresaListStore()
@@ -30,75 +29,91 @@ const counter = ref([])
 const reporteActualDelPeriodoAnteriorADuplicar = ref()
 const indiceDuplicarPeriodo = ref()
 
-const fetchEmpresas = () => {
-  empresaListStore.fetchEmpresas({
-    q: searchQuery.value,
-    status: selectedStatus.value,
-    plan: selectedPlan.value,
-    role: selectedRole.value,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: JSON.parse(sessionStorage.getItem('userData')).id,
-    origen: "ifluc",
-  }).then(response => {
-    empresas.value = response.data.empresas
-    totalPage.value = response.data.totalPage
-    totalEmpresas.value = response.data.totalEmpresas
+let userData = null
+try {
+  const raw = sessionStorage.getItem('userData')
 
-  }).catch(error => {
-    console.error(error)
-  })
+  userData = raw ? JSON.parse(raw) : null
+} catch (err) {
+  console.error('No se pudo parsear userData de sessionStorage:', err)
+  sessionStorage.removeItem('userData')
+  userData = null
 }
 
-watchEffect(fetchEmpresas)
+// sub: NO se parsea, es un string plano
+const userId = sessionStorage.getItem('sub') || null
+
+const fetchEmpresas = () => {
+  empresaListStore.fetchEmpresas({ user: userId })
+    .then(response => {
+      console.log('respuesta empresas', response.data)
+
+      const { data, meta } = response.data   // 👈 desestructuramos
+
+      empresas.value = data                  // 👈 aquí va el array
+      totalEmpresas.value = data.length
+      totalPage.value = Math.ceil(data.length / 10)
+    })
+    .catch(error => {
+      console.error(error)
+    })
+}
+
+// watchEffect(fetchEmpresas)
 
 // 👉 Fetching periodos
 const fetchPeriodos = () => {
   periodoListStore.fetchPeriodos({
-    q: searchQuery.value,
-    status: selectedStatus.value,
-    plan: selectedPlan.value,
-    role: selectedRole.value,
-    perPage: rowPerPage.value,
-    currentPage: currentPage.value,
-    user: JSON.parse(sessionStorage.getItem('userData')).id,
-    origen: 'ifluc',
-  }).then(response => {
-    console.log(response.data.periodos)
-    periodos.value = response.data.periodos
-    totalPage.value = 1
-    totalPeriodos.value = response.data.periodos.length
-
-    // eslint-disable-next-line sonarjs/no-unused-collection
-    let periodosRevisados = []
-
-    // Determinar si hay duplicados
-    periodos.value.forEach(periodoExterno => {
-      const periodoSiguiente = periodoExterno.periodo + 1
-
-      periodoExterno.isDuplicated = periodos.value.some(periodoInterno => (periodoInterno.periodo === periodoSiguiente) && (periodoInterno.empresaId === periodoExterno.empresaId))
-    })
-
-  }).catch(error => {
-    console.error(error)
+    user: userId,
+    // si quieres filtros/paginación:
+    // q: searchQuery.value || '',
+    // perPage: rowPerPage.value,
+    // currentPage: currentPage.value,
   })
+    .then(response => {
+      const { periodos: lista, totalPage: tp, totalPeriodos: tot } = response.data
+
+      console.log('periodos API:', response.data)
+
+      periodos.value = Array.isArray(lista) ? lista : []
+      totalPage.value = tp || 1
+      totalPeriodos.value = tot || periodos.value.length
+
+      // eslint-disable-next-line sonarjs/no-unused-collection
+      let periodosRevisados = []
+
+      periodos.value.forEach(periodoExterno => {
+        const periodoSiguiente = periodoExterno.periodo + 1
+
+        periodoExterno.isDuplicated = periodos.value.some(
+          periodoInterno =>
+            periodoInterno.periodo === periodoSiguiente &&
+            periodoInterno.empresaid === periodoExterno.empresaid, // 👈 campo correcto
+        )
+      })
+    })
+    .catch(error => {
+      console.error(error)
+    })
 }
 
-watchEffect(fetchPeriodos)
 
-// 👉 watching current page
-watchEffect(() => {
-  if (currentPage.value > totalPage.value)
-    currentPage.value = totalPage.value
-})
+// watchEffect(fetchPeriodos)
+
 
 const isAddNewPeriodoDrawerVisible = ref(false)
 
-// 👉 watching current page
-watchEffect(() => {
+onMounted(() => {
   if (currentPage.value > totalPage.value)
     currentPage.value = totalPage.value
+
+  if (currentPage.value > totalPage.value)
+    currentPage.value = totalPage.value
+
+  fetchEmpresas()
+  fetchPeriodos()
 })
+
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
@@ -167,10 +182,6 @@ const addNewReporte = (reporteData, index) => {
 
     })
 }
-
-onMounted(async () => {
-  await fetchPeriodos()
-})
 </script>
 
 <template>
@@ -249,7 +260,7 @@ onMounted(async () => {
               >
                 <!-- 👉 Plan -->
                 <td>
-                  <span class="text-capitalize text-base font-weight-semibold">{{ periodo.enterprisesifluc.nombre }}<br/>RUC: <span style="font-size:12px;">{{periodo.empresaId}}</span></span>
+                  <span class="text-capitalize text-base font-weight-semibold">{{ periodo.empresa.nombre }}<br/>RUC: <span style="font-size:12px;">{{periodo.empresaid}}</span></span>
                 </td>
 
                 <!-- 👉 Billing -->
@@ -259,7 +270,7 @@ onMounted(async () => {
 
                 <!-- 👉 Status -->
                 <td>
-                  {{ periodo.createdAt }}
+                  {{ periodo.createdat }}
                 </td>
 
                 <!-- 👉 Actions -->
@@ -368,3 +379,10 @@ onMounted(async () => {
   color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
 }
 </style>
+
+
+<route lang="yaml">
+meta:
+layout: vertical-nav
+public: true    # 👈 TEMPORAL
+</route>

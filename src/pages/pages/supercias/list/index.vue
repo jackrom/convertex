@@ -7,7 +7,6 @@ import ConfirmDialogReporte from "@core/components/ConfirmDialogReporte.vue"
 import { useReportStore } from "@/@store/reportStore"
 import { borrarDataDeOtrosPeriodos } from "@core/utils/formatters"
 import { descargarPDF, descargarExcel, generarEsfTxt, generarEriTxt, generarEfeTxt, generarEcpTxt } from "@core/utils/Export2Excel"
-import { saveAs } from 'file-saver'
 import { useRouter } from 'vue-router'
 import { useIndexedDB } from '@/composables/useIndexedDB'
 

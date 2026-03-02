@@ -1,5 +1,5 @@
 <script setup>
-import { useSuperciasListStore } from "@/views/pages/supercias/useReportesListStore"
+import { useReportesListStore } from "@/views/pages/supercias/useReportesListStore"
 import { useEmpresaListStore } from "@/views/pages/empresas/useEmpresaListStore"
 import TxtActivosCorrientes from "@/views/pages/supercias/txt/TxtActivosCorrientes.vue"
 import TxtPasivosCorrientes from "@/views/pages/supercias/txt/TxtPasivosCorrientes.vue"
@@ -33,7 +33,6 @@ import TxtMovJubilacionPatronal from "@/views/pages/supercias/txt/TxtMovJubilaci
 import TxtMovDeshaucio from "@/views/pages/supercias/txt/TxtMovDeshaucio.vue"
 import TxtMovActivosFinancierosLargoPlazo from "@/views/pages/supercias/txt/TxtMovActivosFinancierosLargoPlazo.vue"
 import TxtMovOtros from "@/views/pages/supercias/txt/TxtMovOtros.vue"
-import DynamicFlow from "@/views/pages/supercias/txt/DynamicFlow.vue"
 import {
   calcular_9501,
   calcular_9505,
@@ -57,10 +56,6 @@ import TxtMapeo1 from "@/views/reportes/reportViewer/components/mapeo/TxtMapeo1.
 import TxtMapeo101PA from "@/views/reportes/reportViewer/components/mapeo/TxtMapeo101PA.vue"
 import { computed } from "vue"
 import { useReportStore } from "@/@store/reportStore"
-import DynamicFlowOld from "@/views/pages/supercias/txt/DynamicFlowOld.vue"
-import DynamicFlowActividadesOperacion from "@/views/pages/supercias/txt/DynamicFlowActividadesOperacion.vue"
-import DynamicFlowInversionFinanciamiento from "@/views/pages/supercias/txt/DynamicFlowInversionFinanciamiento.vue"
-import DynamicFlowConciliacion from "@/views/pages/supercias/txt/DynamicFlowConciliacion.vue"
 
 const emit = defineEmits([
   'diferenciaPorCuadrarPeriodoAnterior',
@@ -157,7 +152,7 @@ const countdownfd = ref(30)
 
 const intervalId = ref(null)
 const router = useRouter()
-const superciasListStore = useSuperciasListStore()
+const superciasListStore = useReportesListStore()
 const empresaListStore = useEmpresaListStore()
 const empresa = ref(reportStore.reportData["empresareporteifluc"]["nombre"])
 const periodo = ref(reportStore.getReportData('periodosreporteifluc')["periodo"])

@@ -5,16 +5,11 @@ import { getKeycloak } from '@/plugins/keycloak/keycloak'
 const api = axios.create({
   baseURL: environment.apiUrl,
   timeout: 15000,
-  headers: {
-    'Content-Security-Policy': "default-src 'self'; connect-src 'self' https://login.facilcontabilidad.org; frame-src 'self';",
-  },
 })
 
 // Token de Keycloak antes de cada request
 api.interceptors.request.use(async config => {
   const kc = getKeycloak()
-
-  config.headers['Content-Security-Policy'] = "default-src 'self'; connect-src 'self' https://login.facilcontabilidad.org; frame-src 'self';"
 
   if (kc?.updateToken) {
     try {

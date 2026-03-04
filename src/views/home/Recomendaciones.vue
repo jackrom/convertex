@@ -155,18 +155,7 @@ onMounted(async () => {
       </VCardText>
 
       <VCardText>
-        <!-- Si existe arreglo en i18n, lo usamos -->
-        <VList v-if="items.length">
-          <VListItem
-            v-for="(item, idx) in items"
-            :key="idx"
-          >
-            {{ item }}
-          </VListItem>
-        </VList>
-
-        <!-- Fallback si por alguna razón no hay arreglo en i18n -->
-        <VList v-else>
+        <VList>
           <VListItem>Ingrese valores únicamente hasta con 2 decimales</VListItem>
           <VListItem>Para la separación decimal utilizar punto</VListItem>
           <VListItem>No utilizar ni coma ni punto para la separación de miles</VListItem>

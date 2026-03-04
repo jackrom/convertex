@@ -37,9 +37,6 @@ import { VerticalNavLayout } from '@layouts'
     <!-- 👉 Pages -->
     <slot />
 
-    <!-- 👉 Footer -->
-    <template #footer>
-      <Footer />
-    </template>
+
   </VerticalNavLayout>
 </template>

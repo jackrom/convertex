@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:4000',
+  // apiUrl: 'http://localhost:4000',
 
-  // apiUrl: 'https://apifc.dev.facilcontabilidad.org',
+  apiUrl: 'https://apifc.dev.facilcontabilidad.org',
 }

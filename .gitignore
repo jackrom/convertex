@@ -9,7 +9,6 @@ lerna-debug.log*
 
 node_modules
 .DS_Store
-dist
 dist-ssr
 *.local
 
@@ -38,6 +37,3 @@ src/plugins/iconify/icons.css
 # Ignore MSW script
 public/mockServiceWorker.js
 
-# Env files
-.env*
-!.env

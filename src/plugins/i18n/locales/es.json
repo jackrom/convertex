@@ -1,0 +1,49 @@
+{
+  "convertex": {
+    "deletedCompanies": {
+      "importantCardTitle": "IMPORTANTE 🙌",
+      "importantCardSubtitle": "Recomendaciones para un óptimo funcionamiento:",
+      "recommendations": [
+        "Ingrese valores únicamente hasta con 2 decimales",
+        "Para la separación decimal utilizar punto",
+        "No utilizar ni coma ni punto para la separación de miles",
+        "Al ingresar la información de cada módulo (ESF, ERI, ECP, EFE) recuerde dar clic en el botón Guardar"
+      ],
+      "tableTitle": "EMPRESAS ELIMINADAS",
+      "headers": {
+        "ruc": "RUC",
+        "company": "Empresa",
+        "city": "Ciudad",
+        "province": "Provincia",
+        "user": "Usuario",
+        "createdAt": "Fecha creación",
+        "deletedAt": "Fecha eliminación"
+      },
+      "noData": "No existen empresas eliminadas aún",
+      "pagination": "Mostrando {first} a {last} de {total} registros"
+    },
+    "infoInterest": {
+      "title": "Información de Interés"
+    },
+    "nav": {
+      "dashboard": {
+        "infoHeading": "Información de Interés",
+        "recommendations": "Recomendaciones"
+      }
+    },
+    "dashboards": {
+      "analytics": {
+        "title": "Analytics",
+        "subtitle": "Resumen"
+      }
+    }
+  },
+  "supercias": {
+    "reports": {
+      "esfTitle": "ESF",
+      "eriTitle": "ERI",
+      "efeTitle": "EFE",
+      "ecpTitle": "ECP"
+    }
+  }
+}

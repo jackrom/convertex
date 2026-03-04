@@ -1,0 +1,1522 @@
+﻿[
+    {
+        "CODIGO": "1",
+        "NOMBRE DE LA CUENTA": "ACTIVO"
+    },
+    {
+        "CODIGO": "101",
+        "NOMBRE DE LA CUENTA": "ACTIVO CORRIENTE"
+    },
+    {
+        "CODIGO": "10101",
+        "NOMBRE DE LA CUENTA": "EFECTIVO Y EQUIVALENTES DE EFECTIVO"
+    },
+    {
+        "CODIGO": "1010101",
+        "NOMBRE DE LA CUENTA": "CAJA"
+    },
+    {
+        "CODIGO": "1010102",
+        "NOMBRE DE LA CUENTA": "INSTITUCIONES FINANCIERAS PÚBLICAS"
+    },
+    {
+        "CODIGO": "1010103",
+        "NOMBRE DE LA CUENTA": "INSTITUCIONES FINANCIERAS PRIVADAS"
+    },
+    {
+        "CODIGO": "10102",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS"
+    },
+    {
+        "CODIGO": "1010201",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN RESULTADOS"
+    },
+    {
+        "CODIGO": "101020101",
+        "NOMBRE DE LA CUENTA": "RENTA VARIABLE"
+    },
+    {
+        "CODIGO": "10102010101",
+        "NOMBRE DE LA CUENTA": "ACCIONES Y PARTICIPACIONES"
+    },
+    {
+        "CODIGO": "10102010102",
+        "NOMBRE DE LA CUENTA": "CUOTAS DE FONDOS COLECTIVOS"
+    },
+    {
+        "CODIGO": "10102010103",
+        "NOMBRE DE LA CUENTA": "VALORES DE  TITULARIZACIÓN DE PARTICIPACIÓN"
+    },
+    {
+        "CODIGO": "10102010104",
+        "NOMBRE DE LA CUENTA": "UNIDADES DE PARTICIPACIÓN"
+    },
+    {
+        "CODIGO": "10102010105",
+        "NOMBRE DE LA CUENTA": "INVERSIONES EN EL EXTERIOR"
+    },
+    {
+        "CODIGO": "10102010106",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "101020102",
+        "NOMBRE DE LA CUENTA": "RENTA FIJA"
+    },
+    {
+        "CODIGO": "10102010201",
+        "NOMBRE DE LA CUENTA": "AVALES"
+    },
+    {
+        "CODIGO": "10102010202",
+        "NOMBRE DE LA CUENTA": "BONOS DEL ESTADO"
+    },
+    {
+        "CODIGO": "10102010203",
+        "NOMBRE DE LA CUENTA": "BONOS DE PRENDA"
+    },
+    {
+        "CODIGO": "10102010204",
+        "NOMBRE DE LA CUENTA": "CÉDULAS HIPOTECARIAS"
+    },
+    {
+        "CODIGO": "10102010205",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS FINANCIEROS"
+    },
+    {
+        "CODIGO": "10102010206",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS DE INVERSIÓN"
+    },
+    {
+        "CODIGO": "10102010207",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS DE TESORERÍA"
+    },
+    {
+        "CODIGO": "10102010208",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS DE DEPÓSITO"
+    },
+    {
+        "CODIGO": "10102010209",
+        "NOMBRE DE LA CUENTA": "CUPONES"
+    },
+    {
+        "CODIGO": "10102010210",
+        "NOMBRE DE LA CUENTA": "DEPÓSITOS A PLAZO"
+    },
+    {
+        "CODIGO": "10102010211",
+        "NOMBRE DE LA CUENTA": "LETRAS DE CAMBIO"
+    },
+    {
+        "CODIGO": "10102010212",
+        "NOMBRE DE LA CUENTA": "NOTAS DE CRÉDITO"
+    },
+    {
+        "CODIGO": "10102010213",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES"
+    },
+    {
+        "CODIGO": "10102010214",
+        "NOMBRE DE LA CUENTA": "FACTURAS COMERCIALES NEGOCIABLES"
+    },
+    {
+        "CODIGO": "10102010215",
+        "NOMBRE DE LA CUENTA": "OVERNIGHTS"
+    },
+    {
+        "CODIGO": "10102010216",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES CONVERTIBLES EN ACCIONES"
+    },
+    {
+        "CODIGO": "10102010217",
+        "NOMBRE DE LA CUENTA": "PAPEL COMERCIAL"
+    },
+    {
+        "CODIGO": "10102010218",
+        "NOMBRE DE LA CUENTA": "PAGARÉS"
+    },
+    {
+        "CODIGO": "10102010219",
+        "NOMBRE DE LA CUENTA": "PÓLIZAS DE ACUMULACIÓN"
+    },
+    {
+        "CODIGO": "10102010220",
+        "NOMBRE DE LA CUENTA": "TÍTULOS DEL BANCO CENTRAL"
+    },
+    {
+        "CODIGO": "10102010221",
+        "NOMBRE DE LA CUENTA": "VALORES DE TITULARIZACIÓN"
+    },
+    {
+        "CODIGO": "10102010222",
+        "NOMBRE DE LA CUENTA": "INVERSIONES EN EL EXTERIOR"
+    },
+    {
+        "CODIGO": "10102010223",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "101020103",
+        "NOMBRE DE LA CUENTA": "DERIVADOS"
+    },
+    {
+        "CODIGO": "10102010301",
+        "NOMBRE DE LA CUENTA": "FORWARD"
+    },
+    {
+        "CODIGO": "10102010302",
+        "NOMBRE DE LA CUENTA": "FUTUROS"
+    },
+    {
+        "CODIGO": "10102010303",
+        "NOMBRE DE LA CUENTA": "OPCIONES"
+    },
+    {
+        "CODIGO": "10102010304",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "1010202",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN OTRO RESULTADO INTEGRAL"
+    },
+    {
+        "CODIGO": "101020201",
+        "NOMBRE DE LA CUENTA": "RENTA VARIABLE"
+    },
+    {
+        "CODIGO": "10102020101",
+        "NOMBRE DE LA CUENTA": "ACCIONES Y PARTICIPACIONES"
+    },
+    {
+        "CODIGO": "10102020102",
+        "NOMBRE DE LA CUENTA": "CUOTAS DE FONDOS COLECTIVOS"
+    },
+    {
+        "CODIGO": "10102020103",
+        "NOMBRE DE LA CUENTA": "UNIDADES DE PARTICIPACIÓN"
+    },
+    {
+        "CODIGO": "10102020104",
+        "NOMBRE DE LA CUENTA": "VALORES DE  TITULARIZACIÓN DE PARTICIPACIÓN"
+    },
+    {
+        "CODIGO": "10102020105",
+        "NOMBRE DE LA CUENTA": "INVERSIONES EN EL EXTERIOR"
+    },
+    {
+        "CODIGO": "10102020106",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "101020202",
+        "NOMBRE DE LA CUENTA": "RENTA FIJA"
+    },
+    {
+        "CODIGO": "10102020201",
+        "NOMBRE DE LA CUENTA": "AVALES"
+    },
+    {
+        "CODIGO": "10102020202",
+        "NOMBRE DE LA CUENTA": "BONOS DEL ESTADO"
+    },
+    {
+        "CODIGO": "10102020203",
+        "NOMBRE DE LA CUENTA": "BONOS DE PRENDA"
+    },
+    {
+        "CODIGO": "10102020204",
+        "NOMBRE DE LA CUENTA": "CÉDULAS HIPOTECARIAS"
+    },
+    {
+        "CODIGO": "10102020205",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS FINANCIEROS"
+    },
+    {
+        "CODIGO": "10102020206",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS DE INVERSIÓN"
+    },
+    {
+        "CODIGO": "10102020207",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS DE TESORERÍA"
+    },
+    {
+        "CODIGO": "10102020208",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS DE DEPÓSITO"
+    },
+    {
+        "CODIGO": "10102020209",
+        "NOMBRE DE LA CUENTA": "CUPONES"
+    },
+    {
+        "CODIGO": "10102020210",
+        "NOMBRE DE LA CUENTA": "DEPÓSITOS A PLAZO"
+    },
+    {
+        "CODIGO": "10102020211",
+        "NOMBRE DE LA CUENTA": "LETRAS DE CAMBIO"
+    },
+    {
+        "CODIGO": "10102020212",
+        "NOMBRE DE LA CUENTA": "NOTAS DE CRÉDITO"
+    },
+    {
+        "CODIGO": "10102020213",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES"
+    },
+    {
+        "CODIGO": "10102020214",
+        "NOMBRE DE LA CUENTA": "FACTURAS COMERCIALES NEGOCIABLES"
+    },
+    {
+        "CODIGO": "10102020215",
+        "NOMBRE DE LA CUENTA": "OVERNIGHTS"
+    },
+    {
+        "CODIGO": "10102020216",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES CONVERTIBLES EN ACCIONES"
+    },
+    {
+        "CODIGO": "10102020217",
+        "NOMBRE DE LA CUENTA": "PAPEL COMERCIAL"
+    },
+    {
+        "CODIGO": "10102020218",
+        "NOMBRE DE LA CUENTA": "PAGARÉS"
+    },
+    {
+        "CODIGO": "10102020219",
+        "NOMBRE DE LA CUENTA": "PÓLIZAS DE ACUMULACIÓN"
+    },
+    {
+        "CODIGO": "10102020220",
+        "NOMBRE DE LA CUENTA": "TÍTULOS DEL BANCO CENTRAL"
+    },
+    {
+        "CODIGO": "10102020221",
+        "NOMBRE DE LA CUENTA": "VALORES DE TITULARIZACIÓN"
+    },
+    {
+        "CODIGO": "10102020222",
+        "NOMBRE DE LA CUENTA": "INVERSIONES EN EL EXTERIOR"
+    },
+    {
+        "CODIGO": "10102020223",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "1010203",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS AL COSTO AMORTIZADO"
+    },
+    {
+        "CODIGO": "101020302",
+        "NOMBRE DE LA CUENTA": "RENTA FIJA"
+    },
+    {
+        "CODIGO": "10102030201",
+        "NOMBRE DE LA CUENTA": "AVALES"
+    },
+    {
+        "CODIGO": "10102030202",
+        "NOMBRE DE LA CUENTA": "BONOS DEL ESTADO"
+    },
+    {
+        "CODIGO": "10102030203",
+        "NOMBRE DE LA CUENTA": "BONOS DE PRENDA"
+    },
+    {
+        "CODIGO": "10102030204",
+        "NOMBRE DE LA CUENTA": "CÉDULAS HIPOTECARIAS"
+    },
+    {
+        "CODIGO": "10102030205",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS FINANCIEROS"
+    },
+    {
+        "CODIGO": "10102030206",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS DE INVERSIÓN"
+    },
+    {
+        "CODIGO": "10102030207",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS DE TESORERÍA"
+    },
+    {
+        "CODIGO": "10102030208",
+        "NOMBRE DE LA CUENTA": "CERTIFICADOS DE DEPÓSITO"
+    },
+    {
+        "CODIGO": "10102030209",
+        "NOMBRE DE LA CUENTA": "CUPONES"
+    },
+    {
+        "CODIGO": "10102030210",
+        "NOMBRE DE LA CUENTA": "DEPÓSITOS A PLAZO"
+    },
+    {
+        "CODIGO": "10102030211",
+        "NOMBRE DE LA CUENTA": "LETRAS DE CAMBIO"
+    },
+    {
+        "CODIGO": "10102030212",
+        "NOMBRE DE LA CUENTA": "NOTAS DE CRÉDITO"
+    },
+    {
+        "CODIGO": "10102030213",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES"
+    },
+    {
+        "CODIGO": "10102030214",
+        "NOMBRE DE LA CUENTA": "FACTURAS COMERCIALES NEGOCIABLES"
+    },
+    {
+        "CODIGO": "10102030215",
+        "NOMBRE DE LA CUENTA": "OVERNIGHTS"
+    },
+    {
+        "CODIGO": "10102030216",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES CONVERTIBLES EN ACCIONES"
+    },
+    {
+        "CODIGO": "10102030217",
+        "NOMBRE DE LA CUENTA": "PAPEL COMERCIAL"
+    },
+    {
+        "CODIGO": "10102030218",
+        "NOMBRE DE LA CUENTA": "PAGARÉS"
+    },
+    {
+        "CODIGO": "10102030219",
+        "NOMBRE DE LA CUENTA": "PÓLIZAS DE ACUMULACIÓN"
+    },
+    {
+        "CODIGO": "10102030220",
+        "NOMBRE DE LA CUENTA": "TÍTULOS DEL BANCO CENTRAL"
+    },
+    {
+        "CODIGO": "10102030221",
+        "NOMBRE DE LA CUENTA": "VALORES DE TITULARIZACIÓN"
+    },
+    {
+        "CODIGO": "10102030222",
+        "NOMBRE DE LA CUENTA": "INVERSIONES EN EL EXTERIOR"
+    },
+    {
+        "CODIGO": "10102030223",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "1010204",
+        "NOMBRE DE LA CUENTA": "PROVISIÓN POR DETERIORO DE ACTIVOS FINANCIEROS"
+    },
+    {
+        "CODIGO": "101020401",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN RESULTADOS"
+    },
+    {
+        "CODIGO": "101020402",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS AL COSTO AMORTIZADO"
+    },
+    {
+        "CODIGO": "101020403",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN OTRO RESULTADO INTEGRAL"
+    },
+    {
+        "CODIGO": "1010205",
+        "NOMBRE DE LA CUENTA": "DEUDORES COMERCIALES Y OTRAS CUENTAS POR COBRAR NO RELACIONADOS"
+    },
+    {
+        "CODIGO": "101020501",
+        "NOMBRE DE LA CUENTA": "DE ACTIVIDADES ORDINARIAS QUE GENEREN INTERESES"
+    },
+    {
+        "CODIGO": "10102050101",
+        "NOMBRE DE LA CUENTA": "CUENTAS Y DOCUMENTOS A COBRAR  A CLIENTES"
+    },
+    {
+        "CODIGO": "10102050102",
+        "NOMBRE DE LA CUENTA": "CUENTAS Y DOCUMENTOS A COBRAR  A TERCEROS"
+    },
+    {
+        "CODIGO": "101020502",
+        "NOMBRE DE LA CUENTA": "DE ACTIVIDADES ORDINARIAS QUE NO GENEREN INTERESES"
+    },
+    {
+        "CODIGO": "10102050201",
+        "NOMBRE DE LA CUENTA": "CUENTAS Y DOCUMENTOS A COBRAR  A CLIENTES"
+    },
+    {
+        "CODIGO": "10102050202",
+        "NOMBRE DE LA CUENTA": "CUENTAS Y DOCUMENTOS A COBRAR  A TERCEROS"
+    },
+    {
+        "CODIGO": "10102050203",
+        "NOMBRE DE LA CUENTA": "CUENTAS POR COBRAR AL ORIGINADOR"
+    },
+    {
+        "CODIGO": "10102050204",
+        "NOMBRE DE LA CUENTA": "COMISIONES POR OPERACIONES  BURSÁTILES"
+    },
+    {
+        "CODIGO": "10102050207",
+        "NOMBRE DE LA CUENTA": "CONTRATO DE UNDERWRITING"
+    },
+    {
+        "CODIGO": "10102050208",
+        "NOMBRE DE LA CUENTA": "POR  ADMINISTRACIÓN Y MANEJO DE PORTAFOLIOS DE TERCEROS"
+    },
+    {
+        "CODIGO": "10102050209",
+        "NOMBRE DE LA CUENTA": "POR ADMINISTRACIÓN Y MANEJO DE FONDOS ADMINISTRADOS"
+    },
+    {
+        "CODIGO": "10102050210",
+        "NOMBRE DE LA CUENTA": "POR ADMINISTRACIÓN Y MANEJO DE NEGOCIOS FIDUCIARIOS"
+    },
+    {
+        "CODIGO": "10102050211",
+        "NOMBRE DE LA CUENTA": "POR CUSTODIA Y CONSERVACIÓN DE VALORES MATERIALIZADOS"
+    },
+    {
+        "CODIGO": "10102050212",
+        "NOMBRE DE LA CUENTA": "POR CUSTODIA Y CONSERVACIÓN DE VALORES DESMATERIALIZADOS"
+    },
+    {
+        "CODIGO": "10102050213",
+        "NOMBRE DE LA CUENTA": "POR MANEJO DE LIBRO DE ACCIONES Y ACCIONISTAS"
+    },
+    {
+        "CODIGO": "10102050214",
+        "NOMBRE DE LA CUENTA": "POR ASESORÍA"
+    },
+    {
+        "CODIGO": "10102050215",
+        "NOMBRE DE LA CUENTA": "DIVIDENDOS POR COBRAR"
+    },
+    {
+        "CODIGO": "10102050216",
+        "NOMBRE DE LA CUENTA": "INTERESES POR COBRAR"
+    },
+    {
+        "CODIGO": "10102050217",
+        "NOMBRE DE LA CUENTA": "DEUDORES POR INTERMEDIACIÓN DE VALORES"
+    },
+    {
+        "CODIGO": "10102050218",
+        "NOMBRE DE LA CUENTA": "ANTICIPO A COMITENTES"
+    },
+    {
+        "CODIGO": "10102050219",
+        "NOMBRE DE LA CUENTA": "ANTICIPO A CONSTRUCTOR POR AVANCE DE OBRA"
+    },
+    {
+        "CODIGO": "10102050220",
+        "NOMBRE DE LA CUENTA": "DERECHOS POR COMPROMISO DE RECOMPRA"
+    },
+    {
+        "CODIGO": "10102050221",
+        "NOMBRE DE LA CUENTA": "OTRAS CUENTAS POR COBRAR NO RELACIONADAS"
+    },
+    {
+        "CODIGO": "1010206",
+        "NOMBRE DE LA CUENTA": "DOCUMENTOS Y CUENTAS POR COBRAR RELACIONADOS"
+    },
+    {
+        "CODIGO": "101020601",
+        "NOMBRE DE LA CUENTA": "POR COBRAR A ACCIONISTAS"
+    },
+    {
+        "CODIGO": "101020602",
+        "NOMBRE DE LA CUENTA": "POR COBRAR A COMPAÑÍAS RELACIONADAS"
+    },
+    {
+        "CODIGO": "101020603",
+        "NOMBRE DE LA CUENTA": "POR COBRAR A CLIENTES"
+    },
+    {
+        "CODIGO": "101020604",
+        "NOMBRE DE LA CUENTA": "OTRAS CUENTAS POR COBRAR RELACIONADAS"
+    },
+    {
+        "CODIGO": "1010207",
+        "NOMBRE DE LA CUENTA": "PROVISIÓN POR CUENTAS INCOBRABLES Y DETERIORO"
+    },
+    {
+        "CODIGO": "10103",
+        "NOMBRE DE LA CUENTA": "INVENTARIOS"
+    },
+    {
+        "CODIGO": "1010301",
+        "NOMBRE DE LA CUENTA": "INVENTARIOS DE MATERIA PRIMA"
+    },
+    {
+        "CODIGO": "1010302",
+        "NOMBRE DE LA CUENTA": "INVENTARIOS DE PRODUCTOS EN PROCESO"
+    },
+    {
+        "CODIGO": "1010303",
+        "NOMBRE DE LA CUENTA": "INVENTARIOS DE SUMINISTROS O MATERIALES A SER CONSUMIDOS EN EL PROCESO DE PRODUCCION"
+    },
+    {
+        "CODIGO": "1010304",
+        "NOMBRE DE LA CUENTA": "INVENTARIOS DE SUMINISTROS O MATERIALES A SER CONSUMIDOS EN LA PRESTACION DEL SERVICIO"
+    },
+    {
+        "CODIGO": "1010305",
+        "NOMBRE DE LA CUENTA": "INVENTARIOS DE PROD. TERM. Y MERCAD. EN ALMACÉN - PRODUCIDO POR LA COMPAÑÍA"
+    },
+    {
+        "CODIGO": "1010306",
+        "NOMBRE DE LA CUENTA": "INVENTARIOS DE PROD. TERM. Y MERCAD. EN ALMACÉN - COMPRADO A  TERCEROS"
+    },
+    {
+        "CODIGO": "1010307",
+        "NOMBRE DE LA CUENTA": "MERCADERÍAS EN TRÁNSITO"
+    },
+    {
+        "CODIGO": "1010308",
+        "NOMBRE DE LA CUENTA": "OBRAS EN CONSTRUCCION"
+    },
+    {
+        "CODIGO": "1010309",
+        "NOMBRE DE LA CUENTA": "OBRAS TERMINADAS"
+    },
+    {
+        "CODIGO": "1010310",
+        "NOMBRE DE LA CUENTA": "MATERIALES O BIENES PARA LA CONSTRUCCION"
+    },
+    {
+        "CODIGO": "1010311",
+        "NOMBRE DE LA CUENTA": "INVENTARIOS REPUESTOS, HERRAMIENTAS Y ACCESORIOS"
+    },
+    {
+        "CODIGO": "1010312",
+        "NOMBRE DE LA CUENTA": "OTROS INVENTARIOS"
+    },
+    {
+        "CODIGO": "1010313",
+        "NOMBRE DE LA CUENTA": "(-) PROVISIÓN POR VALOR NETO DE REALIZACIÓN Y OTRAS PERDIDAS EN INVENTARIO"
+    },
+    {
+        "CODIGO": "10104",
+        "NOMBRE DE LA CUENTA": "SERVICIOS Y OTROS PAGOS ANTICIPADOS"
+    },
+    {
+        "CODIGO": "1010401",
+        "NOMBRE DE LA CUENTA": "SEGUROS PAGADOS POR ANTICIPADO"
+    },
+    {
+        "CODIGO": "1010402",
+        "NOMBRE DE LA CUENTA": "ARRIENDOS PAGADOS POR ANTICIPADO"
+    },
+    {
+        "CODIGO": "1010403",
+        "NOMBRE DE LA CUENTA": "ANTICIPOS A PROVEEDORES"
+    },
+    {
+        "CODIGO": "1010404",
+        "NOMBRE DE LA CUENTA": "OTROS ANTICIPOS ENTREGADOS"
+    },
+    {
+        "CODIGO": "10105",
+        "NOMBRE DE LA CUENTA": "ACTIVOS POR IMPUESTOS CORRIENTES"
+    },
+    {
+        "CODIGO": "1010501",
+        "NOMBRE DE LA CUENTA": "CRÉDITO TRIBUTARIO A FAVOR DE LA EMPRESA (IVA)"
+    },
+    {
+        "CODIGO": "1010502",
+        "NOMBRE DE LA CUENTA": "CRÉDITO TRIBUTARIO A FAVOR DE LA EMPRESA ( I. R.)"
+    },
+    {
+        "CODIGO": "1010503",
+        "NOMBRE DE LA CUENTA": "ANTICIPO DE IMPUESTO A LA RENTA"
+    },
+    {
+        "CODIGO": "10106",
+        "NOMBRE DE LA CUENTA": "ACTIVOS CORRIENTES MANTENIDOS PARA LA VENTA Y OPERACIONES DISCONTINUADAS"
+    },
+    {
+        "CODIGO": "10107",
+        "NOMBRE DE LA CUENTA": "CONSTRUCCIONES EN PROCESO (NIC 11 Y SECC.23 PYMES)"
+    },
+    {
+        "CODIGO": "10108",
+        "NOMBRE DE LA CUENTA": "OTROS ACTIVOS CORRIENTES"
+    },
+    {
+        "CODIGO": "102",
+        "NOMBRE DE LA CUENTA": "ACTIVOS NO CORRIENTES"
+    },
+    {
+        "CODIGO": "10201",
+        "NOMBRE DE LA CUENTA": "PROPIEDAD, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "1020101",
+        "NOMBRE DE LA CUENTA": "TERRENOS"
+    },
+    {
+        "CODIGO": "1020102",
+        "NOMBRE DE LA CUENTA": "EDIFICIOS"
+    },
+    {
+        "CODIGO": "1020103",
+        "NOMBRE DE LA CUENTA": "CONSTRUCCIONES EN CURSO"
+    },
+    {
+        "CODIGO": "1020104",
+        "NOMBRE DE LA CUENTA": "INSTALACIONES"
+    },
+    {
+        "CODIGO": "1020105",
+        "NOMBRE DE LA CUENTA": "MUEBLES Y ENSERES"
+    },
+    {
+        "CODIGO": "1020106",
+        "NOMBRE DE LA CUENTA": "MAQUINARIA Y EQUIPO"
+    },
+    {
+        "CODIGO": "1020107",
+        "NOMBRE DE LA CUENTA": "NAVES, AEREONAVES, BARCAZAS Y SIMILARES"
+    },
+    {
+        "CODIGO": "1020108",
+        "NOMBRE DE LA CUENTA": "EQUIPO DE COMPUTACIÓN"
+    },
+    {
+        "CODIGO": "1020109",
+        "NOMBRE DE LA CUENTA": "VEHÍCULOS, EQUIPOS DE TRASPORTE Y EQUIPO CAMINERO MÓVIL"
+    },
+    {
+        "CODIGO": "1020110",
+        "NOMBRE DE LA CUENTA": "OTROS PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "1020111",
+        "NOMBRE DE LA CUENTA": "REPUESTOS Y HERRAMIENTAS"
+    },
+    {
+        "CODIGO": "1020112",
+        "NOMBRE DE LA CUENTA": "(-) DEPRECIACIÓN ACUMULADA PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "1020113",
+        "NOMBRE DE LA CUENTA": "(-) DETERIORO  ACUMULADO DE PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "1020114",
+        "NOMBRE DE LA CUENTA": "ACTIVOS DE EXPLORACION Y EXPLOTACION"
+    },
+    {
+        "CODIGO": "102011401",
+        "NOMBRE DE LA CUENTA": "ACTIVOS DE EXPLORACION Y EXPLOTACION"
+    },
+    {
+        "CODIGO": "102011402",
+        "NOMBRE DE LA CUENTA": "(-) AMORTIZACION ACUMULADA DE ACTIVOS DE EXPLORACIÓN Y EXPLOTACIÓN"
+    },
+    {
+        "CODIGO": "102011403",
+        "NOMBRE DE LA CUENTA": "(-) DETERIORO  ACUMULADO DE ACTIVOS DE EXPLORACIÓN Y EXPLOTACIÓN"
+    },
+    {
+        "CODIGO": "10202",
+        "NOMBRE DE LA CUENTA": "PROPIEDADES DE INVERSIÓN"
+    },
+    {
+        "CODIGO": "1020201",
+        "NOMBRE DE LA CUENTA": "TERRENOS"
+    },
+    {
+        "CODIGO": "102020101",
+        "NOMBRE DE LA CUENTA": "TERRENOS"
+    },
+    {
+        "CODIGO": "102020102",
+        "NOMBRE DE LA CUENTA": "DERECHOS DE USO SOBRE TERRENOS SUBARRENDADOS"
+    },
+    {
+        "CODIGO": "1020202",
+        "NOMBRE DE LA CUENTA": "EDIFICIOS"
+    },
+    {
+        "CODIGO": "102020201",
+        "NOMBRE DE LA CUENTA": "EDIFICIOS"
+    },
+    {
+        "CODIGO": "102020202",
+        "NOMBRE DE LA CUENTA": "DERECHOS DE USO SOBRE EDIFICIOS SUBARRENDADOS"
+    },
+    {
+        "CODIGO": "1020203",
+        "NOMBRE DE LA CUENTA": "(-) DEPRECIACION ACUMULADA DE PROPIEDADES DE INVERSIÓN"
+    },
+    {
+        "CODIGO": "1020204",
+        "NOMBRE DE LA CUENTA": "(-) DETERIORO ACUMULADO DE PROPIEDADES DE INVERSIÓN"
+    },
+    {
+        "CODIGO": "10203",
+        "NOMBRE DE LA CUENTA": "ACTIVOS BIOLOGICOS"
+    },
+    {
+        "CODIGO": "1020301",
+        "NOMBRE DE LA CUENTA": "ANIMALES VIVOS EN CRECIMIENTO"
+    },
+    {
+        "CODIGO": "1020302",
+        "NOMBRE DE LA CUENTA": "ANIMALES VIVOS EN PRODUCCION"
+    },
+    {
+        "CODIGO": "1020303",
+        "NOMBRE DE LA CUENTA": "PLANTAS EN CRECIMIENTO"
+    },
+    {
+        "CODIGO": "1020304",
+        "NOMBRE DE LA CUENTA": "PLANTAS EN PRODUCCION"
+    },
+    {
+        "CODIGO": "1020305",
+        "NOMBRE DE LA CUENTA": "(-) DEPRECIACION ACUMULADA DE ACTIVOS BIOLÓGICOS"
+    },
+    {
+        "CODIGO": "1020306",
+        "NOMBRE DE LA CUENTA": "(-) DETERIORO ACUMULADO DE ACTIVOS BIOLOGÍCOS"
+    },
+    {
+        "CODIGO": "10204",
+        "NOMBRE DE LA CUENTA": "ACTIVO INTANGIBLE"
+    },
+    {
+        "CODIGO": "1020401",
+        "NOMBRE DE LA CUENTA": "PLUSVALÍAS"
+    },
+    {
+        "CODIGO": "1020402",
+        "NOMBRE DE LA CUENTA": "MARCAS, PATENTES, DERECHOS DE LLAVE , CUOTAS PATRIMONIALES Y OTROS SIMILARES"
+    },
+    {
+        "CODIGO": "1020403",
+        "NOMBRE DE LA CUENTA": "CONCESIONES Y LICENCIAS"
+    },
+    {
+        "CODIGO": "1020404",
+        "NOMBRE DE LA CUENTA": "ACTIVOS DE EXPLORACION Y EXPLOTACION"
+    },
+    {
+        "CODIGO": "1020405",
+        "NOMBRE DE LA CUENTA": "(-) AMORTIZACIÓN ACUMULADA DE ACTIVOS INTANGIBLE"
+    },
+    {
+        "CODIGO": "1020406",
+        "NOMBRE DE LA CUENTA": "(-) DETERIORO ACUMULADO DE ACTIVO INTANGIBLE"
+    },
+    {
+        "CODIGO": "1020407",
+        "NOMBRE DE LA CUENTA": " OTROS INTANGIBLES"
+    },
+    {
+        "CODIGO": "10205",
+        "NOMBRE DE LA CUENTA": "ACTIVOS POR IMPUESTOS DIFERIDOS"
+    },
+    {
+        "CODIGO": "10206",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS NO CORRIENTES"
+    },
+    {
+        "CODIGO": "1020601",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN OTRO RESULTADO INTEGRAL"
+    },
+    {
+        "CODIGO": "1020602",
+        "NOMBRE DE LA CUENTA": "(-) PROVISION POR DETERIORO DE ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN OTRO RESULTADO INTEGRAL"
+    },
+    {
+        "CODIGO": "1020603",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS A COSTO AMORTIZADO"
+    },
+    {
+        "CODIGO": "1020604",
+        "NOMBRE DE LA CUENTA": "(-) PROVISIÓN POR DETERIORO DE ACTIVOS FINANCIEROS A COSTO AMORTIZADO"
+    },
+    {
+        "CODIGO": "1020605",
+        "NOMBRE DE LA CUENTA": "ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN RESULTADOS"
+    },
+    {
+        "CODIGO": "1020606",
+        "NOMBRE DE LA CUENTA": "(-)PROVISIÓN POR DETERIORO DE ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN RESULTADOS"
+    },
+    {
+        "CODIGO": "10207",
+        "NOMBRE DE LA CUENTA": "DERECHO DE USO POR ACTIVOS ARRENDADOS"
+    },
+    {
+        "CODIGO": "1020701",
+        "NOMBRE DE LA CUENTA": "(-) DEPRECIACIÓN ACUMULADA DE ACTIVOS PROVENIENTES POR DERECHOS DE USO"
+    },
+    {
+        "CODIGO": "1020702",
+        "NOMBRE DE LA CUENTA": "(-) DETERIORO ACUMULADO DE ACTIVOS PROVENIENTES POR DERECHOS DE USO"
+    },
+    {
+        "CODIGO": "1020703",
+        "NOMBRE DE LA CUENTA": "DERECHO DE USO POR ACTIVOS ARRENDADOS"
+    },
+    {
+        "CODIGO": "10208",
+        "NOMBRE DE LA CUENTA": "OTROS ACTIVOS NO CORRIENTES"
+    },
+    {
+        "CODIGO": "1020801",
+        "NOMBRE DE LA CUENTA": "DERECHOS FIDUCIARIOS"
+    },
+    {
+        "CODIGO": "1020802",
+        "NOMBRE DE LA CUENTA": "DEPÓSITOS EN GARANTÍA"
+    },
+    {
+        "CODIGO": "1020803",
+        "NOMBRE DE LA CUENTA": "DEPÓSITOS EN GARANTÍA POR OPERACIONES BURSÁTILES"
+    },
+    {
+        "CODIGO": "1020805",
+        "NOMBRE DE LA CUENTA": "ACCIONES DEL DEPÓSITO CENTRALIZADO DE VALORES"
+    },
+    {
+        "CODIGO": "1020806",
+        "NOMBRE DE LA CUENTA": "INVERSIONES SUBSIDIARIAS"
+    },
+    {
+        "CODIGO": "1020807",
+        "NOMBRE DE LA CUENTA": "INVERSIONES ASOCIADAS"
+    },
+    {
+        "CODIGO": "1020808",
+        "NOMBRE DE LA CUENTA": "INVERSIONES NEGOCIOS CONJUNTOS"
+    },
+    {
+        "CODIGO": "1020809",
+        "NOMBRE DE LA CUENTA": "OTRAS INVERSIONES"
+    },
+    {
+        "CODIGO": "1020810",
+        "NOMBRE DE LA CUENTA": "(-) PROVISIÓN VALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "1020811",
+        "NOMBRE DE LA CUENTA": "OTROS ACTIVOS NO CORRIENTES"
+    },
+    {
+        "CODIGO": "10209",
+        "NOMBRE DE LA CUENTA": "DOCUMENTOS Y CUENTAS POR COBRAR NO RELACIONADOS"
+    },
+    {
+        "CODIGO": "1020901",
+        "NOMBRE DE LA CUENTA": "CUENTAS Y DOCUMENTOS A COBRAR  A CLIENTES"
+    },
+    {
+        "CODIGO": "1020902",
+        "NOMBRE DE LA CUENTA": "CUENTAS Y DOCUMENTOS A COBRAR  A TERCEROS"
+    },
+    {
+        "CODIGO": "1020903",
+        "NOMBRE DE LA CUENTA": "OTRAS CUENTAS POR COBRAR NO RELACIONADAS"
+    },
+    {
+        "CODIGO": "10210",
+        "NOMBRE DE LA CUENTA": "DOCUMENTOS Y CUENTAS POR COBRAR RELACIONADOS"
+    },
+    {
+        "CODIGO": "1021001",
+        "NOMBRE DE LA CUENTA": "POR COBRAR A ACCIONISTAS"
+    },
+    {
+        "CODIGO": "1021002",
+        "NOMBRE DE LA CUENTA": "POR COBRAR A COMPAÑÍAS RELACIONADAS"
+    },
+    {
+        "CODIGO": "1021003",
+        "NOMBRE DE LA CUENTA": "POR COBRAR A CLIENTES"
+    },
+    {
+        "CODIGO": "1021004",
+        "NOMBRE DE LA CUENTA": "OTRAS CUENTAS POR COBRAR RELACIONADAS"
+    },
+    {
+        "CODIGO": "2",
+        "NOMBRE DE LA CUENTA": "PASIVO"
+    },
+    {
+        "CODIGO": "201",
+        "NOMBRE DE LA CUENTA": "PASIVO CORRIENTE"
+    },
+    {
+        "CODIGO": "20101",
+        "NOMBRE DE LA CUENTA": "PASIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN RESULTADOS"
+    },
+    {
+        "CODIGO": "20102",
+        "NOMBRE DE LA CUENTA": "PASIVOS POR CONTRATOS DE ARRENDAMIENTO"
+    },
+    {
+        "CODIGO": "20103",
+        "NOMBRE DE LA CUENTA": "CUENTAS Y DOCUMENTOS POR PAGAR"
+    },
+    {
+        "CODIGO": "2010301",
+        "NOMBRE DE LA CUENTA": "LOCALES"
+    },
+    {
+        "CODIGO": "201030101",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS"
+    },
+    {
+        "CODIGO": "201030102",
+        "NOMBRE DE LA CUENTA": "PROVEEDORES"
+    },
+    {
+        "CODIGO": "201030103",
+        "NOMBRE DE LA CUENTA": "OTRAS"
+    },
+    {
+        "CODIGO": "2010302",
+        "NOMBRE DE LA CUENTA": "DEL EXTERIOR"
+    },
+    {
+        "CODIGO": "201030201",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS"
+    },
+    {
+        "CODIGO": "201030202",
+        "NOMBRE DE LA CUENTA": "PROVEEDORES"
+    },
+    {
+        "CODIGO": "201030203",
+        "NOMBRE DE LA CUENTA": "OTRAS"
+    },
+    {
+        "CODIGO": "20104",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES CON INSTITUCIONES FINANCIERAS"
+    },
+    {
+        "CODIGO": "2010401",
+        "NOMBRE DE LA CUENTA": "LOCALES"
+    },
+    {
+        "CODIGO": "2010402",
+        "NOMBRE DE LA CUENTA": "DEL EXTERIOR"
+    },
+    {
+        "CODIGO": "20105",
+        "NOMBRE DE LA CUENTA": "PROVISIONES"
+    },
+    {
+        "CODIGO": "2010501",
+        "NOMBRE DE LA CUENTA": "LOCALES"
+    },
+    {
+        "CODIGO": "2010502",
+        "NOMBRE DE LA CUENTA": "DEL EXTERIOR"
+    },
+    {
+        "CODIGO": "20106",
+        "NOMBRE DE LA CUENTA": "PORCIÓN CORRIENTE DE VALORES EMITIDOS"
+    },
+    {
+        "CODIGO": "2010601",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES"
+    },
+    {
+        "CODIGO": "2010602",
+        "NOMBRE DE LA CUENTA": "PAPEL COMERCIAL"
+    },
+    {
+        "CODIGO": "2010603",
+        "NOMBRE DE LA CUENTA": "VALORES DE TITULARIZACIÓN"
+    },
+    {
+        "CODIGO": "2010604",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "2010605",
+        "NOMBRE DE LA CUENTA": "INTERESES POR PAGAR"
+    },
+    {
+        "CODIGO": "20107",
+        "NOMBRE DE LA CUENTA": "OTRAS OBLIGACIONES CORRIENTES"
+    },
+    {
+        "CODIGO": "2010701",
+        "NOMBRE DE LA CUENTA": "CON LA ADMINISTRACIÓN TRIBUTARIA"
+    },
+    {
+        "CODIGO": "2010702",
+        "NOMBRE DE LA CUENTA": "IMPUESTO A LA RENTA POR PAGAR DEL EJERCICIO"
+    },
+    {
+        "CODIGO": "2010703",
+        "NOMBRE DE LA CUENTA": "CON EL IESS"
+    },
+    {
+        "CODIGO": "2010704",
+        "NOMBRE DE LA CUENTA": "POR BENEFICIOS DE LEY A EMPLEADOS"
+    },
+    {
+        "CODIGO": "2010705",
+        "NOMBRE DE LA CUENTA": "PARTICIPACIÓN TRABAJADORES POR PAGAR DEL EJERCICIO"
+    },
+    {
+        "CODIGO": "2010706",
+        "NOMBRE DE LA CUENTA": "DIVIDENDOS POR PAGAR"
+    },
+    {
+        "CODIGO": "2010707",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "20108",
+        "NOMBRE DE LA CUENTA": "CUENTAS POR PAGAR A RELACIONADAS"
+    },
+    {
+        "CODIGO": "2010801",
+        "NOMBRE DE LA CUENTA": "LOCALES"
+    },
+    {
+        "CODIGO": "201080101",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS DE ACCIONISTAS"
+    },
+    {
+        "CODIGO": "201080102",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS DE COMPAÑÍAS RELACIONADAS"
+    },
+    {
+        "CODIGO": "201080103",
+        "NOMBRE DE LA CUENTA": "PROVEEDORES"
+    },
+    {
+        "CODIGO": "201080104",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "2010802",
+        "NOMBRE DE LA CUENTA": "DEL EXTERIOR"
+    },
+    {
+        "CODIGO": "201080201",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS DE ACCIONISTAS"
+    },
+    {
+        "CODIGO": "201080202",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS DE COMPAÑÍAS RELACIONADAS"
+    },
+    {
+        "CODIGO": "201080203",
+        "NOMBRE DE LA CUENTA": "PROVEEDORES"
+    },
+    {
+        "CODIGO": "201080204",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "20109",
+        "NOMBRE DE LA CUENTA": "OTROS PASIVOS FINANCIEROS"
+    },
+    {
+        "CODIGO": "20110",
+        "NOMBRE DE LA CUENTA": "ANTICIPOS"
+    },
+    {
+        "CODIGO": "2011001",
+        "NOMBRE DE LA CUENTA": "ANTICIPOS DE CLIENTES"
+    },
+    {
+        "CODIGO": "2011002",
+        "NOMBRE DE LA CUENTA": "OTROS ANTICIPOS RECIBIDOS"
+    },
+    {
+        "CODIGO": "20111",
+        "NOMBRE DE LA CUENTA": "PASIVOS DIRECTAMENTE ASOCIADOS CON LOS ACTIVOS NO CORRIENTES Y OPERACIONES DISCONTINUADAS"
+    },
+    {
+        "CODIGO": "20112",
+        "NOMBRE DE LA CUENTA": "PORCION CORRIENTE DE PROVISIONES POR BENEFICIOS A EMPLEADOS"
+    },
+    {
+        "CODIGO": "2011201",
+        "NOMBRE DE LA CUENTA": "JUBILACION PATRONAL"
+    },
+    {
+        "CODIGO": "2011202",
+        "NOMBRE DE LA CUENTA": "OTROS BENEFICIOS PARA LOS EMPLEADOS"
+    },
+    {
+      "CODIGO": "201120201",
+      "NOMBRE DE LA CUENTA": "DESHAUCIO"
+    },
+    {
+      "CODIGO": "201120202",
+      "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "20113",
+        "NOMBRE DE LA CUENTA": "OTROS PASIVOS CORRIENTES"
+    },
+    {
+        "CODIGO": "2011301",
+        "NOMBRE DE LA CUENTA": "COMISIONES POR PAGAR"
+    },
+    {
+        "CODIGO": "2011302",
+        "NOMBRE DE LA CUENTA": "POR OPERACIONES BURSÁTILES"
+    },
+    {
+        "CODIGO": "2011303",
+        "NOMBRE DE LA CUENTA": "POR CUSTODIA"
+    },
+    {
+        "CODIGO": "2011304",
+        "NOMBRE DE LA CUENTA": "POR ADMINISTRACIÓN"
+    },
+    {
+        "CODIGO": "2011305",
+        "NOMBRE DE LA CUENTA": "OTRAS COMISIONES"
+    },
+    {
+        "CODIGO": "2011306",
+        "NOMBRE DE LA CUENTA": "SANCIONES Y MULTAS"
+    },
+    {
+        "CODIGO": "2011307",
+        "NOMBRE DE LA CUENTA": "INDEMNIZACIONES"
+    },
+    {
+        "CODIGO": "2011308",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES JUDICIALES"
+    },
+    {
+        "CODIGO": "2011309",
+        "NOMBRE DE LA CUENTA": "ACREEDORES POR INTERMEDIACIÓN"
+    },
+    {
+        "CODIGO": "2011310",
+        "NOMBRE DE LA CUENTA": "OBLIGACIÓN POR COMPROMISO DE RECOMPRA"
+    },
+    {
+        "CODIGO": "2011311",
+        "NOMBRE DE LA CUENTA": "POR CONTRATOS DE UNDERWRITING"
+    },
+    {
+        "CODIGO": "2011312",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "20114",
+        "NOMBRE DE LA CUENTA": "PASIVOS FINANCIEROS AL COSTO AMORTIZADO"
+    },
+    {
+        "CODIGO": "202",
+        "NOMBRE DE LA CUENTA": "PASIVO NO CORRIENTE"
+    },
+    {
+        "CODIGO": "20201",
+        "NOMBRE DE LA CUENTA": "PASIVOS POR CONTRATOS DE ARRENDAMIENTO"
+    },
+    {
+        "CODIGO": "20202",
+        "NOMBRE DE LA CUENTA": "CUENTAS Y DOCUMENTOS POR PAGAR"
+    },
+    {
+        "CODIGO": "2020201",
+        "NOMBRE DE LA CUENTA": "LOCALES"
+    },
+    {
+        "CODIGO": "202020101",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS"
+    },
+    {
+        "CODIGO": "202020102",
+        "NOMBRE DE LA CUENTA": "PROVEEDORES"
+    },
+    {
+        "CODIGO": "202020103",
+        "NOMBRE DE LA CUENTA": "OTRAS"
+    },
+    {
+        "CODIGO": "2020202",
+        "NOMBRE DE LA CUENTA": "DEL EXTERIOR"
+    },
+    {
+        "CODIGO": "202020201",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS"
+    },
+    {
+        "CODIGO": "202020202",
+        "NOMBRE DE LA CUENTA": "PROVEEDORES"
+    },
+    {
+        "CODIGO": "202020203",
+        "NOMBRE DE LA CUENTA": "OTRAS"
+    },
+    {
+        "CODIGO": "20203",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES CON INSTITUCIONES FINANCIERAS"
+    },
+    {
+        "CODIGO": "2020301",
+        "NOMBRE DE LA CUENTA": "LOCALES"
+    },
+    {
+        "CODIGO": "2020302",
+        "NOMBRE DE LA CUENTA": "DEL EXTERIOR"
+    },
+    {
+        "CODIGO": "20204",
+        "NOMBRE DE LA CUENTA": "CUENTAS POR PAGAR A RELACIONADAS"
+    },
+    {
+        "CODIGO": "2020401",
+        "NOMBRE DE LA CUENTA": "LOCALES"
+    },
+    {
+        "CODIGO": "202040101",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS DE ACCIONISTAS"
+    },
+    {
+        "CODIGO": "202040102",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS DE COMPAÑÍAS RELACIONADAS"
+    },
+    {
+        "CODIGO": "202040103",
+        "NOMBRE DE LA CUENTA": "PROVEEDORES"
+    },
+    {
+        "CODIGO": "202040104",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "2020402",
+        "NOMBRE DE LA CUENTA": "DEL EXTERIOR"
+    },
+    {
+        "CODIGO": "202040201",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS DE ACCIONISTAS"
+    },
+    {
+        "CODIGO": "202040202",
+        "NOMBRE DE LA CUENTA": "PRÉSTAMOS DE COMPAÑÍAS RELACIONADAS"
+    },
+    {
+        "CODIGO": "202040203",
+        "NOMBRE DE LA CUENTA": "PROVEEDORES"
+    },
+    {
+        "CODIGO": "202040204",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "20205",
+        "NOMBRE DE LA CUENTA": "PORCIÓN NO CORRIENTE DE VALORES EMITIDOS"
+    },
+    {
+        "CODIGO": "2020501",
+        "NOMBRE DE LA CUENTA": "OBLIGACIONES"
+    },
+    {
+        "CODIGO": "2020502",
+        "NOMBRE DE LA CUENTA": "PAPEL COMERCIAL"
+    },
+    {
+        "CODIGO": "2020503",
+        "NOMBRE DE LA CUENTA": "VALORES DE TITULARIZACIÓN"
+    },
+    {
+        "CODIGO": "2020504",
+        "NOMBRE DE LA CUENTA": "OTROS"
+    },
+    {
+        "CODIGO": "2020505",
+        "NOMBRE DE LA CUENTA": "INTERESES POR PAGAR"
+    },
+    {
+        "CODIGO": "20206",
+        "NOMBRE DE LA CUENTA": "ANTICIPOS"
+    },
+    {
+        "CODIGO": "2020601",
+        "NOMBRE DE LA CUENTA": "ANTICIPOS DE CLIENTES"
+    },
+    {
+        "CODIGO": "2020602",
+        "NOMBRE DE LA CUENTA": "OTROS ANTICIPOS RECIBIDOS"
+    },
+    {
+        "CODIGO": "20207",
+        "NOMBRE DE LA CUENTA": "PROVISIONES POR BENEFICIOS A EMPLEADOS"
+    },
+    {
+        "CODIGO": "2020701",
+        "NOMBRE DE LA CUENTA": "JUBILACION PATRONAL"
+    },
+    {
+        "CODIGO": "2020702",
+        "NOMBRE DE LA CUENTA": "OTROS BENEFICIOS NO CORRIENTES PARA LOS EMPLEADOS"
+    },
+  {
+    "CODIGO": "202070201",
+    "NOMBRE DE LA CUENTA": "DESHAUCIO"
+  },
+  {
+    "CODIGO": "202070202",
+    "NOMBRE DE LA CUENTA": "OTROS"
+  },
+    {
+        "CODIGO": "20208",
+        "NOMBRE DE LA CUENTA": "OTRAS PROVISIONES"
+    },
+    {
+        "CODIGO": "20209",
+        "NOMBRE DE LA CUENTA": "PASIVO DIFERIDO"
+    },
+    {
+        "CODIGO": "2020901",
+        "NOMBRE DE LA CUENTA": "INGRESOS DIFERIDOS"
+    },
+    {
+        "CODIGO": "2020902",
+        "NOMBRE DE LA CUENTA": "PASIVOS POR IMPUESTOS DIFERIDOS"
+    },
+    {
+        "CODIGO": "20210",
+        "NOMBRE DE LA CUENTA": "OTROS PASIVOS NO CORRIENTES"
+    },
+    {
+        "CODIGO": "3",
+        "NOMBRE DE LA CUENTA": "PATRIMONIO NETO"
+    },
+    {
+        "CODIGO": "30",
+        "NOMBRE DE LA CUENTA": "PATRIMONIO NETO ATRIBUIBLE A LOS PROPIETARIOS DE LA CONTROLADORA"
+    },
+    {
+        "CODIGO": "301",
+        "NOMBRE DE LA CUENTA": "CAPITAL"
+    },
+    {
+        "CODIGO": "30101",
+        "NOMBRE DE LA CUENTA": " CAPITAL SUSCRITO O  ASIGNADO"
+    },
+    {
+        "CODIGO": "30102",
+        "NOMBRE DE LA CUENTA": " (-) CAPITAL SUSCRITO NO PAGADO, ACCIONES EN TESORERÍA"
+    },
+    {
+        "CODIGO": "30103",
+        "NOMBRE DE LA CUENTA": "FONDO PATRIMONIAL"
+    },
+    {
+        "CODIGO": "30104",
+        "NOMBRE DE LA CUENTA": "PATRIMONIO DE LOS NEGOCIOS FIDUCIARIOS"
+    },
+    {
+        "CODIGO": "30105",
+        "NOMBRE DE LA CUENTA": "PATRIMONIO DE LOS FONDOS DE INVERSIÓN"
+    },
+    {
+        "CODIGO": "3010501",
+        "NOMBRE DE LA CUENTA": "PATRIMONIO DEL FONDO ADMINISTRADO"
+    },
+    {
+        "CODIGO": "3010502",
+        "NOMBRE DE LA CUENTA": "PATRIMONIO DEL FONDO COLECTIVO"
+    },
+    {
+        "CODIGO": "302",
+        "NOMBRE DE LA CUENTA": "APORTES DE SOCIOS O ACCIONISTAS PARA FUTURA CAPITALIZACIÓN"
+    },
+    {
+        "CODIGO": "303",
+        "NOMBRE DE LA CUENTA": "PRIMA POR EMISIÓN PRIMARIA DE ACCIONES"
+    },
+    {
+        "CODIGO": "304",
+        "NOMBRE DE LA CUENTA": "RESERVAS"
+    },
+    {
+        "CODIGO": "30401",
+        "NOMBRE DE LA CUENTA": "RESERVA LEGAL"
+    },
+    {
+        "CODIGO": "30402",
+        "NOMBRE DE LA CUENTA": "RESERVAS FACULTATIVA Y ESTATUTARIA"
+    },
+    {
+        "CODIGO": "305",
+        "NOMBRE DE LA CUENTA": "OTROS RESULTADOS INTEGRALES"
+    },
+    {
+        "CODIGO": "30501",
+        "NOMBRE DE LA CUENTA": "SUPERAVIT DE ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN OTRO RESULTADO INTEGRAL"
+    },
+    {
+        "CODIGO": "30502",
+        "NOMBRE DE LA CUENTA": "SUPERAVIT POR REVALUACIÓN DE PROPIEDADES, PLANTA Y EQUIPO"
+    },
+    {
+        "CODIGO": "30503",
+        "NOMBRE DE LA CUENTA": "SUPERAVIT POR REVALUACION DE ACTIVOS INTANGIBLES"
+    },
+    {
+        "CODIGO": "30504",
+        "NOMBRE DE LA CUENTA": "OTROS SUPERAVIT POR REVALUACION"
+    },
+    {
+        "CODIGO": "306",
+        "NOMBRE DE LA CUENTA": "RESULTADOS ACUMULADOS"
+    },
+    {
+        "CODIGO": "30601",
+        "NOMBRE DE LA CUENTA": "GANANCIAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "30602",
+        "NOMBRE DE LA CUENTA": "(-) PÉRDIDAS ACUMULADAS"
+    },
+    {
+        "CODIGO": "30603",
+        "NOMBRE DE LA CUENTA": "RESULTADOS ACUMULADOS PROVENIENTES DE LA ADOPCION POR PRIMERA VEZ DE LAS NIIF"
+    },
+    {
+        "CODIGO": "30604",
+        "NOMBRE DE LA CUENTA": "RESERVA DE CAPITAL"
+    },
+    {
+        "CODIGO": "30605",
+        "NOMBRE DE LA CUENTA": "RESERVA POR DONACIONES"
+    },
+    {
+        "CODIGO": "30606",
+        "NOMBRE DE LA CUENTA": "RESERVA POR VALUACIÓN"
+    },
+    {
+        "CODIGO": "30607",
+        "NOMBRE DE LA CUENTA": "SUPERÁVIT POR REVALUACIÓN DE INVERSIONES"
+    },
+    {
+        "CODIGO": "307",
+        "NOMBRE DE LA CUENTA": "RESULTADOS DEL EJERCICIO"
+    },
+    {
+        "CODIGO": "30701",
+        "NOMBRE DE LA CUENTA": "GANANCIA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "30702",
+        "NOMBRE DE LA CUENTA": "(-) PÉRDIDA NETA DEL PERIODO"
+    },
+    {
+        "CODIGO": "31",
+        "NOMBRE DE LA CUENTA": "PARTICIPACIÓN CONTROLADORA"
+    }
+]

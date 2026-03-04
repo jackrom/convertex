@@ -1,0 +1,138 @@
+/* eslint-disable import/order */
+import App from '@/App.vue'
+import { ability } from '@/plugins/casl/ability'
+import i18n from '@/plugins/i18n'
+import layoutsPlugin from '@/plugins/layouts'
+import vuetify from '@/plugins/vuetify'
+import { es } from 'vuetify/locale'
+import { loadFonts } from '@/plugins/webfontloader'
+import router from '@/plugins/1.router'
+import { abilitiesPlugin } from '@casl/vue'
+import '@core/scss/template/index.scss'
+import '@styles/styles.scss'
+import { createPinia } from 'pinia'
+import { createApp } from 'vue'
+import { getKeycloak, initKeycloak } from "@/plugins/keycloak/keycloak"
+import { useAuthenticationStore } from "@/views/pages/authentication/useAuthenticationStore"
+
+const PUBLIC_REDIRECT = 'http://localhost:5173/not-authorized'
+
+loadFonts()
+
+async function bootstrap() {
+  const authenticated = await initKeycloak('login-required')
+
+  console.log('authenticated', authenticated)
+
+  if (!authenticated) {
+    console.error('Usuario no autenticado en Keycloak')
+
+    return
+  }
+
+  // Create vue app
+  const app = createApp(App)
+
+  // Use plugins
+  app.use(vuetify, {
+    locale: {
+      defaultLocale: 'es',
+      locales: {
+        es,
+      },
+    },
+  })
+  app.use(createPinia())
+  app.use(router)
+  app.use(layoutsPlugin)
+  app.use(i18n)
+  app.use(abilitiesPlugin, ability, {
+    useGlobalProperties: true,
+  })
+
+  const authenticationUserStore = useAuthenticationStore()
+
+  const fetchEntitlementsConvertex = async () => {
+    const kc = getKeycloak()
+
+    try {
+      // /v1/users/me
+      const me = await authenticationUserStore.fetchMeAndAbilities()
+
+      console.log('me:', me)
+
+      // /v1/users/me/entitlements
+      const entResp = await authenticationUserStore.fetchEntitlements()
+      const data = entResp?.data || {}
+
+      console.log('entitlements:', data)
+
+      const ifluc = data.apps?.find(a => a.key === 'ifluc')
+
+      // Usuario logueado pero sin Ifluc activo
+      if (!ifluc || !ifluc.isActive) {
+        console.warn('Usuario sin Ifluc activo, cerrando sesión…')
+
+        if (kc) {
+          await kc.logout({ redirectUri: PUBLIC_REDIRECT })
+        } else {
+          window.location.href = PUBLIC_REDIRECT
+        }
+
+        // Muy importante: NO seguir montando la app
+        return false
+      }
+
+      return true
+    } catch (error) {
+      // Timeout/abort
+      if (error.code === 'ECONNABORTED' || error.message === 'Request aborted') {
+        console.warn('Request inicial abortado/timeout:', error)
+
+        return false
+      }
+
+      // 401 / 403 ⇒ algo va mal con permisos del backend
+      if (error.response && [401, 403].includes(error.response.status)) {
+        console.warn('Backend devolvió', error.response.status, 'cerrando sesión…')
+
+        const kc = getKeycloak()
+        if (kc) {
+          await kc.logout({ redirectUri: PUBLIC_REDIRECT })
+        } else {
+          window.location.href = PUBLIC_REDIRECT
+        }
+
+        return false
+      }
+
+      console.error('Error al cargar datos iniciales:', error)
+
+      // Si llegamos aquí sí montaremos la app pero en una ruta de error
+      await router.replace({
+        name: 'error-entitlements',
+        query: { reason: 'entitlements' },
+      })
+
+      return true
+    }
+  }
+
+  // 3) Esperar antes de montar
+  const puedeMontar = await fetchEntitlementsConvertex()
+
+  if (!puedeMontar) {
+    // ya hemos hecho logout o redirección
+    return
+  }
+
+  // Register plugins
+  registerPlugins(app)
+
+  console.log('Montando app...')
+
+  // 4) Montar app
+  app.mount('#app')
+}
+
+bootstrap()

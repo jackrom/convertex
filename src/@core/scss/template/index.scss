@@ -1,0 +1,31 @@
+@use "sass:map";
+@use "@core/scss/base";
+
+// Layout
+@use "vertical-nav";
+@use "horizontal-nav";
+@use "default-layout-w-vertical-nav";
+@use "default-layout-w-horizontal-nav";
+
+// Skins
+@use "skins";
+
+// Utilities
+@use "utilities";
+
+// Mixins
+@use "mixins";
+
+.layout-wrapper.layout-nav-type-vertical.layout-content-height-fixed .layout-page-content .page-content-container > :first-child {
+  overflow: hidden;
+}
+.layout-content-width-boxed .layout-page-content {
+  inline-size: 100%;
+  margin-inline: auto;
+  max-inline-size: 100% !important;
+}
+.layout-content-width-boxed.layout-wrapper.layout-nav-type-vertical .layout-navbar, .layout-content-width-boxed.layout-wrapper.layout-nav-type-vertical .layout-footer {
+  inline-size: 100%;
+  margin-inline: auto;
+  max-inline-size: 100%;
+}

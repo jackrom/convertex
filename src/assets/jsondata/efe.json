@@ -1,0 +1,1182 @@
+﻿[
+    {
+        "CODIGO": "95",
+        "NOMBRE DE LA CUENTA": "INCREMENTO NETO (DISMINUCIÓN) EN EL EFECTIVO Y EQUIVALENTES AL EFECTIVO, ANTES DEL EFECTO DE LOS CAMBIOS EN LA TASA DE CAMBIO"
+    },
+    {
+        "CODIGO": "9501",
+        "NOMBRE DE LA CUENTA": "FLUJOS DE EFECTIVO PROCEDENTES DE (UTILIZADOS EN) ACTIVIDADES DE OPERACIÓN"
+    },
+    {
+        "CODIGO": "950101",
+        "NOMBRE DE LA CUENTA": "Clases de cobros por actividades de operación"
+    },
+    {
+        "CODIGO": "95010101",
+        "NOMBRE DE LA CUENTA": "Cobros procedentes de las ventas de bienes y prestación de servicios"
+    },
+    {
+      "CODIGO": "9501010101",
+      "NOMBRE DE LA CUENTA": "Venta de bienes"
+    },
+    {
+      "CODIGO": "9501010102",
+      "NOMBRE DE LA CUENTA": "Prestación de servicios"
+    },
+    {
+      "CODIGO": "9501010103",
+      "NOMBRE DE LA CUENTA": "Contratos de construcción"
+    },
+    {
+      "CODIGO": "9501010104",
+      "NOMBRE DE LA CUENTA": "Descuentos en ventas"
+    },
+    {
+      "CODIGO": "9501010105",
+      "NOMBRE DE LA CUENTA": "Devoluciones en ventas"
+    },
+    {
+      "CODIGO": "9501010106",
+      "NOMBRE DE LA CUENTA": "Bonificación en producto"
+    },
+    {
+      "CODIGO": "9501010107",
+      "NOMBRE DE LA CUENTA": "Otras rebajas comerciales"
+    },
+    {
+      "CODIGO": "9501010108",
+      "NOMBRE DE LA CUENTA": "Utilidades en cambio"
+    },
+    {
+      "CODIGO": "9501010109",
+      "NOMBRE DE LA CUENTA": "Deudores comerciales y otras cuentas por cobrar no relacionados"
+    },
+    {
+      "CODIGO": "9501010110",
+      "NOMBRE DE LA CUENTA": "Provisión por deterioro de activos financieros"
+    },
+    {
+      "CODIGO": "9501010111",
+      "NOMBRE DE LA CUENTA": "Provisión por cuentas incobrables y deterioro"
+    },
+    {
+      "CODIGO": "9501010112",
+      "NOMBRE DE LA CUENTA": "Mov Pérdidas Acum Cuentas Incobrables y Deterioro | Provisión del año"
+    },
+    {
+      "CODIGO": "9501010113",
+      "NOMBRE DE LA CUENTA": "Mov Pérdidas Acum Cuentas Incobrables y Deterioro | Bajas o reversiones"
+    },
+    {
+      "CODIGO": "9501010114",
+      "NOMBRE DE LA CUENTA": "Mov Pérdidas Acum Cuentas Incobrables y Deterioro | Ajustes"
+    },
+    {
+      "CODIGO": "9501010115",
+      "NOMBRE DE LA CUENTA": "Activos Financieros a Valor Razonable con Cambios en Resultados"
+    },
+    {
+      "CODIGO": "9501010116",
+      "NOMBRE DE LA CUENTA": "Activos Financieros a Valor Razonable con Cambios en Otros Resultado Integral"
+    },
+    {
+      "CODIGO": "9501010117",
+      "NOMBRE DE LA CUENTA": "Activos Financieros al Costo Amortizado"
+    },
+    {
+      "CODIGO": "9501010118",
+      "NOMBRE DE LA CUENTA": "Activos por Impuestos Corrientes"
+    },
+    {
+      "CODIGO": "9501010119",
+      "NOMBRE DE LA CUENTA": "Activos Corrientes Mantenidos para la Venta y Operaciones Discontinuadas"
+    },
+    {
+      "CODIGO": "9501010120",
+      "NOMBRE DE LA CUENTA": "Construcciones en Proceso (NIC 11 y Secc.23 PYMES)"
+    },
+    {
+      "CODIGO": "9501010121",
+      "NOMBRE DE LA CUENTA": "Otros Activos Corrientes"
+    },
+    {
+        "CODIGO": "95010102",
+        "NOMBRE DE LA CUENTA": "Cobros procedentes de regalías, cuotas, comisiones y otros ingresos de actividades ordinarias"
+    },
+    {
+      "CODIGO": "9501010201",
+      "NOMBRE DE LA CUENTA": "Subvenciones del Gobierno"
+    },
+    {
+      "CODIGO": "9501010202",
+      "NOMBRE DE LA CUENTA": "Regalías"
+    },
+    {
+      "CODIGO": "9501010203",
+      "NOMBRE DE LA CUENTA": "Intereses"
+    },
+    {
+      "CODIGO": "9501010204",
+      "NOMBRE DE LA CUENTA": "Ganancia por Medición a Valor Razonable de Activos Biológicos"
+    },
+    {
+      "CODIGO": "9501010205",
+      "NOMBRE DE LA CUENTA": "Ingresos por Comisiones, Prestación de Servicios, Custodia, Registro, Compensación y Liquidación"
+    },
+    {
+      "CODIGO": "9501010206",
+      "NOMBRE DE LA CUENTA": "Ingresos Financieros"
+    },
+    {
+      "CODIGO": "9501010207",
+      "NOMBRE DE LA CUENTA": "Documentos y Cuentas por Cobrar Relacionados"
+    },
+    {
+        "CODIGO": "95010103",
+        "NOMBRE DE LA CUENTA": "Cobros procedentes de contratos mantenidos con propósitos de intermediación o para negociar"
+    },
+    {
+        "CODIGO": "95010104",
+        "NOMBRE DE LA CUENTA": "Cobros procedentes de primas y prestaciones, anualidades y otros beneficios de pólizas suscritas"
+    },
+    {
+        "CODIGO": "95010105",
+        "NOMBRE DE LA CUENTA": "Otros cobros por actividades de operación"
+    },
+    {
+        "CODIGO": "950102",
+        "NOMBRE DE LA CUENTA": "Clases de pagos por actividades de operación"
+    },
+    {
+        "CODIGO": "95010201",
+        "NOMBRE DE LA CUENTA": "Pagos a proveedores por el suministro de bienes y servicios"
+    },
+    {
+      "CODIGO": "9501020101",
+      "NOMBRE DE LA CUENTA": "Costo de Ventas y Producción"
+    },
+    {
+      "CODIGO": "9501020102",
+      "NOMBRE DE LA CUENTA": "Inventarios"
+    },
+    {
+      "CODIGO": "9501020103",
+      "NOMBRE DE LA CUENTA": "Mov Pérdida Acum Valor Neto de Realización y Otras Pérdidas de Inventario | Provisión del año"
+    },
+    {
+      "CODIGO": "9501020104",
+      "NOMBRE DE LA CUENTA": "Mov Pérdida Acum Valor Neto de Realización y Otras Pérdidas de Inventario | Bajas"
+    },
+    {
+      "CODIGO": "9501020105",
+      "NOMBRE DE LA CUENTA": "Mov Pérdida Acum Valor Neto de Realización y Otras Pérdidas de Inventario | Ajustes"
+    },
+    {
+      "CODIGO": "9501020106",
+      "NOMBRE DE LA CUENTA": "Gasto de Venta"
+    },
+    {
+      "CODIGO": "9501020107",
+      "NOMBRE DE LA CUENTA": "Gasto Administrativo"
+    },
+    {
+      "CODIGO": "9501020108",
+      "NOMBRE DE LA CUENTA": "Servicios y Otros Pagos Anticipados"
+    },
+    {
+      "CODIGO": "9501020109",
+      "NOMBRE DE LA CUENTA": "Cuentas y Documentos por Pagar"
+    },
+    {
+      "CODIGO": "9501020110",
+      "NOMBRE DE LA CUENTA": "Porción Corriente de Provisiones Por Beneficios a Empleados"
+    },
+    {
+      "CODIGO": "9501020111",
+      "NOMBRE DE LA CUENTA": "Pasivos Financieros a Valor Razonable con Cambios en Resultados"
+    },
+    {
+      "CODIGO": "9501020112",
+      "NOMBRE DE LA CUENTA": "Pasivos por Contratos de Arrendamiento"
+    },
+    {
+      "CODIGO": "9501020113",
+      "NOMBRE DE LA CUENTA": "Obligaciones con Instituciones Financieras"
+    },
+    {
+      "CODIGO": "9501020114",
+      "NOMBRE DE LA CUENTA": "Provisiones"
+    },
+    {
+      "CODIGO": "9501020115",
+      "NOMBRE DE LA CUENTA": "Porción Corriente de Valores Emitidos"
+    },
+    {
+      "CODIGO": "9501020116",
+      "NOMBRE DE LA CUENTA": "Otras Obligaciones Corrientes"
+    },
+    {
+      "CODIGO": "9501020117",
+      "NOMBRE DE LA CUENTA": "Participación a Trabajadores | Provisión del año"
+    },
+    {
+      "CODIGO": "9501020118",
+      "NOMBRE DE LA CUENTA": "Impuesto a la Renta | Provisión del año"
+    },
+    {
+      "CODIGO": "9501020119",
+      "NOMBRE DE LA CUENTA": "Cuentas por Pagar a Relacionadas"
+    },
+    {
+      "CODIGO": "9501020120",
+      "NOMBRE DE LA CUENTA": "Otros Pasivos Financieros"
+    },
+    {
+      "CODIGO": "9501020121",
+      "NOMBRE DE LA CUENTA": "Anticipos"
+    },
+    {
+      "CODIGO": "9501020122",
+      "NOMBRE DE LA CUENTA": "Pasivos Directamente Asociados con los Activos No Corrientes y Operaciones Discontinuadas"
+    },
+    {
+      "CODIGO": "9501020123",
+      "NOMBRE DE LA CUENTA": "Otros Pasivos Corrientes"
+    },
+    {
+      "CODIGO": "9501020124",
+      "NOMBRE DE LA CUENTA": "Pasivos Financieros Al Costo Amortizado"
+    },
+    {
+      "CODIGO": "9501020125",
+      "NOMBRE DE LA CUENTA": "Mov Otros | Impuesto a las Rentas"
+    },
+    {
+      "CODIGO": "9501020126",
+      "NOMBRE DE LA CUENTA": "Mov Otros | Partiipación a Trabajadores"
+    },
+    {
+      "CODIGO": "9501020127",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades,Planta y Equipo | Gastos de Depreciación"
+    },
+    {
+      "CODIGO": "9501020128",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Edificios | Gastos de Depreciación"
+    },
+    {
+      "CODIGO": "9501020129",
+      "NOMBRE DE LA CUENTA": "Mov Activos Intangibles | Gastos de Amortización"
+    },
+    {
+      "CODIGO": "9501020130",
+      "NOMBRE DE LA CUENTA": "Mov Pérdidas Acum Cuentas Incobrables y Deterioro | Provisión del Año"
+    },
+    {
+      "CODIGO": "9501020131",
+      "NOMBRE DE LA CUENTA": "Mov Pérdidas Acum Cuentas Incobrables y Deterioro | Bajas o Reversiones"
+    },
+    {
+      "CODIGO": "9501020132",
+      "NOMBRE DE LA CUENTA": "Mov Pérdidas Acum Cuentas Incobrables y Deterioro | Ajustes"
+    },
+    {
+      "CODIGO": "9501020133",
+      "NOMBRE DE LA CUENTA": "Mov Pérdida Acum. Valor Neto de Realización y Otras Pérdidas de Inventario | Provisión del año"
+    },
+    {
+      "CODIGO": "9501020134",
+      "NOMBRE DE LA CUENTA": "Mov Pérdida Acum. Valor Neto de Realización y Otras Pérdidas de Inventario | Bajas"
+    },
+    {
+      "CODIGO": "9501020135",
+      "NOMBRE DE LA CUENTA": "Mov Pérdida Acum. Valor Neto de Realización y Otras Pérdidas de Inventario | Ajustes"
+    },
+    {
+      "CODIGO": "9501020136",
+      "NOMBRE DE LA CUENTA": "Mov Activos Financieros Largo Plazo | Provisión por Deterioro"
+    },
+    {
+      "CODIGO": "9501020137",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Terrenos | Valor Razonable"
+    },
+    {
+      "CODIGO": "9501020138",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Edificios | Valor Razonable"
+    },
+    {
+      "CODIGO": "9501020139",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades, Planta y Equipo | Bajas Incluida Depreciación"
+    },
+    {
+      "CODIGO": "9501020140",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades, Planta y Equipo | Ajustes a PyG"
+    },
+    {
+      "CODIGO": "9501020141",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Terrenos | Bajas Incluida LA Depreciación"
+    },
+    {
+      "CODIGO": "9501020142",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Edificios | Bajas Incluidas La Depreciación"
+    },
+    {
+      "CODIGO": "9501020143",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Terrenos | Otros"
+    },
+    {
+      "CODIGO": "9501020144",
+      "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Edificios | Otros"
+    },
+    {
+      "CODIGO": "9501020145",
+      "NOMBRE DE LA CUENTA": "Mov Activos Intangibles | Bajas Incluida la Depreciación"
+    },
+    {
+      "CODIGO": "9501020146",
+      "NOMBRE DE LA CUENTA": "Mov Activos Intangibles | Otros"
+    },
+    {
+      "CODIGO": "9501020147",
+      "NOMBRE DE LA CUENTA": "Mov Activos Biológicos | Bajas o Ventas"
+    },
+    {
+      "CODIGO": "9501020148",
+      "NOMBRE DE LA CUENTA": "Mov Activos Biológicos | Incremento o Disminución Del Valor Razonable"
+    },
+    {
+      "CODIGO": "9501020149",
+      "NOMBRE DE LA CUENTA": "Mov Jubilación Patronal | Costos por Servicios Actuales"
+    },
+    {
+      "CODIGO": "9501020150",
+      "NOMBRE DE LA CUENTA": "Mov Jubilación Patronal | Costo Financiero"
+    },
+    {
+      "CODIGO": "9501020151",
+      "NOMBRE DE LA CUENTA": "Mov Jubilación Patronal | Otros"
+    },
+    {
+      "CODIGO": "9501020152",
+      "NOMBRE DE LA CUENTA": "Mov Jubilación Patronal | Efectos de Liquidaciones Anticipadas"
+    },
+    {
+      "CODIGO": "9501020153",
+      "NOMBRE DE LA CUENTA": "Mov Desahucio | Costos por Servicios Actuales"
+    },
+    {
+      "CODIGO": "9501020154",
+      "NOMBRE DE LA CUENTA": "Mov Desahucio | Costo Financiero"
+    },
+    {
+      "CODIGO": "9501020155",
+      "NOMBRE DE LA CUENTA": "Mov Desahucio | Otros"
+    },
+    {
+      "CODIGO": "9501020156",
+      "NOMBRE DE LA CUENTA": "Mov Desahucio | Efecto de Liquidaciones Anticipadas"
+    },
+    {
+        "CODIGO": "95010202",
+        "NOMBRE DE LA CUENTA": "Pagos procedentes de contratos mantenidos para intermediación o para negociar"
+    },
+    {
+        "CODIGO": "95010203",
+        "NOMBRE DE LA CUENTA": "Pagos a y por cuenta de los empleados"
+    },
+    {
+      "CODIGO": "9501020301",
+      "NOMBRE DE LA CUENTA": "Resultados | 15% Participación Trabajadores"
+    },
+    {
+      "CODIGO": "9501020302",
+      "NOMBRE DE LA CUENTA": "Mov Otros | Participación Trabajadores | Provisión del año"
+    },
+    {
+      "CODIGO": "9501020303",
+      "NOMBRE DE LA CUENTA": "Mov Otros | Participación Trabajadores | Pagos"
+    },
+    {
+      "CODIGO": "95010203",
+      "NOMBRE DE LA CUENTA": "PResultados | 15% Participación Trabajadores"
+    },
+    {
+      "CODIGO": "95010203",
+      "NOMBRE DE LA CUENTA": "Mov Otros | Participación Trabajadores | Provisión del año"
+    },
+    {
+      "CODIGO": "95010203",
+      "NOMBRE DE LA CUENTA": "Mov Otros | Participación Trabajadores | Pagos"
+    },
+    {
+        "CODIGO": "95010204",
+        "NOMBRE DE LA CUENTA": "Pagos por primas y prestaciones, anualidades y otras obligaciones derivadas de las pólizas suscritas"
+    },
+    {
+        "CODIGO": "95010205",
+        "NOMBRE DE LA CUENTA": "Otros pagos por actividades de operación"
+    },
+    {
+        "CODIGO": "950103",
+        "NOMBRE DE LA CUENTA": "Dividendos pagados"
+    },
+    {
+        "CODIGO": "950104",
+        "NOMBRE DE LA CUENTA": "Dividendos recibidos"
+    },
+    {
+      "CODIGO": "95010401",
+      "NOMBRE DE LA CUENTA": "Dividendos"
+    },
+    {
+        "CODIGO": "950105",
+        "NOMBRE DE LA CUENTA": "Intereses pagados"
+    },
+    {
+      "CODIGO": "95010501",
+      "NOMBRE DE LA CUENTA": "Gastos Financieros"
+    },
+    {
+      "CODIGO": "95010502",
+      "NOMBRE DE LA CUENTA": "Intereses o Actualización de Antiguas Inversiones"
+    },
+    {
+      "CODIGO": "95010503",
+      "NOMBRE DE LA CUENTA": "Ajustes"
+    },
+    {
+        "CODIGO": "950106",
+        "NOMBRE DE LA CUENTA": "Intereses recibidos"
+    },
+    {
+        "CODIGO": "950107",
+        "NOMBRE DE LA CUENTA": "Impuestos a las ganancias pagados"
+    },
+    {
+      "CODIGO": "95010701",
+      "NOMBRE DE LA CUENTA": "Impuestos a la Renta Causado"
+    },
+    {
+      "CODIGO": "95010702",
+      "NOMBRE DE LA CUENTA": "Impuestos a la Renta | Provisión del año"
+    },
+    {
+      "CODIGO": "95010703",
+      "NOMBRE DE LA CUENTA": "Impuestos a la Renta | Pagos"
+    },
+    {
+        "CODIGO": "950108",
+        "NOMBRE DE LA CUENTA": "Otras entradas (salidas) de efectivo"
+    },
+    {
+      "CODIGO": "95010801",
+      "NOMBRE DE LA CUENTA": "Otros Gastos"
+    },
+    {
+      "CODIGO": "95010802",
+      "NOMBRE DE LA CUENTA": "Otros Ingresos"
+    },
+    {
+      "CODIGO": "95010803",
+      "NOMBRE DE LA CUENTA": "(-) Gasto por Impuestos Diferidos"
+    },
+    {
+      "CODIGO": "95010804",
+      "NOMBRE DE LA CUENTA": "(+) Ingreso por Impuesto Diferido"
+    },
+    {
+      "CODIGO": "95010805",
+      "NOMBRE DE LA CUENTA": "Activo | Impuesto Diferido | Generación Reversión"
+    },
+    {
+      "CODIGO": "95010806",
+      "NOMBRE DE LA CUENTA": "Activo | Impuesto Diferido | Ajustes a Resultados"
+    },
+    {
+      "CODIGO": "95010807",
+      "NOMBRE DE LA CUENTA": "Pasivo | Impuesto Diferido | Generación Reversión"
+    },
+    {
+      "CODIGO": "95010808",
+      "NOMBRE DE LA CUENTA": "Pasivo | Impuesto Diferido | Ajustes a Resultados"
+    },
+    {
+      "CODIGO": "95010809",
+      "NOMBRE DE LA CUENTA": "Pérdida (Ganancia) de moneda extranjera no realizada"
+    },
+    {
+      "CODIGO": "95010810",
+      "NOMBRE DE LA CUENTA": "Pérdidas en cambio de moneda extranjera"
+    },
+    {
+      "CODIGO": "95010811",
+      "NOMBRE DE LA CUENTA": "Ajustes por gastos en provisiones"
+    },
+    {
+      "CODIGO": "95010812",
+      "NOMBRE DE LA CUENTA": "Ajustes por Participaciones no Controladoras"
+    },
+    {
+      "CODIGO": "95010813",
+      "NOMBRE DE LA CUENTA": "Ajustes por Pagos basados en Acciones"
+    },
+    {
+        "CODIGO": "9502",
+        "NOMBRE DE LA CUENTA": "FLUJOS DE EFECTIVO PROCEDENTES DE (UTILIZADOS EN) ACTIVIDADES DE INVERSIÓN"
+    },
+    {
+        "CODIGO": "950201",
+        "NOMBRE DE LA CUENTA": "Efectivo procedentes de la venta de acciones en subsidiarias u otros negocios"
+    },
+    {
+        "CODIGO": "950202",
+        "NOMBRE DE LA CUENTA": "Efectivo utilizado para adquirir acciones en subsidiarias u otros negocios para tener el control"
+    },
+    {
+        "CODIGO": "950203",
+        "NOMBRE DE LA CUENTA": "Efectivo utilizado en la compra de participaciones no controladoras"
+    },
+    {
+        "CODIGO": "950204",
+        "NOMBRE DE LA CUENTA": "Otros cobros por la venta de acciones o instrumentos de deuda de otras entidades"
+    },
+    {
+        "CODIGO": "950205",
+        "NOMBRE DE LA CUENTA": "Otros pagos para adquirir acciones o instrumentos de deuda de otras entidades"
+    },
+  {
+    "CODIGO": "95020501",
+    "NOMBRE DE LA CUENTA": "Mov Activos Financieros Largo Plazo | Nuevas Inversiones"
+  },
+    {
+        "CODIGO": "950206",
+        "NOMBRE DE LA CUENTA": "Otros cobros por la venta de participaciones en negocios conjuntos"
+    },
+    {
+        "CODIGO": "950207",
+        "NOMBRE DE LA CUENTA": "Otros pagos para adquirir participaciones en negocios conjuntos"
+    },
+    {
+        "CODIGO": "950208",
+        "NOMBRE DE LA CUENTA": "Importes procedentes por la venta de propiedades, planta y equipo"
+    },
+    {
+        "CODIGO": "950209",
+        "NOMBRE DE LA CUENTA": "Adquisiciones de propiedades, planta y equipo"
+    },
+  {
+    "CODIGO": "95020901",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades,Planta y Equipo | Compras"
+  },
+    {
+        "CODIGO": "950210",
+        "NOMBRE DE LA CUENTA": "Importes procedentes de ventas de activos intangibles"
+    },
+    {
+        "CODIGO": "950211",
+        "NOMBRE DE LA CUENTA": "Compras de activos intangibles"
+    },
+  {
+    "CODIGO": "95021101",
+    "NOMBRE DE LA CUENTA": "Mov Activos Intangibles | Compras"
+  },
+    {
+        "CODIGO": "950212",
+        "NOMBRE DE LA CUENTA": "Importes procedentes de otros activos a largo plazo"
+    },
+    {
+        "CODIGO": "950213",
+        "NOMBRE DE LA CUENTA": "Compras de otros activos a largo plazo"
+    },
+  {
+    "CODIGO": "95021301",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Terrenos | Compras"
+  },
+  {
+    "CODIGO": "95021302",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Edificios | Compras"
+  },
+  {
+    "CODIGO": "95021303",
+    "NOMBRE DE LA CUENTA": "Mov Activos Biológicos | Compras"
+  },
+    {
+        "CODIGO": "950214",
+        "NOMBRE DE LA CUENTA": "Importes procedentes de subvenciones del gobierno"
+    },
+    {
+        "CODIGO": "950215",
+        "NOMBRE DE LA CUENTA": "Anticipos de efectivo efectuados a terceros"
+    },
+    {
+        "CODIGO": "950216",
+        "NOMBRE DE LA CUENTA": "Cobros procedentes del reembolso de anticipos y préstamos concedidos a terceros"
+    },
+    {
+        "CODIGO": "950217",
+        "NOMBRE DE LA CUENTA": "Pagos derivados de contratos de futuro, a término, de opciones y de permuta financiera"
+    },
+    {
+        "CODIGO": "950218",
+        "NOMBRE DE LA CUENTA": "Cobros procedentes de contratos de futuro, a término, de opciones y de permuta financiera"
+    },
+    {
+        "CODIGO": "950219",
+        "NOMBRE DE LA CUENTA": "Dividendos recibidos"
+    },
+    {
+        "CODIGO": "950220",
+        "NOMBRE DE LA CUENTA": "Intereses recibidos"
+    },
+    {
+        "CODIGO": "950221",
+        "NOMBRE DE LA CUENTA": "Otras entradas (salidas) de efectivo"
+    },
+  {
+    "CODIGO": "95022101",
+    "NOMBRE DE LA CUENTA": "Derecho de Uso por Activos Arrendados"
+  },
+  {
+    "CODIGO": "95022102",
+    "NOMBRE DE LA CUENTA": "Otros Activos no Corrientes"
+  },
+  {
+    "CODIGO": "95022103",
+    "NOMBRE DE LA CUENTA": "Documentos y Cuentas por Cobrar No Relacionados"
+  },
+  {
+    "CODIGO": "95022104",
+    "NOMBRE DE LA CUENTA": "Documentos y Cuentas por Cobrar Relacionados"
+  },
+  {
+    "CODIGO": "95022105",
+    "NOMBRE DE LA CUENTA": "Cuentas y Documentos por Pagar"
+  },
+  {
+    "CODIGO": "95022106",
+    "NOMBRE DE LA CUENTA": "Cuentas por Pagar Relacionadas"
+  },
+  {
+    "CODIGO": "95022107",
+    "NOMBRE DE LA CUENTA": "Anticipos"
+  },
+  {
+    "CODIGO": "95022108",
+    "NOMBRE DE LA CUENTA": "Otras Provisiones"
+  },
+  {
+    "CODIGO": "95022109",
+    "NOMBRE DE LA CUENTA": "Pasivo Diferido"
+  },
+  {
+    "CODIGO": "95022110",
+    "NOMBRE DE LA CUENTA": "Otros Pasivos No Corrientes"
+  },
+    {
+        "CODIGO": "9503",
+        "NOMBRE DE LA CUENTA": "FLUJOS DE EFECTIVO PROCEDENTES DE (UTILIZADOS EN) ACTIVIDADES DE FINANCIACIÓN"
+    },
+    {
+        "CODIGO": "950301",
+        "NOMBRE DE LA CUENTA": "Aporte en efectivo por aumento de capital"
+    },
+  {
+    "CODIGO": "95030101",
+    "NOMBRE DE LA CUENTA": "Aumento (Disminución) de Capital Social"
+  },
+  {
+    "CODIGO": "95030102",
+    "NOMBRE DE LA CUENTA": "Aumento (Disminución) de Capital Social y Aporte para Futura Capitalización"
+  },
+  {
+    "CODIGO": "95030103",
+    "NOMBRE DE LA CUENTA": "Aporte para Futura Capitalizaciones"
+  },
+  {
+    "CODIGO": "95030104",
+    "NOMBRE DE LA CUENTA": "AAporte para Futura Capitalizaciones"
+  },
+    {
+        "CODIGO": "950302",
+        "NOMBRE DE LA CUENTA": "Financiamiento por emisión de títulos valores"
+    },
+    {
+        "CODIGO": "950303",
+        "NOMBRE DE LA CUENTA": "Pagos por adquirir o rescatar las acciones de la entidad"
+    },
+    {
+        "CODIGO": "950304",
+        "NOMBRE DE LA CUENTA": "Financiación por préstamos a largo plazo"
+    },
+    {
+        "CODIGO": "950305",
+        "NOMBRE DE LA CUENTA": "Pagos de préstamos"
+    },
+    {
+        "CODIGO": "950306",
+        "NOMBRE DE LA CUENTA": "Pagos de pasivos por arrendamientos financieros"
+    },
+    {
+        "CODIGO": "950307",
+        "NOMBRE DE LA CUENTA": "Importes procedentes de subvenciones del gobierno"
+    },
+    {
+        "CODIGO": "950308",
+        "NOMBRE DE LA CUENTA": "Dividendos pagados"
+    },
+  {
+    "CODIGO": "95030801",
+    "NOMBRE DE LA CUENTA": "Otros Dividendos Pagados"
+  },
+    {
+        "CODIGO": "950309",
+        "NOMBRE DE LA CUENTA": "Intereses recibidos"
+    },
+    {
+        "CODIGO": "950310",
+        "NOMBRE DE LA CUENTA": "Otras entradas (salidas) de efectivo"
+    },
+  {
+    "CODIGO": "95031001",
+    "NOMBRE DE LA CUENTA": "Porción no Corrientes de Valores Emitidos"
+  },
+  {
+    "CODIGO": "95031002",
+    "NOMBRE DE LA CUENTA": "Provisiones por Beneficios a Empleados"
+  },
+  {
+    "CODIGO": "95031003",
+    "NOMBRE DE LA CUENTA": "Pasivos por Contratos de Arrendamiento"
+  },
+  {
+    "CODIGO": "95031004",
+    "NOMBRE DE LA CUENTA": "Obligaciones con Instituciones Financieras"
+  },
+  {
+    "CODIGO": "95031005",
+    "NOMBRE DE LA CUENTA": "Pago por Jubilación Patronal"
+  },
+  {
+    "CODIGO": "95031006",
+    "NOMBRE DE LA CUENTA": "Pago por Desahucio"
+  },
+  {
+    "CODIGO": "95031007",
+    "NOMBRE DE LA CUENTA": "Dividendos Pagados"
+  },
+  {
+    "CODIGO": "95031008",
+    "NOMBRE DE LA CUENTA": "Transferencias a Cuentas de Activos y Pasivo"
+  },
+    {
+        "CODIGO": "9504",
+        "NOMBRE DE LA CUENTA": "EFECTOS DE LA VARIACION EN LA TASA DE CAMBIO SOBRE EL EFECTIVO Y EQUIVALENTES AL EFECTIVO"
+    },
+    {
+        "CODIGO": "950401",
+        "NOMBRE DE LA CUENTA": "Efectos de la variación en la tasa de cambio sobre el efectivo y equivalentes al efectivo"
+    },
+    {
+        "CODIGO": "9505",
+        "NOMBRE DE LA CUENTA": "INCREMENTO (DISMINUCIÓN) NETO DE EFECTIVO Y EQUIVALENTES AL EFECTIVO"
+    },
+    {
+        "CODIGO": "9506",
+        "NOMBRE DE LA CUENTA": "EFECTIVO Y EQUIVALENTES AL EFECTIVO AL PRINCIPIO DEL PERIODO"
+    },
+    {
+        "CODIGO": "9507",
+        "NOMBRE DE LA CUENTA": "EFECTIVO Y EQUIVALENTES AL EFECTIVO AL FINAL DEL PERIODO"
+    },
+    {
+        "CODIGO": "96",
+        "NOMBRE DE LA CUENTA": "GANANCIA (PÉRDIDA) ANTES DE 15% A TRABAJADORES E IMPUESTO A LA RENTA"
+    },
+    {
+        "CODIGO": "97",
+        "NOMBRE DE LA CUENTA": "AJUSTE POR PARTIDAS DISTINTAS AL EFECTIVO"
+    },
+    {
+        "CODIGO": "9701",
+        "NOMBRE DE LA CUENTA": "Ajustes por gasto de depreciación y amortización"
+    },
+  {
+    "CODIGO": "970101",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades, Planta y Equipo | Depreciación"
+  },
+  {
+    "CODIGO": "970102",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Depreciación"
+  },
+  {
+    "CODIGO": "970103",
+    "NOMBRE DE LA CUENTA": "Mov Activos Intangibles | Amortización"
+  },
+    {
+        "CODIGO": "9702",
+        "NOMBRE DE LA CUENTA": "Ajustes por gastos por deterioro (reversiones por deterioro) reconocidas en los resultados del periodo"
+    },
+  {
+    "CODIGO": "970201",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum Cuentas Incobrables y Deterioro | Provisión del año"
+  },
+  {
+    "CODIGO": "970202",
+    "NOMBRE DE LA CUENTA": "Mov Pérdidas Acum Cuentas Incobrables y Deterioro | Bajas o reversiones"
+  },
+  {
+    "CODIGO": "970203",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum Cuentas Incobrables y Deterioro | Ajustes"
+  },
+  {
+    "CODIGO": "970204",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum. Valor Neto de Realización y Otras Pérdidas de Inventario | Provisión del año"
+  },
+  {
+    "CODIGO": "970205",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum. Valor Neto de Realización y Otras Pérdidas de Inventario | Bajas"
+  },
+  {
+    "CODIGO": "970206",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum. Valor Neto de Realización y Otras Pérdidas de Inventario | Ajustes"
+  },
+  {
+    "CODIGO": "970207",
+    "NOMBRE DE LA CUENTA": "Mov Activos Financieros Largo Plazo | Provision por deterioro"
+  },
+    {
+        "CODIGO": "9703",
+        "NOMBRE DE LA CUENTA": "Pérdida (ganancia) de moneda extranjera no realizada"
+    },
+    {
+        "CODIGO": "9704",
+        "NOMBRE DE LA CUENTA": "Pérdidas en cambio de moneda extranjera"
+    },
+    {
+        "CODIGO": "9705",
+        "NOMBRE DE LA CUENTA": "Ajustes por gastos en provisiones"
+    },
+    {
+        "CODIGO": "9706",
+        "NOMBRE DE LA CUENTA": "Ajuste por participaciones no controladoras"
+    },
+    {
+        "CODIGO": "9707",
+        "NOMBRE DE LA CUENTA": "Ajuste por pagos basados en acciones"
+    },
+    {
+        "CODIGO": "9708",
+        "NOMBRE DE LA CUENTA": "Ajustes por ganancias (pérdidas) en valor razonable"
+    },
+  {
+    "CODIGO": "970801",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Terrenos Valor razonable"
+  },
+  {
+    "CODIGO": "970802",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Edificios Valor razonable"
+  },
+    {
+        "CODIGO": "9709",
+        "NOMBRE DE LA CUENTA": "Ajustes por gasto por impuesto a la renta"
+    },
+  {
+    "CODIGO": "970901",
+    "NOMBRE DE LA CUENTA": "Mov Otros | Impuesto a la renta"
+  },
+    {
+        "CODIGO": "9710",
+        "NOMBRE DE LA CUENTA": "Ajustes por gasto por participación trabajadores"
+    },
+  {
+    "CODIGO": "971001",
+    "NOMBRE DE LA CUENTA": "Mov Otros | Participación a trabajadores"
+  },
+    {
+        "CODIGO": "9711",
+        "NOMBRE DE LA CUENTA": "Otros ajustes por partidas distintas al efectivo"
+    },
+  {
+    "CODIGO": "971101",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades, Planta y Equipo | Bajas"
+  },
+  {
+    "CODIGO": "971102",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades, Planta y Equipo | Ajustes a PYG"
+  },
+  {
+    "CODIGO": "971103",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Terrenos"
+  },
+  {
+    "CODIGO": "971104",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Edificios"
+  },
+  {
+    "CODIGO": "971105",
+    "NOMBRE DE LA CUENTA": "Mov Propiedades de Inversión | Otros Terrenos"
+  },
+  {
+    "CODIGO": "971106",
+    "NOMBRE DE LA CUENTA": "Propiedades de Inversión | Otros Edificios"
+  },
+  {
+    "CODIGO": "971107",
+    "NOMBRE DE LA CUENTA": "Activos Intangibles | Bajas incluida la depreciación"
+  },
+  {
+    "CODIGO": "971108",
+    "NOMBRE DE LA CUENTA": "Mov Activos Intangibles | Otros"
+  },
+  {
+    "CODIGO": "971109",
+    "NOMBRE DE LA CUENTA": "Mov Activos Biológicos | Bajas o Ventas"
+  },
+  {
+    "CODIGO": "971110",
+    "NOMBRE DE LA CUENTA": "Mov Activos Biológicos | Incremento o Disminución del Valor Razonable"
+  },
+  {
+    "CODIGO": "971111",
+    "NOMBRE DE LA CUENTA": "Mov Impuesto Diferido | Activos Generación Reversión"
+  },
+  {
+    "CODIGO": "971112",
+    "NOMBRE DE LA CUENTA": "Mov Impuesto Diferido | Activos Ajustes a Resultados"
+  },
+  {
+    "CODIGO": "971113",
+    "NOMBRE DE LA CUENTA": "Mov Impuesto Diferido | Pasivos Generación Reversión"
+  },
+  {
+    "CODIGO": "971114",
+    "NOMBRE DE LA CUENTA": "Mov Impuesto Diferido | Pasivo Ajuste a Resultados"
+  },
+  {
+    "CODIGO": "971115",
+    "NOMBRE DE LA CUENTA": "Mov Jubilación Patronal | Costo por servicios actuales"
+  },
+  {
+    "CODIGO": "971116",
+    "NOMBRE DE LA CUENTA": "Mov Jubilación Patronal | Costo Financiero"
+  },
+  {
+    "CODIGO": "971117",
+    "NOMBRE DE LA CUENTA": "Mov Jubilación Patronal | Otros"
+  },
+  {
+    "CODIGO": "971118",
+    "NOMBRE DE LA CUENTA": "Mov Jubilación Patronal | Efectos de liquidaciones anticipadas"
+  },
+  {
+    "CODIGO": "971119",
+    "NOMBRE DE LA CUENTA": "Mov Desahucio | Costo por servicios actuales"
+  },
+  {
+    "CODIGO": "971120",
+    "NOMBRE DE LA CUENTA": "Mov Desahucio | Costo Financiero"
+  },
+  {
+    "CODIGO": "971121",
+    "NOMBRE DE LA CUENTA": "Mov Desahucio | Otros"
+  },
+  {
+    "CODIGO": "971122",
+    "NOMBRE DE LA CUENTA": "Mov Desahucio | Efecto de liquidaciones anticipadas"
+  },
+  {
+    "CODIGO": "971123",
+    "NOMBRE DE LA CUENTA": "Mov Activos Financieros Largo Plazo | Intereses o actualización de antiguas inversiones"
+  },
+  {
+    "CODIGO": "971124",
+    "NOMBRE DE LA CUENTA": "Mov Activos Financieros Largo Plazo | Ajustes"
+  },
+    {
+        "CODIGO": "98",
+        "NOMBRE DE LA CUENTA": "CAMBIOS EN ACTIVOS Y PASIVOS"
+    },
+    {
+        "CODIGO": "9801",
+        "NOMBRE DE LA CUENTA": "(Incremento) disminución en cuentas por cobrar clientes"
+    },
+  {
+    "CODIGO": "980101",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|1010205 DEUDORES COMERCIALES Y OTRAS CUENTAS POR COBRAR NO RELACIONADOS"
+  },
+  {
+    "CODIGO": "980102",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|1010204 PROVISIÓN POR DETERIORO DE ACTIVOS FINANCIEROS"
+  },
+  {
+    "CODIGO": "980103",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|1010207 PROVISIÓN POR CUENTAS INCOBRABLES Y DETERIORO"
+  },
+  {
+    "CODIGO": "980104",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum Cuentas Incobrables y Deterioro | Provisión del año"
+  },
+  {
+    "CODIGO": "980105",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum Cuentas Incobrables y Deterioro | Bajas o reversiones"
+  },
+  {
+    "CODIGO": "980106",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum Cuentas Incobrables y Deterioro | Ajustes"
+  },
+    {
+        "CODIGO": "9802",
+        "NOMBRE DE LA CUENTA": "(Incremento) disminución en otras cuentas por cobrar"
+    },
+  {
+    "CODIGO": "980201",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|1010206 DOCUMENTOS Y CUENTAS POR COBRAR RELACIONADOS"
+  },
+    {
+        "CODIGO": "9803",
+        "NOMBRE DE LA CUENTA": "(Incremento) disminución en anticipos de proveedores"
+    },
+  {
+    "CODIGO": "980301",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|10104 SERVICIOS Y OTROS PAGOS ANTICIPADOS"
+  },
+    {
+        "CODIGO": "9804",
+        "NOMBRE DE LA CUENTA": "(Incremento) disminución en inventarios"
+    },
+  {
+    "CODIGO": "980401",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|1010301 INVENTARIOS"
+  },
+  {
+    "CODIGO": "980402",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum. Valor Neto de Realización y Otras Pérdidas de Inventario | Provisión del año"
+  },
+  {
+    "CODIGO": "980403",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum. Valor Neto de Realización y Otras Pérdidas de Inventario| Bajas"
+  },
+  {
+    "CODIGO": "980404",
+    "NOMBRE DE LA CUENTA": "Mov Pérdida Acum. Valor Neto de Realización y Otras Pérdidas de Inventario| Ajustes"
+  },
+    {
+        "CODIGO": "9805",
+        "NOMBRE DE LA CUENTA": "(Incremento) disminución en otros activos"
+    },
+  {
+    "CODIGO": "980501",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|1010201 ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN RESULTADOS"
+  },
+  {
+    "CODIGO": "980502",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|1010202 ACTIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN OTRO RESULTADO INTEGRAL"
+  },
+  {
+    "CODIGO": "980503",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|1010203 ACTIVOS FINANCIEROS AL COSTO AMORTIZADO"
+  },
+  {
+    "CODIGO": "980504",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|10105 ACTIVOS POR IMPUESTOS CORRIENTES"
+  },
+  {
+    "CODIGO": "980505",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|10106 ACTIVOS CORRIENTES MANTENIDOS PARA LA VENTA Y OPERACIONES DISCONTINUADAS"
+  },
+  {
+    "CODIGO": "980506",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|10107 CONSTRUCCIONES EN PROCESO (NIC 11 Y SECC.23 PYMES)"
+  },
+  {
+    "CODIGO": "980507",
+    "NOMBRE DE LA CUENTA": "ESF|ACTIVOS CORRIENTES|10108 OTROS ACTIVOS CORRIENTES"
+  },
+    {
+        "CODIGO": "9806",
+        "NOMBRE DE LA CUENTA": "Incremento  (disminución) en cuentas por pagar comerciales"
+    },
+  {
+    "CODIGO": "980601",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20103 CUENTAS Y DOCUMENTOS POR PAGAR"
+  },
+    {
+        "CODIGO": "9807",
+        "NOMBRE DE LA CUENTA": "Incremento  (disminución) en otras cuentas por pagar"
+    },
+    {
+        "CODIGO": "9808",
+        "NOMBRE DE LA CUENTA": "Incremento  (disminución) en beneficios empleados"
+    },
+  {
+    "CODIGO": "980801",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20112 PORCION CORRIENTE DE PROVISIONES POR BENEFICIOS A EMPLEADOS"
+  },
+    {
+        "CODIGO": "9809",
+        "NOMBRE DE LA CUENTA": "Incremento  (disminución) en anticipos de clientes"
+    },
+    {
+        "CODIGO": "9810",
+        "NOMBRE DE LA CUENTA": "Incremento  (disminución) en otros pasivos"
+    },
+  {
+    "CODIGO": "981001",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20101 PASIVOS FINANCIEROS A VALOR RAZONABLE CON CAMBIOS EN RESULTADOS"
+  },
+  {
+    "CODIGO": "981002",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20102 PASIVOS POR CONTRATOS DE ARRENDAMIENTO"
+  },
+  {
+    "CODIGO": "981003",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20104 OBLIGACIONES CON INSTITUCIONES FINANCIERAS"
+  },
+  {
+    "CODIGO": "981004",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20105 PROVISIONES"
+  },
+  {
+    "CODIGO": "981005",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20106 PORCIÓN CORRIENTE DE VALORES EMITIDOS"
+  },
+  {
+    "CODIGO": "981006",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20107 OTRAS OBLIGACIONES CORRIENTES"
+  },
+  {
+    "CODIGO": "981007",
+    "NOMBRE DE LA CUENTA": "Mov Otros|Participación a trabajadores | Provisión del año"
+  },
+  {
+    "CODIGO": "981008",
+    "NOMBRE DE LA CUENTA": "Mov Otros|Impuesto a la Renta|Provisión del año"
+  },
+  {
+    "CODIGO": "981009",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20108 CUENTAS POR PAGAR A RELACIONADAS"
+  },
+  {
+    "CODIGO": "981010",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20109 OTROS PASIVOS FINANCIEROS"
+  },
+  {
+    "CODIGO": "981011",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20110 ANTICIPOS"
+  },
+  {
+    "CODIGO": "981012",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20111 PASIVOS DIRECTAMENTE ASOCIADOS CON LOS ACTIVOS NO CORRIENTES Y OPERACIONES DISCONTINUADAS"
+  },
+  {
+    "CODIGO": "981013",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20113 OTROS PASIVOS CORRIENTES"
+  },
+  {
+    "CODIGO": "981014",
+    "NOMBRE DE LA CUENTA": "ESF|PASIVOS CORRIENTES|20114 PASIVOS FINANCIEROS AL COSTO AMORTIZADO"
+  },
+    {
+        "CODIGO": "9820",
+        "NOMBRE DE LA CUENTA": "Flujos de efectivo netos procedentes de (utilizados en) actividades de operación"
+    }
+]

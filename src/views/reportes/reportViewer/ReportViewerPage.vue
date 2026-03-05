@@ -210,8 +210,6 @@ const onChangeValue = payload => {
       store.updateValue(tipoModel, nombrecampo, p.valor, p.meta || {})
     }
 
-    updateCuadres()
-
     return
   }
 
@@ -221,20 +219,6 @@ const onChangeValue = payload => {
   if (!nombrecampo) return
 
   store.updateValue(tipoModel, nombrecampo, payload.valor, payload.meta || {})
-
-  updateCuadres()
-}
-
-// Función para actualizar los cuadres
-const updateCuadres = () => {
-  // Actualizamos los cuadres después de que el valor haya sido actualizado
-  esfCuadre.value = calculateCuadre("esf")  // Reactivo, usa el valor de esf
-  efeCuadre.value = calculateCuadre("efe")  // Reactivo, usa el valor de efe
-  eriCuadre.value = calculateCuadre("eri")  // Reactivo, usa el valor de eri
-  ecpCuadre.value = calculateCuadre("ecp")  // Reactivo, usa el valor de ecp
-
-  // Si es necesario, emite un evento para notificar a otros componentes sobre el cambio en los cuadres
-  // emit("update-cuadres", { esfCuadre, efeCuadre, eriCuadre, ecpCuadre })
 }
 
 // Función que calcula el cuadre para un tipo específico (esf, efe, eri, ecp)
@@ -721,7 +705,7 @@ const calculateCuadre = tipo => {
   position: fixed;
   z-index: 9999;
   background-color: rgb(255, 255, 255);
-  margin-top: -68px;
+  margin-top: -60px;
   right: 80px;
 }
 
@@ -729,7 +713,7 @@ const calculateCuadre = tipo => {
   position: fixed;
   z-index: 9999;
   background-color: rgb(255, 255, 255);
-  margin-top: -68px;
+  margin-top: -60px;
   right: 80px;
 }
 
@@ -737,7 +721,7 @@ const calculateCuadre = tipo => {
   position: fixed;
   z-index: 9999;
   background-color: rgb(255, 255, 255);
-  margin-top: -68px;
+  margin-top: -60px;
   right: 350px;
 }
 </style>

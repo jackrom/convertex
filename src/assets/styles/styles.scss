@@ -1,1 +1,19 @@
 // Write your overrides
+
+.v-text-field input {
+  color: inherit;
+  opacity: 0;
+  flex: 1;
+  transition: .15s opacity cubic-bezier(.4, 0, .2, 1);
+  min-width: 0;
+}
+
+.v-text-field--disabled {
+  opacity: .5;
+  pointer-events: none;
+}
+
+.v-field__input--readonly {
+  opacity: .2 !important;
+  pointer-events: none;
+}

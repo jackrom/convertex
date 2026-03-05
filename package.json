@@ -1,6 +1,6 @@
 {
-  "name": "vuexy-vuejs-admin-template",
-  "version": "9.5.0",
+  "name": "convertex",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {

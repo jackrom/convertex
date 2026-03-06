@@ -878,29 +878,29 @@ const recomputeFormulas = planTipo => {
 
 
   // Si el tipo de plan no es "eri" ni "efe", no hacemos nada
-  if (planTipo !== "eri" && planTipo !== "efe") return;
+  if (planTipo !== "eri" && planTipo !== "efe") return
 
-  const list = planTipo === "efe" ? efeStoreValues.value : eriStoreValues.value;
+  const list = planTipo === "efe" ? efeStoreValues.value : eriStoreValues.value
 
-  const totalsByCodigo = buildHierTotalsByCodigo(planTipo, list);
+  const totalsByCodigo = buildHierTotalsByCodigo(planTipo, list)
 
-  const getSumActual = (codigo) => totalsByCodigo[String(codigo)]?.sumActual ?? 0;
-  const getSumAnterior = (codigo) => totalsByCodigo[String(codigo)]?.sumAnterior ?? 0;
+  const getSumActual = codigo => totalsByCodigo[String(codigo)]?.sumActual ?? 0
+  const getSumAnterior = codigo => totalsByCodigo[String(codigo)]?.sumAnterior ?? 0
 
-  const findByName = (name) => list.find((r) => String(r.nombrecampo).toLowerCase() === name.toLowerCase());
+  const findByName = name => list.find(r => String(r.nombrecampo).toLowerCase() === name.toLowerCase())
 
-  const get = (name) => {
-    const row = findByName(name);
-    return row ? toNumber(row.valor) : 0;
-  };
+  const get = name => {
+    const row = findByName(name)
+    return row ? toNumber(row.valor) : 0
+  }
 
   const setIfChanged = (nombrecampo, numericVal) => {
-    const targetRow = findByName(nombrecampo);
-    const normalized = normalizeForField(nombrecampo, numericVal);
-    const current = targetRow ? toNumber(targetRow.valor) : 0;
-    const tStore = storeTipo.value;
+    const targetRow = findByName(nombrecampo)
+    const normalized = normalizeForField(nombrecampo, numericVal)
+    const current = targetRow ? toNumber(targetRow.valor) : 0
+    const tStore = storeTipo.value
 
-    if (current === normalized) return;
+    if (current === normalized) return
 
     emit("change-value", {
       tipo: tStore, // 'esf' | 'eri' | 'efe' | 'efemd'
@@ -912,8 +912,8 @@ const recomputeFormulas = planTipo => {
         codigo: targetRow?.codigo,
         tablaorigen: targetRow?.tablaorigen,
       },
-    });
-  };
+    })
+  }
 
   const v402 = getSumActual("401") - getSumActual("501")
 
@@ -1012,10 +1012,10 @@ const recomputeFormulas = planTipo => {
 
   // ✅ eri_502 = suma de los 4 bloques (usando hojas)
   const v502 =
-    sumLeavesByPrefix(eriList, "50201", "actual") +
-    sumLeavesByPrefix(eriList, "50202", "actual") +
-    sumLeavesByPrefix(eriList, "50203", "actual") +
-    sumLeavesByPrefix(eriList, "50204", "actual")
+    sumLeavesByPrefix(list, "50201", "actual") +
+    sumLeavesByPrefix(list, "50202", "actual") +
+    sumLeavesByPrefix(list, "50203", "actual") +
+    sumLeavesByPrefix(list, "50204", "actual")
 
   setIfChanged("eri_502", v502)
 
@@ -1023,10 +1023,10 @@ const recomputeFormulas = planTipo => {
 
   // ✅ eri_502_ant = igual pero anterior
   const v502_ant =
-    sumLeavesByPrefix(eriList, "50201", "anterior") +
-    sumLeavesByPrefix(eriList, "50202", "anterior") +
-    sumLeavesByPrefix(eriList, "50203", "anterior") +
-    sumLeavesByPrefix(eriList, "50204", "anterior")
+    sumLeavesByPrefix(list, "50201", "anterior") +
+    sumLeavesByPrefix(list, "50202", "anterior") +
+    sumLeavesByPrefix(list, "50203", "anterior") +
+    sumLeavesByPrefix(list, "50204", "anterior")
 
   setIfChanged("eri_502_ant", v502_ant)
 
@@ -1036,15 +1036,15 @@ const recomputeFormulas = planTipo => {
   // eri_600 = ((eri_401 - eri_501) - (eri_50201 + ...)) + (eri_403)
   const v401 =
     get("eri_40101") +
-    sumLeavesByPrefix(eriList, "40102", "actual") +
+    sumLeavesByPrefix(list, "40102", "actual") +
     get("eri_40103") +
     get("eri_40104") +
     get("eri_40105") +
-    sumLeavesByPrefix(eriList, "40106", "actual") +
+    sumLeavesByPrefix(list, "40106", "actual") +
     get("eri_40107") +
     get("eri_40108") +
-    sumLeavesByPrefix(eriList, "40109", "actual") +
-    sumLeavesByPrefix(eriList, "40110", "actual") +
+    sumLeavesByPrefix(list, "40109", "actual") +
+    sumLeavesByPrefix(list, "40110", "actual") +
     get("eri_40112") +
     get("eri_40113") +
     get("eri_40114") +
@@ -1054,11 +1054,11 @@ const recomputeFormulas = planTipo => {
   setIfChanged("eri_401", v401)
 
   const v501 =
-    sumLeavesByPrefix(eriList, "50101", "actual") +
-    sumLeavesByPrefix(eriList, "50102", "actual") +
-    sumLeavesByPrefix(eriList, "50103", "actual") +
-    sumLeavesByPrefix(eriList, "50104", "actual") +
-    sumLeavesByPrefix(eriList, "50105", "actual")
+    sumLeavesByPrefix(list, "50101", "actual") +
+    sumLeavesByPrefix(list, "50102", "actual") +
+    sumLeavesByPrefix(list, "50103", "actual") +
+    sumLeavesByPrefix(list, "50104", "actual") +
+    sumLeavesByPrefix(list, "50105", "actual")
 
   setIfChanged("eri_501", v501)
 
@@ -1072,15 +1072,15 @@ const recomputeFormulas = planTipo => {
 
   const v401_ant =
     get("eri_40101_ant") +
-    sumLeavesByPrefix(eriList, "40102", "anterior") +
+    sumLeavesByPrefix(list, "40102", "anterior") +
     get("eri_40103_ant") +
     get("eri_40104_ant") +
     get("eri_40105_ant") +
-    sumLeavesByPrefix(eriList, "40106", "anterior") +
+    sumLeavesByPrefix(list, "40106", "anterior") +
     get("eri_40107_ant") +
     get("eri_40108_ant") +
-    sumLeavesByPrefix(eriList, "40109", "anterior") +
-    sumLeavesByPrefix(eriList, "40110", "anterior") +
+    sumLeavesByPrefix(list, "40109", "anterior") +
+    sumLeavesByPrefix(list, "40110", "anterior") +
     get("eri_40112_ant") +
     get("eri_40113_ant") +
     get("eri_40114_ant") +
@@ -1090,11 +1090,11 @@ const recomputeFormulas = planTipo => {
   setIfChanged("eri_401_ant", v401_ant)
 
   const v501_ant =
-    sumLeavesByPrefix(eriList, "50101", "anterior") +
-    sumLeavesByPrefix(eriList, "50102", "anterior") +
-    sumLeavesByPrefix(eriList, "50103", "anterior") +
-    sumLeavesByPrefix(eriList, "50104", "anterior") +
-    sumLeavesByPrefix(eriList, "50105", "anterior")
+    sumLeavesByPrefix(list, "50101", "anterior") +
+    sumLeavesByPrefix(list, "50102", "anterior") +
+    sumLeavesByPrefix(list, "50103", "anterior") +
+    sumLeavesByPrefix(list, "50104", "anterior") +
+    sumLeavesByPrefix(list, "50105", "anterior")
 
   setIfChanged("eri_501_ant", v501_ant)
 
@@ -1333,7 +1333,7 @@ if (props.tipo === "eri") {
 
       // 1 sola pasada inicial: mapeos ESF->ERI + fórmulas ERI
       syncEsfToEri()
-      recomputeEriFormulas()
+      recomputeFormulas("eri")
     },
     { immediate: true },
   )
@@ -1357,7 +1357,7 @@ if (props.tipo === "eri") {
     ],
     () => {
       // ✅ cada vez que cambie cualquiera de estos, recalculamos fórmulas (incluye eri_402)
-      recomputeEriFormulas()
+      recomputeFormulas("eri")
     },
     { immediate: true },
   )
@@ -1374,7 +1374,7 @@ if (props.tipo === "eri") {
   watch(
     () => eriSignature.value,
     () => {
-      recomputeEriFormulas()
+      recomputeFormulas("eri")
     },
     { immediate: true },
   )

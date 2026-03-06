@@ -1,0 +1,1 @@
+import{M as t,E as e,aU as s,bJ as n}from"./index-m-tEb1C3.js";function i(){const o=t(!1);return e(()=>{window.requestAnimationFrame(()=>{o.value=!0})}),{ssrBootStyles:s(()=>o.value?void 0:{transition:"none !important"}),isBooted:n(o)}}export{i as u};

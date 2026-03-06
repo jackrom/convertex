@@ -3,9 +3,11 @@ import { onMounted, ref, computed } from "vue"
 import { usePeriodoStore } from "@/@store/periodo.store"
 import { useEmpresaStore } from "@/@store/empresa.store"
 import AddPeriodoDrawer from "./AddPeriodoDrawer.vue"
+import { useReportesStore } from "@/@store/reportes.store"
 
 const periodoStore = usePeriodoStore()
 const empresaStore = useEmpresaStore()
+const reportStore = useReportesStore()
 
 const isDrawerOpen = ref(false)
 
@@ -43,7 +45,11 @@ const confirmarEliminar = async () => {
 
   deleting.value = true
   try {
+    // Eliminar el periodo
     await periodoStore.remove(targetPeriodo.value.id)
+
+    // Refrescar la lista de reportes
+    await reportStore.load({ force: true })
   } finally {
     deleting.value = false
     deleteDialogOpen.value = false

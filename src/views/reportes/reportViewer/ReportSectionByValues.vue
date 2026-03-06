@@ -274,7 +274,7 @@ const GROUP_LABEL_ORDER = {
     "OTROS GASTOS",
     "RESULTADOS",
     "OPERACIONES DISCONTINUADAS",
-    "OTROS RESULTADO INTEGRAL",
+    "OTROS RESULTADOS INTEGRALES",
     "PARTICIPACION CONTROLADORA",
   ],
   efe: [
@@ -376,7 +376,7 @@ const safeParseNombreCampo = (tPlan, nombrecampo) => {
 // longitudes que consideramos como niveles de padre (3,5,7,9,11,13 dígitos)
 const PARENT_LENGTHS = [5, 7, 9, 11, 13]
 
-const PARENT_LENGTHS_EFE = [2, 4, 6, 8, 10, 12, 14]
+const PARENT_LENGTHS_EFE = [4, 6, 8, 10, 12, 14]
 
 // ---------------------------------------------
 // Agrupar por tablaorigen y calcular totales jerárquicos
@@ -387,18 +387,14 @@ const groups = computed(() => {
 
   const groupedByTabla = {}
 
-  // 1) Construir estructura básica por tablaorigen / código
+  // Paso 1: Construir la estructura básica por tablaorigen / código
   for (const row of items) {
     if (!row || !row.nombrecampo) continue
-
     const parsed = safeParseNombreCampo(tPlan, row.nombrecampo)
     if (!parsed) continue
-
     const { codigo, isAnterior } = parsed
 
-    const { key: logicalTablaKey, base } = getLogicalTablaKey(
-      row.tablaorigen || "OTROS",
-    )
+    const { key: logicalTablaKey, base } = getLogicalTablaKey(row.tablaorigen || "OTROS")
 
     if (!groupedByTabla[logicalTablaKey]) {
       groupedByTabla[logicalTablaKey] = {
@@ -409,7 +405,6 @@ const groups = computed(() => {
     }
 
     const group = groupedByTabla[logicalTablaKey]
-
     if (!group.rowsByCodigo[codigo]) {
       group.rowsByCodigo[codigo] = {
         tipo: storeTipo.value,
@@ -433,7 +428,7 @@ const groups = computed(() => {
     }
   }
 
-  // 2) Crear filas padre "sintéticas" si no existen (para 3,5,7,9 dígitos)
+  // Paso 2: Crear filas padre "sintéticas" si no existen (para 3,5,7,9 dígitos)
   Object.values(groupedByTabla).forEach(group => {
     const existingCodes = Object.keys(group.rowsByCodigo)
     const extraRows = {}
@@ -441,7 +436,7 @@ const groups = computed(() => {
     for (const code of existingCodes) {
       const codeStr = String(code)
 
-      if (tPlan === 'efe'){
+      if (tPlan === "efe") {
         for (const len of PARENT_LENGTHS_EFE) {
           if (len >= codeStr.length) continue
 
@@ -482,13 +477,12 @@ const groups = computed(() => {
           }
         }
       }
-
     }
 
     Object.assign(group.rowsByCodigo, extraRows)
   })
 
-  // 3) Calcular totales jerárquicos
+  // Paso 3: Calcular totales jerárquicos y ordenar
   const result = Object.values(groupedByTabla)
     .map(group => {
       const rows = Object.values(group.rowsByCodigo)
@@ -547,6 +541,11 @@ const groups = computed(() => {
         }
       }
 
+      // 3.5 Ordenar los grupos según `GROUP_LABEL_ORDER`
+      const orderIndex = getGroupOrderIndex(tPlan, group.label)
+
+      group.orderIndex = orderIndex  // Añadimos el índice de orden a cada grupo
+
       const sortedRows = rows.sort((a, b) =>
         compareCodigo(a.codigo, b.codigo),
       )
@@ -554,22 +553,11 @@ const groups = computed(() => {
       return {
         key: group.key,
         label: group.label,
+        orderIndex: group.orderIndex, // Usamos el índice de orden aquí
         rows: sortedRows,
       }
     })
-    .sort((a, b) => {
-      const tPlanSort = planTipo.value
-
-      const orderA = getGroupOrderIndex(tPlanSort, a.label)
-      const orderB = getGroupOrderIndex(tPlanSort, b.label)
-
-      if (orderA !== orderB) return orderA - orderB
-
-      const aFirst = a.rows[0]?.codigo
-      const bFirst = b.rows[0]?.codigo
-
-      return compareCodigo(aFirst, bFirst)
-    })
+    .sort((a, b) => a.orderIndex - b.orderIndex) // Ordenamos los grupos por el `orderIndex`
 
   return result
 })
@@ -854,24 +842,7 @@ const buildHierTotalsByCodigo = (tPlan, list) => {
 // ---------------------------------------------
 // Reglas internas de ERI (fórmulas)
 // ---------------------------------------------
-const recomputeEriFormulas = () => {
-  if (planTipo.value !== "eri") return
-
-  const eriList = eriStoreValues.value
-
-  const totalsByCodigo = buildHierTotalsByCodigo("eri", eriList)
-
-  const getSumActual = codigo => totalsByCodigo[String(codigo)]?.sumActual ?? 0
-  const getSumAnterior = codigo => totalsByCodigo[String(codigo)]?.sumAnterior ?? 0
-
-  const findByName = name => eriList.find(r => String(r.nombrecampo).toLowerCase() === name.toLowerCase())
-
-  const sumActualByCodigo = codigo =>
-    totalsByCodigo[String(codigo)]?.sumActual ?? 0
-
-  const sumAnteriorByCodigo = codigo =>
-    totalsByCodigo[String(codigo)]?.sumAnterior ?? 0
-
+const recomputeFormulas = planTipo => {
   // =============================================
   // Sumar por prefijo (ERI) separando actual/ant
   // sin depender de parseNombreCampo
@@ -905,22 +876,34 @@ const recomputeEriFormulas = () => {
     return roundTo(sum, 2)
   }
 
-  const get = name => {
-    const row = findByName(name)
 
-    return row ? toNumber(row.valor) : 0
-  }
+  // Si el tipo de plan no es "eri" ni "efe", no hacemos nada
+  if (planTipo !== "eri" && planTipo !== "efe") return;
+
+  const list = planTipo === "efe" ? efeStoreValues.value : eriStoreValues.value;
+
+  const totalsByCodigo = buildHierTotalsByCodigo(planTipo, list);
+
+  const getSumActual = (codigo) => totalsByCodigo[String(codigo)]?.sumActual ?? 0;
+  const getSumAnterior = (codigo) => totalsByCodigo[String(codigo)]?.sumAnterior ?? 0;
+
+  const findByName = (name) => list.find((r) => String(r.nombrecampo).toLowerCase() === name.toLowerCase());
+
+  const get = (name) => {
+    const row = findByName(name);
+    return row ? toNumber(row.valor) : 0;
+  };
 
   const setIfChanged = (nombrecampo, numericVal) => {
-    const targetRow = findByName(nombrecampo)
-    const normalized = normalizeForField(nombrecampo, numericVal)
-    const current = targetRow ? toNumber(targetRow.valor) : 0
-    const tStore = storeTipo.value
+    const targetRow = findByName(nombrecampo);
+    const normalized = normalizeForField(nombrecampo, numericVal);
+    const current = targetRow ? toNumber(targetRow.valor) : 0;
+    const tStore = storeTipo.value;
 
-    if (current === normalized) return
+    if (current === normalized) return;
 
     emit("change-value", {
-      tipo: tStore, // 'esf' | 'eri' | 'ecp' | 'efemd'
+      tipo: tStore, // 'esf' | 'eri' | 'efe' | 'efemd'
       id: nombrecampo,
       valor: String(normalized),
       row: targetRow ?? { nombrecampo },
@@ -929,14 +912,14 @@ const recomputeEriFormulas = () => {
         codigo: targetRow?.codigo,
         tablaorigen: targetRow?.tablaorigen,
       },
-    })
-  }
+    });
+  };
 
-  const v402 = getSumActual("401") + getSumActual("501")
+  const v402 = getSumActual("401") - getSumActual("501")
 
   setIfChanged("eri_402", v402)
 
-  const v402_ant = getSumAnterior("401") + getSumAnterior("501")
+  const v402_ant = getSumAnterior("401") - getSumAnterior("501")
 
   setIfChanged("eri_402_ant", v402_ant)
 
@@ -1293,17 +1276,41 @@ const recomputeEriFormulas = () => {
   setIfChanged("eri_707_ant", v707_ant)
 
   // eri_801 = (eri_707 + eri_800)
-  const v800 = get("eri_800")
+  const v800 =
+    get("eri_80001") +
+    get("eri_80002") +
+    get("eri_80003") +
+    get("eri_80004") +
+    get("eri_80005") +
+    get("eri_80006") +
+    get("eri_80007") +
+    get("eri_80008") +
+    get("eri_80009")
+
   const v801 = v707 + v800
 
   setIfChanged("eri_801", v801)
 
   // eri_801_ant = (eri_707_ant + eri_800_ant)
-  const v800_ant = get("eri_800_ant")
+  const v800_ant =
+    get("eri_80001_ant") +
+    get("eri_80002_ant") +
+    get("eri_80003_ant") +
+    get("eri_80004_ant") +
+    get("eri_80005_ant") +
+    get("eri_80006_ant") +
+    get("eri_80007_ant") +
+    get("eri_80008_ant") +
+    get("eri_80009_ant")
+
   const v801_ant = v707_ant + v800_ant
 
   setIfChanged("eri_801_ant", v801_ant)
 
+  const v96 = v600 // Suponiendo que v600 se utiliza aquí (puedes ajustarlo según las fórmulas reales)
+  console.log("v96 (EFE):", v96)
+
+  setIfChanged("efe_md_96", v96)
 }
 
 // ===================================================
@@ -1410,7 +1417,9 @@ const onInput = (group, row, which, rawValue) => {
   if (planTipo.value === "esf") {
     syncEsfToEri()
   } else if (planTipo.value === "eri") {
-    recomputeEriFormulas()
+    recomputeFormulas("eri")
+  } else {
+    recomputeFormulas("efe")
   }
 }
 </script>

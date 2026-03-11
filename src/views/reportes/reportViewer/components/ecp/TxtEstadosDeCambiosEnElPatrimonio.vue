@@ -1,5 +1,6 @@
 <script setup>
-import { computed, reactive, ref } from "vue"
+import { computed, reactive, ref, watch } from "vue"
+import { useDebounceFn } from "@vueuse/core"
 import $ from "jquery"
 import { useAudit } from "@/composables/useAudit"
 import { useLogger } from "@/composables/useLogger"
@@ -52,7 +53,54 @@ const emit = defineEmits(["update:activePanel", "change-value"])
 
 const store = useReportViewerStore()
 
-// console.log('activePanel', props.activePanel)
+const resolveEcpBucket = storeSource => {
+  // Caso 1: no mandan nada
+  if (!storeSource) return store.values.ecp
+
+  // Caso 2: mandan directamente el bucket store.values.ecp
+  if (typeof storeSource === "object" && !storeSource.values && !storeSource.$id) {
+    return storeSource
+  }
+
+  // Caso 3: mandan el store completo de Pinia
+  if (storeSource?.values?.ecp) {
+    return storeSource.values.ecp
+  }
+
+  // Fallback seguro
+  return store.values.ecp
+}
+
+const parseInputNumber = raw => {
+  // No convertir vacío en 0
+  if (raw === "" || raw == null) return null
+
+  // Soporte para string con coma decimal
+  let normalized = raw
+  if (typeof normalized === "string") {
+    normalized = normalized.trim()
+
+    if (normalized === "") return null
+
+    normalized = normalized.replace(",", ".")
+  }
+
+  const n = Number(normalized)
+
+  return Number.isFinite(n) ? n : null
+}
+
+const parseEcpKey = codigo => {
+  const text = String(codigo ?? "").trim()
+  const match = text.match(/^ecp_([^_]+)_([^_]+)$/)
+
+  if (!match) return null
+
+  return {
+    grupo: match[1],
+    col: match[2],
+  }
+}
 
 const updateActivePanel = val => {
   // console.log("currentTab", props.currentTab)
@@ -71,25 +119,17 @@ const normalizeSignedValue = (nombrecampo, value) => {
   return n
 }
 
+const isLocalEditing = ref(false)
+let localEditTimer = null
 
-const onCellInput = (grupo, col, value) => {
-  updateActivePanel(props.currentTab)
+const markLocalEditing = () => {
+  isLocalEditing.value = true
 
-  const nombrecampo = `ecp_${grupo}_${col}`
-  const numeric = normalizeSignedValue(nombrecampo, value)
+  if (localEditTimer) clearTimeout(localEditTimer)
 
-  const cell = ensureCell(grupo, col)
-  if (cell.readonly) return
-
-  cell.value = numeric
-  recalcAll()
-
-  emit("change-value", {
-    tipo: "ecp",
-    id: nombrecampo,
-    valor: String(numeric),
-    row: { nombrecampo, valor: numeric, tablaorigen: "Ecp" },
-  })
+  localEditTimer = setTimeout(() => {
+    isLocalEditing.value = false
+  }, 500)
 }
 
 // -----------------------------------------------------
@@ -381,21 +421,62 @@ const recalcTotals = () => {
 const syncDerivedToStore = () => {
   const base = ecpBaseData.value
 
-  const GROUPS_TO_SYNC = ["9901", "9902", "99"]
-  const COLS_TO_SYNC = [...COLS_FOR_30, "30", "31", "Total"]
+  const emitIfChanged = (g, col) => {
+    const cell = ecp[g]?.[col]
+    if (!cell) return
 
-  for (const g of GROUPS_TO_SYNC) {
-    for (const col of COLS_TO_SYNC) {
+    const key = `ecp_${g}_${col}`
+    const newVal = Number(cell.value) || 0
+    const oldVal = Number(base[key] ?? 0)
+
+    if (newVal === oldVal) return
+
+    emit("change-value", {
+      tipo: "ecp",
+      id: key,
+      valor: String(newVal),
+      row: { nombrecampo: key, valor: newVal, tablaorigen: "Ecp" },
+      meta: { autoCalc: true, grupo: g, col },
+    })
+  }
+
+  // 1) Grupos hoja: sincronizar solo derivados
+  for (const g of LEAF_GROUPS) {
+    emitIfChanged(g, "30")
+    emitIfChanged(g, "Total")
+  }
+
+  // 2) Grupos agregados: sincronizar todo
+  for (const g of ["9901", "9902", "99"]) {
+    for (const col of ALL_COLS) {
+      emitIfChanged(g, col)
+    }
+  }
+}
+
+const buildDerivedBatch = storeSource => {
+  const bucket = resolveEcpBucket(storeSource)
+  const batch = []
+
+  const groupsToSync = [...ALL_GROUPS]
+
+  for (const g of groupsToSync) {
+    const colsToSync =
+      g === "9901" || g === "9902" || g === "99"
+        ? [...COLS_FOR_30, "30", "31", "Total"]
+        : ["30", "Total"]
+
+    for (const col of colsToSync) {
       const cell = ecp[g]?.[col]
       if (!cell) continue
 
       const key = `ecp_${g}_${col}`
       const newVal = Number(cell.value) || 0
-      const oldVal = Number(base[key] ?? 0)
+      const oldVal = Number(bucket?.[key]?.valor ?? 0)
 
       if (newVal === oldVal) continue
 
-      emit("change-value", {
+      batch.push({
         tipo: "ecp",
         id: key,
         valor: String(newVal),
@@ -405,8 +486,7 @@ const syncDerivedToStore = () => {
     }
   }
 
-  // si además quieres mantener 30 y Total para TODOS los grupos (hojas incluidas):
-  // (lo dejas como lo tenías o lo expandes)
+  return batch
 }
 
 
@@ -419,65 +499,51 @@ const recalcAll = () => {
   syncDerivedToStore()
 }
 
-// ======================================================
-// 5. Sincronizar con el store (ecpconvertex + props.data 99)
-// ======================================================
+const recalcDerivedOnly = () => {
+  recalc30()
+  recalcAggregatedColumns()
+  recalcTotals()
+  syncDerivedToStore()
+}
 
-/*
-const syncEcpToStore = () => {
-  const ecpconvertex = {}
+const parseCellCode = codigo => {
+  const m = String(codigo ?? "").match(/^ecp_([^_]+)_([^_]+)$/)
+  if (!m) return null
 
-  Object.keys(ecp).forEach(grupo => {
-    Object.keys(ecp[grupo]).forEach(col => {
-      const key = `ecp_${grupo}_${col}`
-      const cell = ecp[grupo][col]
-
-      ecpconvertex[key] = Number(cell.value) || 0
-    })
-  })
-
-  store.setReportData({
-    ...store.reportData,
-    ecpconvertex,
-  })
-
-  // Actualizar props.data.* solo para grupo 99
-  const grupo99 = ecp["99"]
-  if (grupo99 && props.data) {
-    Object.keys(grupo99).forEach(col => {
-      const patKey = `pat_99_${col}`
-
-      if (Object.prototype.hasOwnProperty.call(props.data, patKey)) {
-        props.data[patKey] = Number(grupo99[col].value) || 0
-      }
-    })
+  return {
+    grupo: String(m[1]),
+    col: String(m[2]),
   }
 }
-*/
 
-// ======================================================
-// 6. Hook reactivo: cuando cambian los valores base, recalcular y sincronizar
-// ======================================================
+const normalizeInputValue = (codigo, raw) => {
+  let v = raw
 
-/*
-watchEffect(() => {
-  recalcAll()
-  syncEcpToStore()
-  usePerformanceMetrics("TxtEstadosDeCambiosEnElPatrimonio")
-})
-*/
-
-
-const flatEcp = computed(() => {
-  const out = {}
-  for (const grupo of Object.keys(ecp)) {
-    for (const col of Object.keys(ecp[grupo])) {
-      out[`ecp_${grupo}_${col}`] = Number(ecp[grupo][col].value) || 0
-    }
+  if (typeof v === "string") {
+    v = v.trim()
   }
 
-  return out
-})
+  if (v === "" || v == null) {
+    return null
+  }
+
+  const n = Number(typeof v === "string" ? v.replace(",", ".") : v)
+
+  if (!Number.isFinite(n)) {
+    return null
+  }
+
+  return normalizeSignedValue(codigo, n)
+}
+
+const patchMatrixValue = (codigo, numericVal) => {
+  const parsed = parseCellCode(codigo)
+  if (!parsed) return
+
+  ensureCell(parsed.grupo, parsed.col).value = numericVal
+}
+
+const getStoreRow = codigo => store.values?.ecp?.[codigo]
 
 
 const hydrateFromBase = () => {
@@ -499,103 +565,99 @@ const hydrateFromBase = () => {
 watch(
   () => props.values,
   () => {
+    if (isLocalEditing.value) return
+
     hydrateFromBase()
     recalcAll()
   },
   { immediate: true },
 )
 
-// ======================================================
-// 7. Handler genérico para cuando cambie una columna en el UI
-// ======================================================
-
-const handleActionClick = (grupo, col) => {
-  const startTime = performance.now()
-
-  // En este modelo, el recálculo es global.
-  recalcAll()
-
-  // syncEcpToStore()
-
-  const endTime = performance.now()
-
-  // console.log(ecp[grupo][col].value)
-
-  const updatedValue = ecp[grupo][col].value
-
-  // Registrar el tiempo que tomó la actualización en las métricas de rendimiento
-  usePerformanceStore().addComponentTime({
-    component: `ECP Update - ${grupo} - ${col}`,
-    duration: endTime - startTime,
-    timestamp: new Date().toISOString(),
-  })
-
-  // Registrar en auditoría
-  useAudit().registrar({
-    modulo: "ECP",
-    accion: "update",
-    targetId: `${grupo}_${col}`,
-    antes: ecp[grupo][col],   // Valor antes de la actualización
-    despues: updatedValue,    // Valor después de la actualización
-    empresaId: props.empresa,
-    periodoId: props.periodo,
-    usuario: sessionStorage.getItem('sub'),
-    meta: { grupo, col, detalle: `Cambio en valor del grupo ${grupo}, columna ${col}` },
-  })
-
-  // Registrar en logs el cambio
-  useLogger().info(`El valor de ${grupo} columna ${col} se actualizó a ${updatedValue}`, {
-    grupo,
-    col,
-    updatedValue,
-  })
-}
-
 
 const draft = reactive({})
 
-// 👇 commit debounced: no golpea el store en cada tecla
-const commitDebounced = useDebounceFn((codigo, tipoStore, storeValues) => {
-  const row = storeValues?.[codigo]
-  const raw = draft[codigo] ?? row?.valor ?? 0
+const emitBatchSync = useDebounceFn((codigo, tipoStore, storeSource) => {
+  const bucket = resolveEcpBucket(storeSource)
+  const row = bucket?.[codigo]
 
-  const valorNum = normalizeSignedValue(codigo, raw)
+  const parsed = parseInputNumber(draft[codigo])
 
-  emit("change-value", {
-    tipo: tipoStore,
-    id: codigo,
-    valor: String(valorNum),
-    row: row ?? { nombrecampo: codigo },
-    meta: { from: "typing" },
-  })
-}, 200)
+  if (parsed == null) return
 
+  const valorNum = normalizeSignedValue(codigo, parsed)
 
-// al tipear: actualiza UI inmediato y programa sync al store
-const onType = (codigo, val, tipoStore, storeValues) => {
+  const batch = [
+    {
+      tipo: tipoStore,
+      id: codigo,
+      valor: String(valorNum),
+      row: row ?? { nombrecampo: codigo },
+      meta: { from: "typing" },
+    },
+    ...buildDerivedBatch(storeSource),
+  ]
+
+  if (batch.length) {
+    emit("change-value", { batch })
+  }
+}, 350)
+
+const onType = (codigo, val, tipoStore, storeSource) => {
+  markLocalEditing()
   draft[codigo] = val
-  commitDebounced(codigo, tipoStore, storeValues)
+
+  const parsed = parseInputNumber(val)
+  const info = parseEcpKey(codigo)
+
+  // UI local inmediata
+  if (parsed != null && info) {
+    ensureCell(info.grupo, info.col).value = normalizeSignedValue(codigo, parsed)
+
+    recalc30()
+    recalcAggregatedColumns()
+    recalcTotals()
+  }
+
+  // sync al store con debounce
+  emitBatchSync(codigo, tipoStore, storeSource)
 }
 
-// si quieres: al salir del input, fuerzas commit inmediato y limpias draft
-const commitNow = (codigo, tipoStore, storeValues) => {
-  commitDebounced.cancel?.()
+const commitNow = (codigo, tipoStore, storeSource) => {
+  emitBatchSync.cancel?.()
 
-  const row = storeValues?.[codigo]
+  const bucket = resolveEcpBucket(storeSource)
+  const row = bucket?.[codigo]
 
-  let n = String(toNumber(draft[codigo] ?? row?.valor ?? 0))
-  if (NEGATIVE_FIELDS.has(codigo)) n = n === 0 ? 0 : -Math.abs(n)
-  const valor = String(n)
+  const hasDraft = Object.prototype.hasOwnProperty.call(draft, codigo)
+  const raw = hasDraft ? draft[codigo] : row?.valor
+  const parsed = parseInputNumber(raw)
 
-  emit("change-value", {
-    tipo: tipoStore,
-    id: codigo,
-    valor,
-    row: row ?? { nombrecampo: codigo },
-    meta: { from: "blur" },
-  })
+  if (parsed == null) {
+    delete draft[codigo]
+    isLocalEditing.value = false
+
+    return
+  }
+
+  const valorNum = normalizeSignedValue(codigo, parsed)
+
+  const batch = [
+    {
+      tipo: tipoStore,
+      id: codigo,
+      valor: String(valorNum),
+      row: row ?? { nombrecampo: codigo },
+      meta: { from: "blur" },
+    },
+    ...buildDerivedBatch(storeSource),
+  ]
+
+  if (batch.length) {
+    emit("change-value", { batch })
+  }
 
   delete draft[codigo]
+  isLocalEditing.value = false
 }
 
 // ======================================================
@@ -623,7 +685,6 @@ const hideColumn = prefix => {
     <!-- SECTION Table -->
     <VTable
       class="text-no-wrap invoice-list-table"
-      @blur:row="handleTableClick"
     >
       <!-- 👉 Table head -->
       <thead class="text-uppercase sticky-header">
@@ -2507,8 +2568,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990101_301"
-                    label="990101_301"
+                    id="ecp_990101_30603"
+                    label="990101_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -3037,8 +3098,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990102_301"
-                    label="990102_301"
+                    id="ecp_990102_30603"
+                    label="990102_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -3567,8 +3628,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990103_301"
-                    label="990103_301"
+                    id="ecp_990103_30603"
+                    label="990103_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -4583,8 +4644,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990201_301"
-                    label="990201_301"
+                    id="ecp_990201_30603"
+                    label="990201_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -5113,8 +5174,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990202_301"
-                    label="990202_301"
+                    id="ecp_990202_30603"
+                    label="990202_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -5643,8 +5704,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990203_301"
-                    label="990203_301"
+                    id="ecp_990203_30603"
+                    label="990203_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -6172,8 +6233,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990204_301"
-                    label="990204_301"
+                    id="ecp_990204_30603"
+                    label="990204_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -6702,8 +6763,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990205_301"
-                    label="990205_301"
+                    id="ecp_990205_30603"
+                    label="990205_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -7232,8 +7293,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990206_301"
-                    label="990206_301"
+                    id="ecp_990206_30603"
+                    label="990206_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -7762,8 +7823,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990207_301"
-                    label="990207_301"
+                    id="ecp_990207_30603"
+                    label="990207_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -8292,8 +8353,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990208_301"
-                    label="990208_301"
+                    id="ecp_990208_30603"
+                    label="990208_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -8822,8 +8883,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990209_301"
-                    label="990209_301"
+                    id="ecp_990209_30603"
+                    label="990209_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"
@@ -9352,8 +9413,8 @@ const hideColumn = prefix => {
                   style="max-width:140px; white-space: initial;align-text:center;"
                 >
                   <VTextField
-                    id="ecp_990210_301"
-                    label="990210_301"
+                    id="ecp_990210_30603"
+                    label="990210_30603"
                     type="text"
                     inputmode="numeric"
                     density="compact"

@@ -240,6 +240,7 @@ const NEGATIVE_FIELDS = new Set(
     "efe_md_950103",
     "efe_md_950105",
     "efe_md_950107",
+    "efe_md_9704",
   ].map(s => s.toLowerCase()),
 )
 
@@ -483,7 +484,8 @@ const groups = computed(() => {
   })
 
   // Paso 3: Calcular totales jerárquicos y ordenar
-  const result = Object.values(groupedByTabla)
+   // Ordenamos los grupos por el `orderIndex`
+  return Object.values(groupedByTabla)
     .map(group => {
       const rows = Object.values(group.rowsByCodigo)
 
@@ -542,9 +544,7 @@ const groups = computed(() => {
       }
 
       // 3.5 Ordenar los grupos según `GROUP_LABEL_ORDER`
-      const orderIndex = getGroupOrderIndex(tPlan, group.label)
-
-      group.orderIndex = orderIndex  // Añadimos el índice de orden a cada grupo
+      group.orderIndex = getGroupOrderIndex(tPlan, group.label)  // Añadimos el índice de orden a cada grupo
 
       const sortedRows = rows.sort((a, b) =>
         compareCodigo(a.codigo, b.codigo),
@@ -557,9 +557,7 @@ const groups = computed(() => {
         rows: sortedRows,
       }
     })
-    .sort((a, b) => a.orderIndex - b.orderIndex) // Ordenamos los grupos por el `orderIndex`
-
-  return result
+    .sort((a, b) => a.orderIndex - b.orderIndex)
 })
 
 
@@ -608,6 +606,15 @@ const READONLY_ERI_ANTERIOR = new Set(
   ].map(s => s.toLowerCase()),
 )
 
+const READONLY_EFE_ACTUAL = new Set(
+  [
+    "efe_md_96",
+    "efe_md_9505",
+    "efe_md_9506",
+    "efe_md_9507",
+  ].map(s => s.toLowerCase()),
+)
+
 const FORCE_FIELD_VALUE = new Set(
   [
     "eri_501",
@@ -628,12 +635,15 @@ const FORCE_FIELD_VALUE = new Set(
     "eri_602_ant",
     "eri_604_ant",
     "eri_607_ant",
+    "efe_md_96",
+    "efe_md_9505",
+    "efe_md_9506",
+    "efe_md_9507",
   ].map(s => s.toLowerCase()),
 )
 
 const isReadOnlyField = (row, which) => {
   if (row.hasChildren) return true
-  if (planTipo.value !== "eri") return row.hasChildren
 
   let nombrecampo = null
 
@@ -645,11 +655,19 @@ const isReadOnlyField = (row, which) => {
 
   if (!nombrecampo) return row.hasChildren
 
-  if (which === "actual") {
-    return READONLY_ERI_ACTUAL.has(nombrecampo.toLowerCase())
+  const lower = nombrecampo.toLowerCase()
+
+  if (planTipo.value === "efe") {
+    return READONLY_EFE_ACTUAL.has(lower)
   }
 
-  return READONLY_ERI_ANTERIOR.has(nombrecampo.toLowerCase())
+  if (planTipo.value !== "eri") return row.hasChildren
+
+  if (which === "actual") {
+    return READONLY_ERI_ACTUAL.has(lower)
+  }
+
+  return READONLY_ERI_ANTERIOR.has(lower)
 }
 
 // ---------------------------------------------
@@ -715,12 +733,13 @@ const syncEsfToEri = () => {
 
     const targetRow = findByName(eriList, to)
     const currentNum = targetRow ? toNumber(targetRow.valor) : 0
+    const id = targetRow.id
 
     if (currentNum === normalized) continue
 
     emit("change-value", {
       tipo: "eri",
-      id: to,
+      id: id,
       valor: String(normalized),
       row: targetRow ?? { nombrecampo: to },
       meta: { linkedFrom: from },
@@ -842,7 +861,24 @@ const buildHierTotalsByCodigo = (tPlan, list) => {
 // ---------------------------------------------
 // Reglas internas de ERI (fórmulas)
 // ---------------------------------------------
-const recomputeFormulas = planTipo => {
+const recomputeEriFormulas = () => {
+  if (planTipo.value !== "eri") return
+
+  const eriList = eriStoreValues.value
+
+  const totalsByCodigo = buildHierTotalsByCodigo("eri", eriList)
+
+  const getSumActual = codigo => totalsByCodigo[String(codigo)]?.sumActual ?? 0
+  const getSumAnterior = codigo => totalsByCodigo[String(codigo)]?.sumAnterior ?? 0
+
+  const findByName = name => eriList.find(r => String(r.nombrecampo).toLowerCase() === name.toLowerCase())
+
+  const sumActualByCodigo = codigo =>
+    totalsByCodigo[String(codigo)]?.sumActual ?? 0
+
+  const sumAnteriorByCodigo = codigo =>
+    totalsByCodigo[String(codigo)]?.sumAnterior ?? 0
+
   // =============================================
   // Sumar por prefijo (ERI) separando actual/ant
   // sin depender de parseNombreCampo
@@ -876,21 +912,9 @@ const recomputeFormulas = planTipo => {
     return roundTo(sum, 2)
   }
 
-
-  // Si el tipo de plan no es "eri" ni "efe", no hacemos nada
-  if (planTipo !== "eri" && planTipo !== "efe") return
-
-  const list = planTipo === "efe" ? efeStoreValues.value : eriStoreValues.value
-
-  const totalsByCodigo = buildHierTotalsByCodigo(planTipo, list)
-
-  const getSumActual = codigo => totalsByCodigo[String(codigo)]?.sumActual ?? 0
-  const getSumAnterior = codigo => totalsByCodigo[String(codigo)]?.sumAnterior ?? 0
-
-  const findByName = name => list.find(r => String(r.nombrecampo).toLowerCase() === name.toLowerCase())
-
   const get = name => {
     const row = findByName(name)
+
     return row ? toNumber(row.valor) : 0
   }
 
@@ -903,8 +927,8 @@ const recomputeFormulas = planTipo => {
     if (current === normalized) return
 
     emit("change-value", {
-      tipo: tStore, // 'esf' | 'eri' | 'efe' | 'efemd'
-      id: nombrecampo,
+      tipo: tStore, // 'esf' | 'eri' | 'ecp' | 'efemd'
+      id: targetRow.id,
       valor: String(normalized),
       row: targetRow ?? { nombrecampo },
       meta: {
@@ -922,8 +946,6 @@ const recomputeFormulas = planTipo => {
   const v402_ant = getSumAnterior("401") - getSumAnterior("501")
 
   setIfChanged("eri_402_ant", v402_ant)
-
-  console.log('v402_ant', v402_ant)
 
   // eri_502 = eri_50201 + eri_50202 + eri_50203 + eri_50204
   const v50201 =
@@ -1012,39 +1034,33 @@ const recomputeFormulas = planTipo => {
 
   // ✅ eri_502 = suma de los 4 bloques (usando hojas)
   const v502 =
-    sumLeavesByPrefix(list, "50201", "actual") +
-    sumLeavesByPrefix(list, "50202", "actual") +
-    sumLeavesByPrefix(list, "50203", "actual") +
-    sumLeavesByPrefix(list, "50204", "actual")
+    sumLeavesByPrefix(eriList, "50201", "actual") +
+    sumLeavesByPrefix(eriList, "50202", "actual") +
+    sumLeavesByPrefix(eriList, "50203", "actual") +
+    sumLeavesByPrefix(eriList, "50204", "actual")
 
   setIfChanged("eri_502", v502)
 
-  console.log("v502", v502)
-
   // ✅ eri_502_ant = igual pero anterior
   const v502_ant =
-    sumLeavesByPrefix(list, "50201", "anterior") +
-    sumLeavesByPrefix(list, "50202", "anterior") +
-    sumLeavesByPrefix(list, "50203", "anterior") +
-    sumLeavesByPrefix(list, "50204", "anterior")
+    sumLeavesByPrefix(eriList, "50201", "anterior") +
+    sumLeavesByPrefix(eriList, "50202", "anterior") +
+    sumLeavesByPrefix(eriList, "50203", "anterior") +
+    sumLeavesByPrefix(eriList, "50204", "anterior")
 
   setIfChanged("eri_502_ant", v502_ant)
 
-  console.log("v502_ant", v502_ant)
-
-
-  // eri_600 = ((eri_401 - eri_501) - (eri_50201 + ...)) + (eri_403)
   const v401 =
     get("eri_40101") +
-    sumLeavesByPrefix(list, "40102", "actual") +
+    sumLeavesByPrefix(eriList, "40102", "actual") +
     get("eri_40103") +
     get("eri_40104") +
     get("eri_40105") +
-    sumLeavesByPrefix(list, "40106", "actual") +
+    sumLeavesByPrefix(eriList, "40106", "actual") +
     get("eri_40107") +
     get("eri_40108") +
-    sumLeavesByPrefix(list, "40109", "actual") +
-    sumLeavesByPrefix(list, "40110", "actual") +
+    sumLeavesByPrefix(eriList, "40109", "actual") +
+    sumLeavesByPrefix(eriList, "40110", "actual") +
     get("eri_40112") +
     get("eri_40113") +
     get("eri_40114") +
@@ -1054,11 +1070,11 @@ const recomputeFormulas = planTipo => {
   setIfChanged("eri_401", v401)
 
   const v501 =
-    sumLeavesByPrefix(list, "50101", "actual") +
-    sumLeavesByPrefix(list, "50102", "actual") +
-    sumLeavesByPrefix(list, "50103", "actual") +
-    sumLeavesByPrefix(list, "50104", "actual") +
-    sumLeavesByPrefix(list, "50105", "actual")
+    sumLeavesByPrefix(eriList, "50101", "actual") +
+    sumLeavesByPrefix(eriList, "50102", "actual") +
+    sumLeavesByPrefix(eriList, "50103", "actual") +
+    sumLeavesByPrefix(eriList, "50104", "actual") +
+    sumLeavesByPrefix(eriList, "50105", "actual")
 
   setIfChanged("eri_501", v501)
 
@@ -1072,15 +1088,15 @@ const recomputeFormulas = planTipo => {
 
   const v401_ant =
     get("eri_40101_ant") +
-    sumLeavesByPrefix(list, "40102", "anterior") +
+    sumLeavesByPrefix(eriList, "40102", "anterior") +
     get("eri_40103_ant") +
     get("eri_40104_ant") +
     get("eri_40105_ant") +
-    sumLeavesByPrefix(list, "40106", "anterior") +
+    sumLeavesByPrefix(eriList, "40106", "anterior") +
     get("eri_40107_ant") +
     get("eri_40108_ant") +
-    sumLeavesByPrefix(list, "40109", "anterior") +
-    sumLeavesByPrefix(list, "40110", "anterior") +
+    sumLeavesByPrefix(eriList, "40109", "anterior") +
+    sumLeavesByPrefix(eriList, "40110", "anterior") +
     get("eri_40112_ant") +
     get("eri_40113_ant") +
     get("eri_40114_ant") +
@@ -1090,11 +1106,11 @@ const recomputeFormulas = planTipo => {
   setIfChanged("eri_401_ant", v401_ant)
 
   const v501_ant =
-    sumLeavesByPrefix(list, "50101", "anterior") +
-    sumLeavesByPrefix(list, "50102", "anterior") +
-    sumLeavesByPrefix(list, "50103", "anterior") +
-    sumLeavesByPrefix(list, "50104", "anterior") +
-    sumLeavesByPrefix(list, "50105", "anterior")
+    sumLeavesByPrefix(eriList, "50101", "anterior") +
+    sumLeavesByPrefix(eriList, "50102", "anterior") +
+    sumLeavesByPrefix(eriList, "50103", "anterior") +
+    sumLeavesByPrefix(eriList, "50104", "anterior") +
+    sumLeavesByPrefix(eriList, "50105", "anterior")
 
   setIfChanged("eri_501_ant", v501_ant)
 
@@ -1307,10 +1323,61 @@ const recomputeFormulas = planTipo => {
 
   setIfChanged("eri_801_ant", v801_ant)
 
-  const v96 = v600 // Suponiendo que v600 se utiliza aquí (puedes ajustarlo según las fórmulas reales)
-  console.log("v96 (EFE):", v96)
+}
+
+const recomputeEfeFormulas = () => {
+  if (planTipo.value !== "efe") return
+
+  const efeList = efeStoreValues.value ?? []
+  const eriList = eriStoreValues.value ?? []
+  const esfList = esfStoreValues.value ?? []
+
+  const findByName = (list, name) =>
+    list.find(r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase())
+
+  const getFrom = (list, name) => {
+    const row = findByName(list, name)
+
+    return row ? roundTo(toNumber(row.valor), 2) : 0
+  }
+
+  const setIfChanged = (nombrecampo, numericVal) => {
+    const targetRow = findByName(efeList, nombrecampo)
+    const normalized = roundTo(normalizeForField(nombrecampo, numericVal), 2)
+    const current = targetRow ? roundTo(toNumber(targetRow.valor), 2) : 0
+
+    if (current === normalized) return
+
+    emit("change-value", {
+      tipo: storeTipo.value, // para EFE esto es "efemd"
+      id: targetRow?.id,
+      valor: String(normalized),
+      row: targetRow ?? { nombrecampo },
+      meta: {
+        autoCalc: true,
+        formula: true,
+        source: "efe-formulas",
+      },
+    })
+  }
+
+  // Fórmulas:
+  // efe_md_96   = eri_600
+  // efe_md_9505 = efe_md_95 + efe_md_9504
+  // efe_md_9506 = esf_10101_ant
+  // efe_md_9507 = efe_md_9505 + efe_md_9506
+
+  const v96 = getFrom(eriList, "eri_600")
+  const v95 = getFrom(efeList, "efe_md_95")
+  const v9504 = getFrom(efeList, "efe_md_9504")
+  const v9505 = roundTo(v95 + v9504, 2)
+  const v9506 = getFrom(esfList, "esf_10101_ant")
+  const v9507 = roundTo(v9505 + v9506, 2)
 
   setIfChanged("efe_md_96", v96)
+  setIfChanged("efe_md_9505", v9505)
+  setIfChanged("efe_md_9506", v9506)
+  setIfChanged("efe_md_9507", v9507)
 }
 
 // ===================================================
@@ -1333,7 +1400,7 @@ if (props.tipo === "eri") {
 
       // 1 sola pasada inicial: mapeos ESF->ERI + fórmulas ERI
       syncEsfToEri()
-      recomputeFormulas("eri")
+      recomputeEriFormulas()
     },
     { immediate: true },
   )
@@ -1357,7 +1424,7 @@ if (props.tipo === "eri") {
     ],
     () => {
       // ✅ cada vez que cambie cualquiera de estos, recalculamos fórmulas (incluye eri_402)
-      recomputeFormulas("eri")
+      recomputeEriFormulas()
     },
     { immediate: true },
   )
@@ -1374,7 +1441,39 @@ if (props.tipo === "eri") {
   watch(
     () => eriSignature.value,
     () => {
-      recomputeFormulas("eri")
+      recomputeEriFormulas()
+    },
+    { immediate: true },
+  )
+}
+
+
+if (props.tipo === "efe") {
+  const pickValue = (listRef, name) => {
+    const row = (listRef.value ?? []).find(
+      r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase(),
+    )
+
+    return row ? String(row.valor ?? "") : ""
+  }
+
+  const efeFormulaSignature = computed(() => {
+    return [
+      pickValue(eriStoreValues, "eri_600"),
+      pickValue(esfStoreValues, "esf_10101_ant"),
+      pickValue(efeStoreValues, "efe_md_95"),
+      pickValue(efeStoreValues, "efe_md_9504"),
+      pickValue(efeStoreValues, "efe_md_96"),
+      pickValue(efeStoreValues, "efe_md_9505"),
+      pickValue(efeStoreValues, "efe_md_9506"),
+      pickValue(efeStoreValues, "efe_md_9507"),
+    ].join("|")
+  })
+
+  watch(
+    () => efeFormulaSignature.value,
+    () => {
+      recomputeEfeFormulas()
     },
     { immediate: true },
   )
@@ -1400,26 +1499,23 @@ const onInput = (group, row, which, rawValue) => {
 
   emit("change-value", {
     tipo: tStore, // 'esf' | 'eri' | 'ecp' | 'efemd'
-    id: field.nombrecampo,
+    id: field.id,
     valor: String(numericVal),
     row: field,
     meta: {
       codigo: row.codigo,
-      tablaorigen: row.tablaorigen,
+      tablaorigen: field.tablaorigen,
       grupo: group.label,
       periodo: which === "actual" ? "actual" : "anterior",
     },
   })
 
-  // 🔁 Lógica dependiente:
-  // - Si se cambia ESF → actualizar mapeos ESF->ERI
-  // - Si se cambia ERI → recalcular fórmulas internas
   if (planTipo.value === "esf") {
     syncEsfToEri()
   } else if (planTipo.value === "eri") {
-    recomputeFormulas("eri")
-  } else {
-    recomputeFormulas("efe")
+    recomputeEriFormulas()
+  } else if (planTipo.value === "efe") {
+    recomputeEfeFormulas()
   }
 }
 </script>
@@ -1501,7 +1597,7 @@ const onInput = (group, row, which, rawValue) => {
                     variant="outlined"
                     hide-details
                     class="ma-0 pa-0"
-                    :class="{ 'rv-readonly': isReadOnlyField(row, 'actual') }"
+                    :class="{ 'rv-readonly': isReadOnlyField(row, 'anterior') }"
                     :readonly="isReadOnlyField(row, 'anterior')"
                     :model-value="getDisplayValue(row.anterior, row.sumAnterior, row.hasChildren)"
                     @update:modelValue="val => onInput(group, row, 'anterior', val)"

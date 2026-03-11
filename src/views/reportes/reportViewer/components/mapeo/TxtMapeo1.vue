@@ -282,8 +282,6 @@ function handleFileUpload(event) {
       })
     }
     reader.readAsText(file, "utf-8")
-
-    return
   }
 }
 </script>
@@ -302,7 +300,6 @@ function handleFileUpload(event) {
 
   <VContainer>
     <VFileInput
-      label="Cargar archivo Excel, CSV o TXT"
       accept=".xlsx, .csv, .txt"
       :disabled="importing"
       @change="handleFileUpload"

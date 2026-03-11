@@ -44,8 +44,11 @@ const logout = async () => {
   // 2) Limpia storage (ok)
   sessionStorage.removeItem('userData')
   sessionStorage.removeItem('accessToken')
+  sessionStorage.removeItem('email')
+  sessionStorage.removeItem('name')
+  sessionStorage.removeItem('preferred_username')
+  sessionStorage.removeItem('sub')
   sessionStorage.removeItem('userAbilities')
-  localStorage.removeItem('userAbilities')
 
   try {
     await initKeycloak()

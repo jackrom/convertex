@@ -100,14 +100,7 @@ const exportarTxt = async (rep, index) => {
 const editarReporte = rep => {
   console.log('REPORTE: ', rep)
 
-  // router.push(`/reportes/reportviewer/ReportViewerPage?action=editar&reporteid=${rep.reporteid}`)
-  router.push({
-    path: '/reportes/reportviewer/ReportViewerPage',
-    query: {
-      action: 'editar',
-      reporteid: rep.reporteid,
-    },
-  })
+  router.push(`/reportes/reportviewer/ReportViewerPage?action=editar&reporteid=${rep.reporteid}`)
 }
 </script>
 

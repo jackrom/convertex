@@ -8,7 +8,6 @@ import { normalizeReporte } from "@/utils/reporte-normalizer"
 import { useReportViewerService } from "@/services/reporte-viewer.service"
 
 import { useUiSnackbarStore } from "@/@store/uiSnackbar.store"
-import {computed} from "vue";
 
 function buildPlainSnapshot(reporte, values) {
   const base = {
@@ -39,6 +38,14 @@ function toNum(v) {
   return Number.isFinite(n) ? n : 0
 }
 
+export const roundTo = (n, decimals = 2) => {
+  const num = Number(n)
+  if (!Number.isFinite(num)) return 0
+  const p = 10 ** decimals
+
+  return Math.round((num + Number.EPSILON) * p) / p
+}
+
 function sumCodes(index, codes) {
   // dedupe para no sumar 3 veces si el array trae repetidos
   const unique = new Set(codes)
@@ -58,7 +65,21 @@ function allRowsCuadran(esfIndex, ecpIndex, rowDefs) {
   return true
 }
 
+function cloneBuckets(values) {
+  return {
+    esf: JSON.parse(JSON.stringify(values?.esf ?? {})),
+    eri: JSON.parse(JSON.stringify(values?.eri ?? {})),
+    ecp: JSON.parse(JSON.stringify(values?.ecp ?? {})),
+    efemd: JSON.parse(JSON.stringify(values?.efemd ?? {})),
+  }
+}
 
+function getBucketNumber(bucket, name) {
+  const row = bucket?.[name]
+  const n = Number(row?.valor)
+
+  return Number.isFinite(n) ? roundTo(n, 2) : 0
+}
 
 export const useReportViewerStore = defineStore("reportViewer", {
   state: () => ({
@@ -92,6 +113,13 @@ export const useReportViewerStore = defineStore("reportViewer", {
     changeLog: [],
 
     _saveTimer: null,
+
+    movementCheckpoint: {
+      esf: {},
+      eri: {},
+      ecp: {},
+      efemd: {},
+    },
   }),
 
   getters: {
@@ -123,249 +151,804 @@ export const useReportViewerStore = defineStore("reportViewer", {
   actions: {
     // Función para calcular el cuadre de ESF
     calculateEsfCuadre() {
-      // Inicializamos las variables de totales
-      let totals = {
-        activosCorrientes: 0,
-        activosNoCorrientes: 0,
-        pasivosCorrientes: 0,
-        pasivosNoCorrientes: 0,
-        patrimonioActual: 0,
-        activosCorrientesAnt: 0,
-        activosNoCorrientesAnt: 0,
-        pasivosCorrientesAnt: 0,
-        pasivosNoCorrientesAnt: 0,
-        patrimonioAnt: 0,
+      const canon = s =>
+        String(s ?? "")
+          .trim()
+          .replace(/[\s_-]/g, "")
+          .toLowerCase()
+
+      const toNum = v => {
+        const n = Number(v)
+
+        return Number.isFinite(n) ? n : 0
       }
 
-      // Función para acumular los valores
-      const accumulateValues = field => {
-        if (!field || !field.tablaorigen || !field.valor) return
+      // ✅ usa el diccionario normalizado
+      const esfDict = this.values?.esf ?? {}
 
-        // Sumar valores según tablaorigen
-        switch (field.tablaorigen) {
-        case 'Activoscorrientes':
-          totals.activosCorrientes += Number(field.valor)
-          break
-        case 'Activosnocorrientes':
-          totals.activosNoCorrientes += Number(field.valor)
-          break
-        case 'Pasivoscorrientes':
-          totals.pasivosCorrientes += Number(field.valor)
-          break
-        case 'Pasivosnocorrientes':
-          totals.pasivosNoCorrientes += Number(field.valor)
-          break
-        case 'Patrimonio':
-          totals.patrimonioActual += Number(field.valor)
-          break
-        case 'ActivoscorrientesAnt':
-          totals.activosCorrientesAnt += Number(field.valor)
-          break
-        case 'ActivosnocorrientesAnt':
-          totals.activosNoCorrientesAnt += Number(field.valor)
-          break
-        case 'PasivoscorrientesAnt':
-          totals.pasivosCorrientesAnt += Number(field.valor)
-          break
-        case 'PasivosnocorrientesAnt':
-          totals.pasivosNoCorrientesAnt += Number(field.valor)
-          break
-        case 'PatrimonioAnt':
-          totals.patrimonioAnt += Number(field.valor)
-          break
-        default:
-          break
+      const rows = Object.values(esfDict)
+
+      const parseCodigo = nombrecampo => {
+        const s = String(nombrecampo ?? "").toLowerCase()
+        if (!s.startsWith("esf_")) return null
+        const noPrefix = s.slice(4)
+
+        return noPrefix.endsWith("_ant") ? noPrefix.slice(0, -4) : noPrefix
+      }
+
+      // 1) construir lista de códigos existentes
+      const codes = []
+      const byCode = Object.create(null)
+
+      for (const r of rows) {
+        const codigo = parseCodigo(r.nombrecampo)
+        if (!codigo) continue
+        codes.push(codigo)
+        byCode[codigo] = true
+      }
+
+      // 2) detectar padres por prefijo (cualquier código que sea prefijo de otro más largo)
+      const isParent = Object.create(null)
+      for (const c of codes) isParent[c] = false
+
+      // O(n^2) pero ESF no suele ser gigante; si lo es, lo optimizamos luego.
+      for (const a of codes) {
+        for (const b of codes) {
+          if (b.length <= a.length) continue
+          if (b.startsWith(a)) {
+            isParent[a] = true
+            break
+          }
         }
       }
 
-      // Sumar los valores de todos los campos de esfValues
-      const esfList = this.reporte?.values.esfvalues || []
+      // 3) acumular SOLO hojas
+      const totals = {
+        ac: 0, anc: 0, pc: 0, pnc: 0, pat: 0,
+        ac_ant: 0, anc_ant: 0, pc_ant: 0, pnc_ant: 0, pat_ant: 0,
+      }
 
-      esfList.forEach(field => accumulateValues(field))
+      for (const field of rows) {
+        if (!field?.tablaorigen) continue
 
-      // Calcular los totales de activos, pasivos y patrimonio
-      const totalActivo = (totals.activosCorrientes + totals.activosNoCorrientes) - (totals.activosCorrientesAnt + totals.activosNoCorrientesAnt)
-      const totalPasivo = (totals.pasivosCorrientes + totals.pasivosNoCorrientes) - (totals.pasivosCorrientesAnt + totals.pasivosNoCorrientesAnt)
-      const totalPatrimonio = totals.patrimonioActual - totals.patrimonioAnt
+        const codigo = parseCodigo(field.nombrecampo)
+        if (!codigo) continue
 
-      // Verificar si el cuadre es correcto (activos = pasivos + patrimonio)
-      const cuadreCorrecto = totalActivo === (totalPasivo + totalPatrimonio)
+        // ✅ ignorar padres (autoCalc)
+        if (isParent[codigo]) continue
 
-      // Retornar el resultado del cuadre
-      return cuadreCorrecto ? 1 : 0 // Retorna 1 si el cuadre es correcto, 0 si es incorrecto
+        const key = canon(field.tablaorigen)
+        const isAnt = String(field.nombrecampo ?? "").toLowerCase().endsWith("_ant")
+        const v = toNum(field.valor)
+
+        if (key === "activoscorrientes") totals[`ac`] += v
+        else if (key === "activosnocorrientes") totals[`anc`] += v
+        else if (key === "pasivoscorrientes") totals[`pc`] += v
+        else if (key === "pasivosnocorrientes") totals[`pnc`] += v
+        else if (key === "patrimonio") totals[`pat}`] += v
+
+        if (key === "activoscorrientesant") totals[`ac_ant`] += v
+        else if (key === "activosnocorrientesant") totals[`anc_ant`] += v
+        else if (key === "pasivoscorrientesant") totals[`pc_ant`] += v
+        else if (key === "pasivosnocorrientesant") totals[`pnc_ant`] += v
+        else if (key === "patrimonioant") totals[`pat_ant}`] += v
+      }
+
+      const round2 = n => Math.round((n + Number.EPSILON) * 100) / 100
+
+      const totalActivo     = totals.ac + totals.anc
+      const totalPasPat     = totals.pc + totals.pnc + totals.pat
+      const totalActivoAnt  = totals.ac_ant + totals.anc_ant
+      const totalPasPatAnt  = totals.pc_ant + totals.pnc_ant + totals.pat_ant
+
+      const diffAct = round2(totalActivo - totalPasPat)
+      const diffAnt = round2(totalActivoAnt - totalPasPatAnt)
+
+      const ok = (diffAct === 0 && diffAnt === 0)
+
+      return (diffAct === 0 && diffAnt === 0) ? 1 : 0
     },
 
     // Función para calcular el cuadre de EFE
-    calculateEfeCuadre() {
-      // Inicializamos las variables de totales
-      let totals = {
-        operaciones: 0,
-        inversion: 0,
-        financiamiento: 0,
-        conciliacion: 0,
-      }
+    calculateEriCuadre() {
+      const eriList = Object.values(this.values?.eri ?? [])
+      const esfList = Object.values(this.values?.esf ?? [])
 
-      // Función para acumular los valores
-      const accumulateValues = field => {
+      const eq = (a, b) => roundTo((Number(a) || 0) - (Number(b) || 0), 2) === 0
 
-        if (!field || !field.tablaorigen || !field.valor) return
+      const parseEriName = nombrecampo => {
+        const m = String(nombrecampo ?? "")
+          .trim()
+          .toLowerCase()
+          .match(/^eri_(\d+)(?:(_ant))?$/)
 
-        switch (field.tablaorigen) {
-        case 'Actividadesdeoperacion':
-          totals.operaciones += Number(field.valor)
-          break
-        case 'Actividadesdeinversion':
-          totals.inversion += Number(field.valor)
-          break
-        case 'Actividadesdefinanciamiento':
-          totals.financiamiento += Number(field.valor)
-          break
-        case 'Conciliacion':
-          totals.financiamiento += Number(field.valor)
-          break
-        default:
-          break
+        if (!m) return null
+
+        return {
+          codigo: m[1],
+          isAnterior: Boolean(m[2]),
         }
       }
 
-      const efeList = this.reporte?.values.efemdvalues || []
+      const buildIndex = rows => {
+        const byName = Object.create(null)
 
-      efeList.forEach(field => accumulateValues(field))
+        for (const row of rows) {
+          if (!row?.nombrecampo) continue
+          byName[String(row.nombrecampo).toLowerCase()] = row
+        }
 
-      const cuadreCorrecto = (totals.operaciones + totals.inversion + totals.financiamiento + totals.conciliacion) === 0
+        return byName
+      }
 
-      return cuadreCorrecto ? 1 : 0
+      const buildHierTotalsByCodigo = rows => {
+        const PARENT_LENGTHS = [3, 5, 7, 9, 11, 13]
+        const rowsByCodigo = Object.create(null)
+
+        // 1) cargar valores reales
+        for (const row of rows) {
+          if (!row?.nombrecampo) continue
+
+          const parsed = parseEriName(row.nombrecampo)
+          if (!parsed) continue
+
+          const { codigo, isAnterior } = parsed
+
+          if (!rowsByCodigo[codigo]) {
+            rowsByCodigo[codigo] = {
+              codigo,
+              actualVal: 0,
+              anteriorVal: 0,
+              sumActual: 0,
+              sumAnterior: 0,
+              hasChildren: false,
+            }
+          }
+
+          const v = Number(row.valor)
+          const safeValue = Number.isFinite(v) ? v : 0
+
+          if (isAnterior) rowsByCodigo[codigo].anteriorVal = roundTo(safeValue, 2)
+          else rowsByCodigo[codigo].actualVal = roundTo(safeValue, 2)
+        }
+
+        // 2) crear padres sintéticos faltantes
+        const existingCodes = Object.keys(rowsByCodigo)
+        const extra = Object.create(null)
+
+        for (const code of existingCodes) {
+          for (const len of PARENT_LENGTHS) {
+            if (len >= code.length) continue
+
+            const parentCode = code.slice(0, len)
+
+            if (rowsByCodigo[parentCode] || extra[parentCode]) continue
+
+            extra[parentCode] = {
+              codigo: parentCode,
+              actualVal: 0,
+              anteriorVal: 0,
+              sumActual: 0,
+              sumAnterior: 0,
+              hasChildren: false,
+            }
+          }
+        }
+
+        Object.assign(rowsByCodigo, extra)
+
+        const rows2 = Object.values(rowsByCodigo)
+
+        // 3) detectar padres
+        for (const r of rows2) {
+          r.hasChildren = false
+        }
+
+        const sortedByLengthDesc = [...rows2].sort((a, b) => {
+          const lenDiff = String(b.codigo).length - String(a.codigo).length
+          if (lenDiff !== 0) return lenDiff
+
+          return String(a.codigo).localeCompare(String(b.codigo))
+        })
+
+        for (const r of sortedByLengthDesc) {
+          const code = String(r.codigo)
+
+          for (let len = code.length - 1; len > 0; len--) {
+            const parentCode = code.slice(0, len)
+            const parent = rowsByCodigo[parentCode]
+
+            if (parent) {
+              parent.hasChildren = true
+              break
+            }
+          }
+        }
+
+        // 4) inicializar sumas
+        for (const r of rows2) {
+          if (r.hasChildren) {
+            r.sumActual = 0
+            r.sumAnterior = 0
+          } else {
+            r.sumActual = roundTo(r.actualVal, 2)
+            r.sumAnterior = roundTo(r.anteriorVal, 2)
+          }
+        }
+
+        // 5) propagar a padres
+        for (const r of sortedByLengthDesc) {
+          const code = String(r.codigo)
+
+          for (let len = code.length - 1; len > 0; len--) {
+            const parentCode = code.slice(0, len)
+            const parent = rowsByCodigo[parentCode]
+
+            if (parent) {
+              parent.sumActual = roundTo(parent.sumActual + r.sumActual, 2)
+              parent.sumAnterior = roundTo(parent.sumAnterior + r.sumAnterior, 2)
+              break
+            }
+          }
+        }
+
+        return rowsByCodigo
+      }
+
+      const eriByName = buildIndex(eriList)
+      const esfByName = buildIndex(esfList)
+      const totals = buildHierTotalsByCodigo(eriList)
+
+      const getEriValue = name => {
+        const row = eriByName[String(name).toLowerCase()]
+        const n = Number(row?.valor)
+
+        return Number.isFinite(n) ? roundTo(n, 2) : 0
+      }
+
+      const getEsfValue = name => {
+        const row = esfByName[String(name).toLowerCase()]
+        const n = Number(row?.valor)
+
+        return Number.isFinite(n) ? roundTo(n, 2) : 0
+      }
+
+      const existsEri = name => !!eriByName[String(name).toLowerCase()]
+
+      const sumActual = codigo => roundTo(totals[String(codigo)]?.sumActual ?? 0, 2)
+      const sumAnterior = codigo => roundTo(totals[String(codigo)]?.sumAnterior ?? 0, 2)
+
+      const checks = []
+
+      const addCheck = (fieldName, expectedValue) => {
+        if (!existsEri(fieldName)) return
+        checks.push(eq(getEriValue(fieldName), expectedValue))
+      }
+
+      // =========================
+      // PERIODO ACTUAL
+      // =========================
+      const eri401 = sumActual("401")
+      const eri501 = sumActual("501")
+      const eri402 = roundTo(eri401 - eri501, 2)
+
+      const eri502 = roundTo(
+        sumActual("50201") +
+        sumActual("50202") +
+        sumActual("50203") +
+        sumActual("50204"),
+        2,
+      )
+
+      const eri403 = sumActual("403")
+      const eri600 = roundTo((eri401 - eri501 - eri502) + eri403, 2)
+      const eri601 = sumActual("601")
+      const eri602 = roundTo(eri600 + eri601, 2)
+      const eri603 = sumActual("603")
+      const eri604 = roundTo(eri602 + eri603, 2)
+      const eri605 = sumActual("605")
+      const eri606 = sumActual("606")
+      const eri607 = roundTo(eri604 + eri605 + eri606, 2)
+
+      const eri700 = sumActual("700")
+      const eri701 = sumActual("701")
+      const eri702 = roundTo(eri700 - eri701, 2)
+      const eri703 = sumActual("703")
+      const eri704 = roundTo(eri702 - eri703, 2)
+      const eri705 = sumActual("705")
+      const eri706 = roundTo(eri704 - eri705, 2)
+      const eri707 = roundTo(eri607 + eri706, 2)
+
+      const eri800 = sumActual("800")
+      const eri801 = roundTo(eri707 + eri800, 2)
+
+      addCheck("eri_401", eri401)
+      addCheck("eri_501", eri501)
+      addCheck("eri_402", eri402)
+      addCheck("eri_502", eri502)
+      addCheck("eri_403", eri403)
+      addCheck("eri_600", eri600)
+      addCheck("eri_601", eri601)
+      addCheck("eri_602", eri602)
+      addCheck("eri_603", eri603)
+      addCheck("eri_604", eri604)
+      addCheck("eri_605", eri605)
+      addCheck("eri_606", eri606)
+      addCheck("eri_607", eri607)
+      addCheck("eri_700", eri700)
+      addCheck("eri_701", eri701)
+      addCheck("eri_702", eri702)
+      addCheck("eri_703", eri703)
+      addCheck("eri_704", eri704)
+      addCheck("eri_705", eri705)
+      addCheck("eri_706", eri706)
+      addCheck("eri_707", eri707)
+      addCheck("eri_800", eri800)
+      addCheck("eri_801", eri801)
+
+      // =========================
+      // PERIODO ANTERIOR
+      // =========================
+      const eri401Ant = sumAnterior("401")
+      const eri501Ant = sumAnterior("501")
+      const eri402Ant = roundTo(eri401Ant - eri501Ant, 2)
+
+      const eri502Ant = roundTo(
+        sumAnterior("50201") +
+        sumAnterior("50202") +
+        sumAnterior("50203") +
+        sumAnterior("50204"),
+        2,
+      )
+
+      const eri403Ant = sumAnterior("403")
+      const eri600Ant = roundTo((eri401Ant - eri501Ant - eri502Ant) + eri403Ant, 2)
+      const eri601Ant = sumAnterior("601")
+      const eri602Ant = roundTo(eri600Ant + eri601Ant, 2)
+      const eri603Ant = sumAnterior("603")
+      const eri604Ant = roundTo(eri602Ant + eri603Ant, 2)
+      const eri605Ant = sumAnterior("605")
+      const eri606Ant = sumAnterior("606")
+      const eri607Ant = roundTo(eri604Ant + eri605Ant + eri606Ant, 2)
+
+      const eri700Ant = sumAnterior("700")
+      const eri701Ant = sumAnterior("701")
+      const eri702Ant = roundTo(eri700Ant - eri701Ant, 2)
+      const eri703Ant = sumAnterior("703")
+      const eri704Ant = roundTo(eri702Ant - eri703Ant, 2)
+      const eri705Ant = sumAnterior("705")
+      const eri706Ant = roundTo(eri704Ant - eri705Ant, 2)
+      const eri707Ant = roundTo(eri607Ant + eri706Ant, 2)
+
+      const eri800Ant = sumAnterior("800")
+      const eri801Ant = roundTo(eri707Ant + eri800Ant, 2)
+
+      addCheck("eri_401_ant", eri401Ant)
+      addCheck("eri_501_ant", eri501Ant)
+      addCheck("eri_402_ant", eri402Ant)
+      addCheck("eri_502_ant", eri502Ant)
+      addCheck("eri_403_ant", eri403Ant)
+      addCheck("eri_600_ant", eri600Ant)
+      addCheck("eri_601_ant", eri601Ant)
+      addCheck("eri_602_ant", eri602Ant)
+      addCheck("eri_603_ant", eri603Ant)
+      addCheck("eri_604_ant", eri604Ant)
+      addCheck("eri_605_ant", eri605Ant)
+      addCheck("eri_606_ant", eri606Ant)
+      addCheck("eri_607_ant", eri607Ant)
+      addCheck("eri_700_ant", eri700Ant)
+      addCheck("eri_701_ant", eri701Ant)
+      addCheck("eri_702_ant", eri702Ant)
+      addCheck("eri_703_ant", eri703Ant)
+      addCheck("eri_704_ant", eri704Ant)
+      addCheck("eri_705_ant", eri705Ant)
+      addCheck("eri_706_ant", eri706Ant)
+      addCheck("eri_707_ant", eri707Ant)
+      addCheck("eri_800_ant", eri800Ant)
+      addCheck("eri_801_ant", eri801Ant)
+
+      // =========================
+      // CRUCE FINAL ERI vs ESF
+      // =========================
+      const resultadoEsfActual = getEsfValue("esf_30701") + getEsfValue("esf_30702")
+      const resultadoEsfAnterior = getEsfValue("esf_30701_ant") + getEsfValue("esf_30702_ant")
+
+      const diferenciaActual = roundTo(eri801 - resultadoEsfActual, 2)
+      const diferenciaAnterior = roundTo(eri801Ant - resultadoEsfAnterior, 2)
+
+      const estructuralOk = !checks.length ? true : checks.every(Boolean)
+      const cruceFinalOk = diferenciaActual === 0 && diferenciaAnterior === 0
+
+      return estructuralOk && cruceFinalOk ? 1 : 0
+    },
+
+    calculateEriMovimientoCuadre() {
+      const list = Object.values(this.values?.eri ?? [])
+
+      const parseEriName = nombrecampo => {
+        const m = String(nombrecampo ?? "")
+          .trim()
+          .toLowerCase()
+          .match(/^eri_(\d+)(?:(_ant))?$/)
+
+        if (!m) return null
+
+        return {
+          codigo: m[1],
+          isAnterior: Boolean(m[2]),
+        }
+      }
+
+      const buildHierTotalsByCodigo = rows => {
+        const PARENT_LENGTHS = [3, 5, 7, 9, 11, 13]
+        const rowsByCodigo = Object.create(null)
+
+        // 1) cargar valores reales
+        for (const row of rows) {
+          if (!row?.nombrecampo) continue
+
+          const parsed = parseEriName(row.nombrecampo)
+          if (!parsed) continue
+
+          const { codigo, isAnterior } = parsed
+
+          if (!rowsByCodigo[codigo]) {
+            rowsByCodigo[codigo] = {
+              codigo,
+              actualVal: 0,
+              anteriorVal: 0,
+              sumActual: 0,
+              sumAnterior: 0,
+              hasChildren: false,
+            }
+          }
+
+          const v = Number(row.valor)
+          const safeValue = Number.isFinite(v) ? v : 0
+
+          if (isAnterior) rowsByCodigo[codigo].anteriorVal = roundTo(safeValue, 2)
+          else rowsByCodigo[codigo].actualVal = roundTo(safeValue, 2)
+        }
+
+        // 2) crear padres sintéticos faltantes
+        const existingCodes = Object.keys(rowsByCodigo)
+        const extra = Object.create(null)
+
+        for (const code of existingCodes) {
+          for (const len of PARENT_LENGTHS) {
+            if (len >= code.length) continue
+
+            const parentCode = code.slice(0, len)
+
+            if (rowsByCodigo[parentCode] || extra[parentCode]) continue
+
+            extra[parentCode] = {
+              codigo: parentCode,
+              actualVal: 0,
+              anteriorVal: 0,
+              sumActual: 0,
+              sumAnterior: 0,
+              hasChildren: false,
+            }
+          }
+        }
+
+        Object.assign(rowsByCodigo, extra)
+
+        const rows2 = Object.values(rowsByCodigo)
+
+        // 3) detectar padres
+        for (const r of rows2) {
+          r.hasChildren = false
+        }
+
+        const sortedByLengthDesc = [...rows2].sort((a, b) => {
+          const lenDiff = String(b.codigo).length - String(a.codigo).length
+          if (lenDiff !== 0) return lenDiff
+
+          return String(a.codigo).localeCompare(String(b.codigo))
+        })
+
+        for (const r of sortedByLengthDesc) {
+          const code = String(r.codigo)
+
+          for (let len = code.length - 1; len > 0; len--) {
+            const parentCode = code.slice(0, len)
+            const parent = rowsByCodigo[parentCode]
+
+            if (parent) {
+              parent.hasChildren = true
+              break
+            }
+          }
+        }
+
+        // 4) inicializar sumas
+        for (const r of rows2) {
+          if (r.hasChildren) {
+            r.sumActual = 0
+            r.sumAnterior = 0
+          } else {
+            r.sumActual = roundTo(r.actualVal, 2)
+            r.sumAnterior = roundTo(r.anteriorVal, 2)
+          }
+        }
+
+        // 5) propagar a padres
+        for (const r of sortedByLengthDesc) {
+          const code = String(r.codigo)
+
+          for (let len = code.length - 1; len > 0; len--) {
+            const parentCode = code.slice(0, len)
+            const parent = rowsByCodigo[parentCode]
+
+            if (parent) {
+              parent.sumActual = roundTo(parent.sumActual + r.sumActual, 2)
+              parent.sumAnterior = roundTo(parent.sumAnterior + r.sumAnterior, 2)
+              break
+            }
+          }
+        }
+
+        return rowsByCodigo
+      }
+
+      const totals = buildHierTotalsByCodigo(list)
+
+      const delta = codigo => {
+        const node = totals[String(codigo)]
+
+        return roundTo((node?.sumActual ?? 0) - (node?.sumAnterior ?? 0), 2)
+      }
+
+      // =========================
+      // MOVIMIENTO DEL EJERCICIO
+      // =========================
+      const d401 = delta("401")
+      const d501 = delta("501")
+      const d402 = roundTo(d401 - d501, 2)
+
+      const d502 = roundTo(
+        delta("50201") +
+        delta("50202") +
+        delta("50203") +
+        delta("50204"),
+        2,
+      )
+
+      const d403 = delta("403")
+      const d600 = roundTo((d401 - d501 - d502) + d403, 2)
+
+      const d601 = delta("601")
+      const d602 = roundTo(d600 + d601, 2)
+
+      const d603 = delta("603")
+      const d604 = roundTo(d602 + d603, 2)
+
+      const d605 = delta("605")
+      const d606 = delta("606")
+      const d607 = roundTo(d604 + d605 + d606, 2)
+
+      const d700 = delta("700")
+      const d701 = delta("701")
+      const d702 = roundTo(d700 - d701, 2)
+
+      const d703 = delta("703")
+      const d704 = roundTo(d702 - d703, 2)
+
+      const d705 = delta("705")
+      const d706 = roundTo(d704 - d705, 2)
+
+      const d707 = roundTo(d607 + d706, 2)
+
+      const d800 = delta("800")
+      const d801 = roundTo(d707 + d800, 2)
+
+      // Si el resultado neto del movimiento del ejercicio es 0, cuadra
+      return d801 === 0 ? 1 : 0
     },
 
     // Función para calcular el cuadre de ERI
-    calculateEriCuadre() {
-      // Inicializamos los totales de cada categoría para el periodo actual y anterior
-      let totals = {
-        ingresos: 0,
-        costos: 0,
-        otrosIngresos: 0,
-        gastosVentas: 0,
-        gastosAdministrativos: 0,
-        gastosFinancieros: 0,
-        otrosGastos: 0,
-        resultados: 0,
-        operacionesDiscontinuadas: 0,
-        participacionControladora: 0,
-        otrosResultadosIntegrales: 0,
+    calculateEfeCuadre() {
+      const list = Object.values(this.values?.efemd ?? [])
 
-        ingresosAnt: 0,
-        costosAnt: 0,
-        otrosIngresosAnt: 0,
-        gastosVentasAnt: 0,
-        gastosAdministrativosAnt: 0,
-        gastosFinancierosAnt: 0,
-        otrosGastosAnt: 0,
-        resultadosAnt: 0,
-        operacionesDiscontinuadasAnt: 0,
-        participacionControladoraAnt: 0,
-        otrosResultadosIntegralesAnt: 0,
+      const eq = (a, b) => roundTo((Number(a) || 0) - (Number(b) || 0), 2) === 0
+
+      const parseEfeName = nombrecampo => {
+        const m = String(nombrecampo ?? "")
+          .trim()
+          .toLowerCase()
+          .match(/^efe_md_(\d+)$/)
+
+        if (!m) return null
+
+        return { codigo: m[1] }
       }
 
-      // Función para acumular los valores
-      const accumulateValues = field => {
-        if (!field || !field.tablaorigen || !field.valor) return
+      const buildIndex = rows => {
+        const byName = Object.create(null)
 
-        // Verificar si es el periodo anterior o actual
-        const isPeriodoAnterior = field.nombrecampo.endsWith("_ant")
-
-        // Acumular valores según tablaorigen y periodo
-        switch (field.tablaorigen) {
-        case 'Ingresos':
-          totals.ingresos += Number(field.valor)
-          break
-        case 'IngresosAnt':
-          totals.ingresosAnt += Number(field.valor)
-          break
-        case 'Costos':
-          totals.costos += Number(field.valor)
-          break
-        case 'CostosAnt':
-          totals.costosAnt += Number(field.valor)
-          break
-        case 'Otrosingresos':
-          totals.otrosIngresos += Number(field.valor)
-          break
-        case 'OtrosingresosAnt':
-          totals.otrosIngresosAnt += Number(field.valor)
-          break
-        case 'Gastosdeventas':
-          totals.gastosVentas += Number(field.valor)
-          break
-        case 'GastosdeventasAnt':
-          totals.gastosVentasAnt += Number(field.valor)
-          break
-        case 'Gastosadministrativos':
-          totals.gastosAdministrativos += Number(field.valor)
-          break
-        case 'GastosadministrativosAnt':
-          totals.gastosAdministrativosAnt += Number(field.valor)
-          break
-        case 'Gastosfinancieros':
-          totals.gastosFinancieros += Number(field.valor)
-          break
-        case 'GastosfinancierosAnt':
-          totals.gastosFinancierosAnt += Number(field.valor)
-          break
-        case 'Otrosgastos':
-          totals.otrosGastos += Number(field.valor)
-          break
-        case 'OtrosgastosAnt':
-          totals.otrosGastosAnt += Number(field.valor)
-          break
-        case 'Resultados':
-          totals.resultados += Number(field.valor)
-          break
-        case 'ResultadosAnt':
-          totals.resultadosAnt += Number(field.valor)
-          break
-        case 'Operacionesdiscontinuadas':
-          totals.operacionesDiscontinuadas += Number(field.valor)
-          break
-        case 'OperacionesdiscontinuadasAnt':
-          totals.operacionesDiscontinuadasAnt += Number(field.valor)
-          break
-        case 'Participacioncontroladora':
-          totals.participacionControladora += Number(field.valor)
-          break
-        case 'ParticipacioncontroladoraAnt':
-          totals.participacionControladoraAnt += Number(field.valor)
-          break
-        case 'Otrosresultadosintegrales':
-          totals.otrosResultadosIntegrales += Number(field.valor)
-          break
-        case 'OtrosresultadosintegralesAnt':
-          totals.otrosResultadosIntegralesAnt += Number(field.valor)
-          break
-        default:
-          break
+        for (const row of rows) {
+          if (!row?.nombrecampo) continue
+          byName[String(row.nombrecampo).toLowerCase()] = row
         }
+
+        return byName
       }
 
-      // Sumar los valores de todos los campos ERI
-      const eriList = this.reporte?.values.erivalues || []
+      const buildHierTotalsByCodigo = rows => {
+        const PARENT_LENGTHS = [4, 6, 8, 10, 12, 14]
+        const rowsByCodigo = Object.create(null)
 
-      eriList.forEach(field => accumulateValues(field))
+        // 1) cargar valores reales
+        for (const row of rows) {
+          if (!row?.nombrecampo) continue
 
-      // Verificar si el cuadre es correcto para cada categoria
-      const cuadreCorrectoActual = totals.ingresos + totals.costos + totals.otrosIngresos + totals.gastosVentas + totals.gastosAdministrativos + totals.gastosFinancieros + totals.otrosGastos + totals.resultados + totals.operacionesDiscontinuadas + totals.participacionControladora + totals.otrosResultadosIntegrales
+          const parsed = parseEfeName(row.nombrecampo)
+          if (!parsed) continue
 
-      const cuadreCorrectoAnterior = totals.ingresosAnt + totals.costosAnt + totals.otrosIngresosAnt + totals.gastosVentasAnt + totals.gastosAdministrativosAnt + totals.gastosFinancierosAnt + totals.otrosGastosAnt + totals.resultadosAnt + totals.operacionesDiscontinuadasAnt + totals.participacionControladoraAnt + totals.otrosResultadosIntegralesAnt
+          const { codigo } = parsed
 
-      // Retornar el resultado del cuadre si ambos periodos cuadran
-      const cuadreCorrecto = (cuadreCorrectoActual - cuadreCorrectoAnterior) === 0
+          if (!rowsByCodigo[codigo]) {
+            rowsByCodigo[codigo] = {
+              codigo,
+              actualVal: 0,
+              sumActual: 0,
+              hasChildren: false,
+            }
+          }
 
-      return cuadreCorrecto ? 1 : 0
+          const v = Number(row.valor)
+          rowsByCodigo[codigo].actualVal = Number.isFinite(v) ? roundTo(v, 2) : 0
+        }
+
+        // 2) crear padres sintéticos faltantes
+        const existingCodes = Object.keys(rowsByCodigo)
+        const extra = Object.create(null)
+
+        for (const code of existingCodes) {
+          for (const len of PARENT_LENGTHS) {
+            if (len >= code.length) continue
+
+            const parentCode = code.slice(0, len)
+
+            if (rowsByCodigo[parentCode] || extra[parentCode]) continue
+
+            extra[parentCode] = {
+              codigo: parentCode,
+              actualVal: 0,
+              sumActual: 0,
+              hasChildren: false,
+            }
+          }
+        }
+
+        Object.assign(rowsByCodigo, extra)
+
+        const rows2 = Object.values(rowsByCodigo)
+
+        // 3) detectar padres
+        for (const r of rows2) {
+          r.hasChildren = false
+        }
+
+        const sortedByLengthDesc = [...rows2].sort((a, b) => {
+          const lenDiff = String(b.codigo).length - String(a.codigo).length
+          if (lenDiff !== 0) return lenDiff
+
+          return String(a.codigo).localeCompare(String(b.codigo))
+        })
+
+        for (const r of sortedByLengthDesc) {
+          const code = String(r.codigo)
+
+          for (let len = code.length - 1; len > 0; len--) {
+            const parentCode = code.slice(0, len)
+            const parent = rowsByCodigo[parentCode]
+
+            if (parent) {
+              parent.hasChildren = true
+              break
+            }
+          }
+        }
+
+        // 4) inicializar sumas
+        for (const r of rows2) {
+          if (r.hasChildren) {
+            r.sumActual = 0
+          } else {
+            r.sumActual = roundTo(r.actualVal, 2)
+          }
+        }
+
+        // 5) propagar a padres
+        for (const r of sortedByLengthDesc) {
+          const code = String(r.codigo)
+
+          for (let len = code.length - 1; len > 0; len--) {
+            const parentCode = code.slice(0, len)
+            const parent = rowsByCodigo[parentCode]
+
+            if (parent) {
+              parent.sumActual = roundTo(parent.sumActual + r.sumActual, 2)
+              break
+            }
+          }
+        }
+
+        return rowsByCodigo
+      }
+
+      const byName = buildIndex(list)
+      const totals = buildHierTotalsByCodigo(list)
+
+      const getRowValue = name => {
+        const row = byName[String(name).toLowerCase()]
+        const n = Number(row?.valor)
+
+        return Number.isFinite(n) ? roundTo(n, 2) : 0
+      }
+
+      const exists = name => !!byName[String(name).toLowerCase()]
+
+      const sumActual = codigo => roundTo(totals[String(codigo)]?.sumActual ?? 0, 2)
+
+      const checks = []
+
+      // 1) Validar todos los padres persistidos contra la suma real de sus hijos
+      for (const row of list) {
+        if (!row?.nombrecampo) continue
+
+        const parsed = parseEfeName(row.nombrecampo)
+        if (!parsed) continue
+
+        const { codigo } = parsed
+        const node = totals[codigo]
+
+        if (!node?.hasChildren) continue
+
+        checks.push(eq(getRowValue(row.nombrecampo), node.sumActual))
+      }
+
+      // 2) Regla final del cuadre EFE:
+      //    mantener la validación funcional existente,
+      //    pero usando el total reconstruido de 9501 en lugar del valor persistido.
+      //
+      //    Si existe efe_md_9820, lo comparamos contra:
+      //    - suma jerárquica de 9501, si 9501 tiene hijos
+      //    - valor directo de 9501, si no tiene hijos
+      if (exists("efe_md_9820")) {
+        const expected9501 = sumActual("9501")
+        const actual9820 = getRowValue("efe_md_9820")
+
+        checks.push(eq(actual9820, expected9501))
+      }
+
+      const estructuralOk = !checks.length ? true : checks.every(Boolean)
+      const movimientoOk = this.calculateEfeMovimientoCuadre() === 1
+
+      return estructuralOk && movimientoOk ? 1 : 0
+    },
+
+    calculateEfeMovimientoCuadre() {
+      const dirtyUser = Object.entries(this.dirty.efemd).filter(
+        ([, change]) => !change?.meta?.autoCalc,
+      )
+
+      if (!dirtyUser.length) return 1
+
+      const current9820 = getBucketNumber(this.values.efemd, "efe_md_9820")
+      const base9820 = getBucketNumber(this.movementCheckpoint.efemd, "efe_md_9820")
+
+      return roundTo(current9820 - base9820, 2) === 0 ? 1 : 0
     },
 
     // Función para calcular el cuadre de ECP
     calculateEcpCuadre() {
-      const esfList = this.reporte?.values?.esfvalues ?? []
-      const ecpList = this.reporte?.values?.ecpvalues ?? []
+      // ✅ usar fuente viva (this.values), no snapshot (this.reporte.values)
+      const esfList = Object.values(this.values?.esf ?? {})
+      const ecpList = Object.values(this.values?.ecp ?? {})
 
       const esfIndex = buildIndexByNombrecampo(esfList)
       const ecpIndex = buildIndexByNombrecampo(ecpList)
@@ -420,6 +1003,9 @@ export const useReportViewerStore = defineStore("reportViewer", {
 
       const siOk = allRowsCuadran(esfIndex, ecpIndex, rowDefsSI)
       const sfOk = allRowsCuadran(esfIndex, ecpIndex, rowDefsSF)
+
+      console.log("siOk", siOk)
+      console.log("sfOk", sfOk)
 
       return (siOk && sfOk) ? 1 : 0
     },
@@ -563,6 +1149,8 @@ export const useReportViewerStore = defineStore("reportViewer", {
         // Mantener this.reporte.values sincronizado (para ReportViewerPage)
         this._syncReporteValues()
 
+        this.movementCheckpoint = cloneBuckets(this.values)
+
         // Cachear snapshot completo en IndexedDB (store: reportesconvertexs)
         const snapshot = buildPlainSnapshot(this.reporte, this.values)
 
@@ -595,12 +1183,12 @@ export const useReportViewerStore = defineStore("reportViewer", {
     },
 
     // -------------------------------------------
-// Actualizar un valor de campo (con autosave + mini-log)
-// tipo: 'esf' | 'eri' | 'ecp' | 'efemd'
-// nombrecampo: ej. 'esf_10101'
-// newRawValue: string/number desde el input
-// meta: info adicional (autoCalc, codigo, tablaorigen, periodo, etc.)
-// -------------------------------------------
+    // Actualizar un valor de campo (con autosave + mini-log)
+    // tipo: 'esf' | 'eri' | 'ecp' | 'efemd'
+    // nombrecampo: ej. 'esf_10101'
+    // newRawValue: string/number desde el input
+    // meta: info adicional (autoCalc, codigo, tablaorigen, periodo, etc.)
+    // -------------------------------------------
     updateValue(tipo, nombrecampo, newRawValue, meta = {}) {
       if (!this.reporte) return
 
@@ -625,16 +1213,34 @@ export const useReportViewerStore = defineStore("reportViewer", {
 
       const oldValue = entry.valor
 
-      const parsed =
-        newRawValue === "" || newRawValue == null
-          ? null
-          : Number(
-            typeof newRawValue === "string"
-              ? newRawValue.replace(",", ".")
-              : newRawValue,
-          )
+      let normalizedRaw = newRawValue
 
-      entry.valor = Number.isNaN(parsed) ? null : parsed
+      if (typeof normalizedRaw === "string") {
+        normalizedRaw = normalizedRaw.trim()
+      }
+
+      // Si el input vino vacío por focus/blur, no machacar el valor actual.
+      // Solo permitir vaciar explícitamente si algún día mandas meta.allowNull = true
+      if ((normalizedRaw === "" || normalizedRaw == null) && !meta?.allowNull) {
+        return
+      }
+
+      const parsed = Number(
+        typeof normalizedRaw === "string"
+          ? normalizedRaw.replace(",", ".")
+          : normalizedRaw,
+      )
+
+      if (!Number.isFinite(parsed)) {
+        return
+      }
+
+      // Si realmente no cambió, no ensuciar estado ni disparar guardado
+      if (roundTo(oldValue ?? 0, 2) === roundTo(parsed, 2)) {
+        return
+      }
+
+      entry.valor = parsed
 
       // Guardar en la colección principal
       bucket[nombrecampo] = entry
@@ -870,6 +1476,8 @@ export const useReportViewerStore = defineStore("reportViewer", {
       }
     },
 
+
+
     reset() {
       this.loading = false
       this.saving = false
@@ -891,6 +1499,13 @@ export const useReportViewerStore = defineStore("reportViewer", {
       if (this._saveTimer) {
         clearTimeout(this._saveTimer)
         this._saveTimer = null
+      }
+
+      this.movementCheckpoint = {
+        esf: {},
+        eri: {},
+        ecp: {},
+        efemd: {},
       }
     },
   },

@@ -7,7 +7,6 @@ import ReportSectionByValues from "./ReportSectionByValues.vue"
 import TxtMapeo101PA from "@/views/reportes/reportViewer/components/mapeo/TxtMapeo101PA.vue"
 import TxtMapeo1 from "@/views/reportes/reportViewer/components/mapeo/TxtMapeo1.vue"
 import TxtEstadosDeCambiosEnElPatrimonio from "@/views/reportes/reportViewer/components/ecp/TxtEstadosDeCambiosEnElPatrimonio.vue"
-import { useReportStore } from "@/@store/reportStore"
 import ResumenERI from "@/views/reportes/reportViewer/components/ResumenERI.vue"
 import ResumenESF from "@/views/reportes/reportViewer/components/ResumenESF.vue"
 import ResumenSaldosInicialesECP from "@/views/reportes/reportViewer/components/ResumenSaldosInicialesECP.vue"
@@ -23,36 +22,8 @@ const currentTab = ref("esf")
 const hasPendingChanges = computed(() => store.hasPendingChanges)
 const pendingChangesCount = computed(() => store.pendingChangesCount)
 const saving = computed(() => store.saving)
-
-const esfCuadre = computed(() => store.calculateEsfCuadre() !== 0)
-const efeCuadre = computed(() => store.calculateEfeCuadre() !== 0)
-const eriCuadre = computed(() => store.calculateEriCuadre() !== 0)
-const ecpCuadre = computed(() => store.calculateEcpCuadre() !== 0)
-
-const showResumenEsf = ref(false)
-const showEriResumen = ref(false)
-const showResumenEcpSI = ref(false)
-const showResumenEcpSF = ref(false)
-const showResumenEfe = ref(false)
-
 const reporte = computed(() => store.current)
 const loading = computed(() => store.loading)
-
-const reportStore = useReportStore()
-
-const activePanel = ref(null)
-
-// --- HELPERS PARA RESUMEN --------------------------------------
-
-const panel = ref(0)
-const panel2 = ref(19)
-const panel3 = ref(19)
-const panel4 = ref(19)
-const panel5 = ref(19)
-const panel6 = ref(0)
-const panel7 = ref(0)
-
-// let patrimonio = ref('0')
 
 const esfValues = computed(
   () => reporte.value?.values?.esfvalues ?? [],
@@ -76,8 +47,56 @@ const empresaNombre = computed(
   () => reporte.value?.empresa?.nombre ?? reporte.value?.empresaid ?? "",
 )
 
-const periodoTexto = computed(
-  () => reporte.value?.periodo?.periodo ?? reporte.value?.periodoid ?? "",
+const esfOk = ref(false)
+const eriOk = ref(false)
+const ecpOk = ref(false)
+const efeOk = ref(false)
+
+let cuadreTimer = null
+
+const refreshCuadres = () => {
+  if (cuadreTimer) clearTimeout(cuadreTimer)
+
+  cuadreTimer = setTimeout(() => {
+    esfOk.value = store.calculateEsfCuadre() === 1
+    eriOk.value = store.calculateEriCuadre() === 1
+    ecpOk.value = store.calculateEcpCuadre() === 1
+    efeOk.value = store.calculateEfeCuadre() === 1
+  }, 180)
+}
+
+watch(
+  [esfValues, eriValues, ecpValues, efeValues],
+  () => {
+    refreshCuadres()
+  },
+  { immediate: true },
+)
+
+const showResumenEsf = ref(false)
+const showEriResumen = ref(false)
+const showResumenEcpSI = ref(false)
+const showResumenEcpSF = ref(false)
+const showResumenEfe = ref(false)
+
+
+
+const activePanel = ref(null)
+
+// --- HELPERS PARA RESUMEN --------------------------------------
+
+const panel = ref(0)
+const panel2 = ref(19)
+const panel3 = ref(19)
+const panel4 = ref(19)
+const panel5 = ref(19)
+const panel6 = ref(0)
+const panel7 = ref(0)
+
+// let patrimonio = ref('0')
+
+const periodoTexto = computed(() =>
+  String(reporte.value?.periodo?.periodo ?? reporte.value?.periodoid ?? ""),
 )
 
 const esConsolidado = computed(() => {
@@ -155,52 +174,10 @@ watch(
   },
 )
 
-// Observar los cambios en los valores de ERI
-// Watcher para los cambios en ERI
-watch(
-  () => eriValues.value,
-  newValues => {
-    // Recalcular el resumen ERI cuando los valores cambien
-    // Evitar que se actualice en tiempo real con cada cambio
-
-    // console.log('ERI values have been updated:', newValues)
-
-    // Aquí puedes hacer solo las actualizaciones necesarias de los cálculos relacionados con ERI
-    // Solo actualiza valores si se detectan cambios en los campos específicos de ERI
-    // No sincronices o recalcules todos los campos de ERI a menos que sea necesario
-  },
-  { deep: true })
-
-const openResumenEsf = () => {
-  console.log("Abriendo el panel Resumen ESF")
-  showResumenEsf.value = true
-
-  console.log('showResumenEsf: ', showResumenEsf.value)
-}
-
-const openResumenEcpSI = () => {
-  console.log("Abriendo el panel Resumen ECP")
-  showResumenEcpSI.value = true
-
-  console.log('showResumenEcpSSI: ', showResumenEcpSI.value)
-}
-
-const openResumenEcpSF = () => {
-  console.log("Abriendo el panel Resumen ECP")
-  showResumenEcpSF.value = true
-
-  console.log('showResumenEcpSSI: ', showResumenEcpSF.value)
-}
-
-const openResumenEfe = () => {
-  console.log("Abriendo el panel Resumen EFE")
-  showResumenEfe.value = true
-
-  console.log('showResumenEfe: ', showResumenEfe.value)
-}
 
 // Maneja los cambios emitidos por ReportSectionByValues (Individuales y en Batch)
 const onChangeValue = payload => {
+  console.log("onChangeValue", payload)
   // ✅ Soporte para import masivo
   if (payload && Array.isArray(payload.batch)) {
     for (const p of payload.batch) {
@@ -219,25 +196,6 @@ const onChangeValue = payload => {
   if (!nombrecampo) return
 
   store.updateValue(tipoModel, nombrecampo, payload.valor, payload.meta || {})
-}
-
-// Función que calcula el cuadre para un tipo específico (esf, efe, eri, ecp)
-const calculateCuadre = tipo => {
-  // Verificar que esté calculando un valor numérico y no un objeto
-  if (tipo === "esf") {
-    return store.calculateEsfCuadre() // Asegúrate de que esto devuelve un número
-  }
-  if (tipo === "efe") {
-    return store.calculateEfeCuadre() // Asegúrate de que esto devuelve un número
-  }
-  if (tipo === "eri") {
-    return store.calculateEriCuadre() // Asegúrate de que esto devuelve un número
-  }
-  if (tipo === "ecp") {
-    return store.calculateEcpCuadre() // Asegúrate de que esto devuelve un número
-  }
-
-  return 0
 }
 </script>
 
@@ -373,7 +331,7 @@ const calculateCuadre = tipo => {
           <VTab value="esf">
             ESF
             <VIcon
-              v-if="esfCuadre"
+              v-if="esfOk"
               icon="tabler-check"
               color="success"
             />
@@ -386,7 +344,7 @@ const calculateCuadre = tipo => {
           <VTab value="eri">
             ERI
             <VIcon
-              v-if="eriCuadre"
+              v-if="eriOk"
               icon="tabler-check"
               color="success"
             />
@@ -399,7 +357,7 @@ const calculateCuadre = tipo => {
           <VTab value="ecp">
             ECP
             <VIcon
-              v-if="ecpCuadre"
+              v-if="ecpOk"
               icon="tabler-check"
               color="success"
             />
@@ -412,7 +370,7 @@ const calculateCuadre = tipo => {
           <VTab value="efe">
             EFE
             <VIcon
-              v-if="efeCuadre"
+              v-if="efeOk"
               icon="tabler-check"
               color="success"
             />
@@ -429,7 +387,7 @@ const calculateCuadre = tipo => {
         <VCardText>
           <VWindow v-model="currentTab">
             <!-- MAPEO 1 -->
-            <VWindowItem value="mapeo1">
+            <VWindowItem value="mapeo1" eager>
               <h3
                 class="ml-4"
                 style="color:#DB7E3A"
@@ -447,16 +405,12 @@ const calculateCuadre = tipo => {
                   </VExpansionPanelTitle>
                   <VExpansionPanelText>
                     <TxtMapeo1
-                      :active-panel="activePanel"
                       :ecp-values="ecpValues"
                       :esf-values="esfValues"
                       :efe-values="efeValues"
                       :eri-values="eriValues"
                       :periodo="periodoTexto"
                       :empresa="empresaNombre"
-                      :loading="loading"
-                      :current-tab="currentTab"
-                      title=""
                       @change-value="onChangeValue"
                     />
                   </VExpansionPanelText>
@@ -467,16 +421,12 @@ const calculateCuadre = tipo => {
                   </VExpansionPanelTitle>
                   <VExpansionPanelText>
                     <TxtMapeo101PA
-                      :active-panel="activePanel"
                       :ecp-values="ecpValues"
                       :esf-values="esfValues"
                       :efe-values="efeValues"
                       :eri-values="eriValues"
                       :periodo="periodoTexto"
                       :empresa="empresaNombre"
-                      :loading="loading"
-                      :current-tab="currentTab"
-                      title=""
                       @change-value="onChangeValue"
                     />
                   </VExpansionPanelText>
@@ -484,7 +434,7 @@ const calculateCuadre = tipo => {
               </VExpansionPanels>
             </VWindowItem>
             <!-- ESF -->
-            <VWindowItem value="esf">
+            <VWindowItem value="esf" eager>
               <div class="sticky-actions">
                 <VBtn
                   size="small"
@@ -514,7 +464,7 @@ const calculateCuadre = tipo => {
             </VWindowItem>
 
             <!-- ERI -->
-            <VWindowItem value="eri">
+            <VWindowItem value="eri" eager>
               <!-- Botón para abrir resumen ERI -->
               <div class="sticky-actions">
                 <VBtn
@@ -541,7 +491,7 @@ const calculateCuadre = tipo => {
             </VWindowItem>
 
             <!-- ECP -->
-            <VWindowItem value="ecp">
+            <VWindowItem value="ecp" eager>
               <div class="sticky-actions">
                 <VBtn
                   size="small"
@@ -577,7 +527,6 @@ const calculateCuadre = tipo => {
                 :values="ecpValues"
                 :periodo="periodoTexto"
                 :empresa="empresaNombre"
-                :loading="loading"
                 :data="reporte?.patrimonio ?? {}"
                 :current-tab="currentTab"
                 title=""
@@ -587,7 +536,7 @@ const calculateCuadre = tipo => {
             </VWindowItem>
 
             <!-- EFE MD -->
-            <VWindowItem value="efe">
+            <VWindowItem value="efe" eager>
               <div class="sticky-actions">
                 <VBtn
                   size="small"
@@ -623,21 +572,17 @@ const calculateCuadre = tipo => {
     <!-- DIALOGO RESUMEN ESF -->
     <ResumenESF
       v-model="showResumenEsf"
-      :esf-cuadre="esfCuadre"
+      :esf-cuadre="esfOk"
       :values="esfValues"
-      :showResumenEsf="showResumenEsf"
       @update:showResumenEsf="showResumenEsf = $event"
-      @update:esfCuadre="esfCuadre = $event"
     />
 
     <!-- Diálogo resumen ERI -->
     <ResumenERI
       v-model="showEriResumen"
-      :eri-cuadre="eriCuadre"
+      :eri-cuadre="eriOk"
       :values="eriValues"
-      :showEriResumen="showEriResumen"
       @update:showEriResumen="showEriResumen = $event"
-      @update:eriCuadre="eriCuadre = $event"
     />
 
     <!-- Diálogo resumen ECP -->

@@ -1,7 +1,7 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useAbility } from '@casl/vue'
-import { getKeycloak } from '@/plugins/keycloak'
+import { initKeycloak, getKeycloak, isKeycloakInitialized, stopKeycloakRefresh } from '@/plugins/keycloak/keycloak'
 
 const router = useRouter()
 const ability = useAbility()
@@ -33,28 +33,44 @@ const clearLocalSession = () => {
 }
 
 const openKeycloakProfile = async () => {
-  const kc = getKeycloak()
-
-  if (!kc) {
-    console.error('Keycloak no está inicializado')
-
-    return
-  }
-
   try {
+    if (!isKeycloakInitialized()) {
+      await initKeycloak('check-sso')
+    }
+
+    const kc = getKeycloak()
+
+    if (!kc) throw new Error('No existe instancia de Keycloak')
+
     await kc.accountManagement()
   } catch (err) {
     console.error('Error al abrir el perfil de Keycloak:', err)
   }
 }
 
-const logout = async () => {
-  const kc = getKeycloak()
+const buildManualLogoutUrl = () => {
+  const redirectUri = encodeURIComponent(window.location.origin)
 
-  clearLocalSession()
+  return `https://login.facilcontabilidad.org/realms/ApiFC/protocol/openid-connect/logout?client_id=convertex-spa&post_logout_redirect_uri=${redirectUri}`
+}
+
+const logout = async () => {
+  ability.update([])
+
+  sessionStorage.removeItem('userData')
+  sessionStorage.removeItem('accessToken')
+  sessionStorage.removeItem('email')
+  sessionStorage.removeItem('name')
+  sessionStorage.removeItem('preferred_username')
+  sessionStorage.removeItem('sub')
+  sessionStorage.removeItem('userAbilities')
 
   try {
-    if (kc) {
+    const kc = getKeycloak()
+
+    if (kc && isKeycloakInitialized()) {
+      stopKeycloakRefresh()
+
       await kc.logout({
         redirectUri: window.location.origin,
       })
@@ -62,10 +78,10 @@ const logout = async () => {
       return
     }
 
-    await router.push('/login')
+    window.location.href = buildManualLogoutUrl()
   } catch (err) {
     console.error('Error en logout de Keycloak', err)
-    await router.push('/login')
+    window.location.href = buildManualLogoutUrl()
   }
 }
 </script>

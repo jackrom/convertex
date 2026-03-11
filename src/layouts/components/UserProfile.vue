@@ -1,21 +1,15 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useAbility } from '@casl/vue'
-import { initKeycloak, getKeycloak } from '@/plugins/keycloak' // usa el barrel correcto
+import { getKeycloak } from '@/plugins/keycloak'
 
 const router = useRouter()
 const ability = useAbility()
 
-// TODO: Get type from backend
 const rawUserData = sessionStorage.getItem('userData')
 const userData = rawUserData ? JSON.parse(rawUserData) : null
 
-// ─────────────────────────────
-// userData seguro
-// ─────────────────────────────
 const userName = computed(() => {
-  // intenta tomar el nombre “bonito” del perfil,
-  // si no, el username, y como último recurso el valor guardado en sessionStorage
   return (
     sessionStorage.getItem('name') ||
     userData?.profile?.name ||
@@ -26,9 +20,26 @@ const userName = computed(() => {
 
 const userRoleLabel = computed(() => 'Usuario')
 
+const clearLocalSession = () => {
+  ability.update([])
+
+  sessionStorage.removeItem('userData')
+  sessionStorage.removeItem('accessToken')
+  sessionStorage.removeItem('email')
+  sessionStorage.removeItem('name')
+  sessionStorage.removeItem('preferred_username')
+  sessionStorage.removeItem('sub')
+  sessionStorage.removeItem('userAbilities')
+}
+
 const openKeycloakProfile = async () => {
-  await initKeycloak()
   const kc = getKeycloak()
+
+  if (!kc) {
+    console.error('Keycloak no está inicializado')
+
+    return
+  }
 
   try {
     await kc.accountManagement()
@@ -38,26 +49,20 @@ const openKeycloakProfile = async () => {
 }
 
 const logout = async () => {
-  // 1) Reset CASL primero (ok)
-  ability.update([])
+  const kc = getKeycloak()
 
-  // 2) Limpia storage (ok)
-  sessionStorage.removeItem('userData')
-  sessionStorage.removeItem('accessToken')
-  sessionStorage.removeItem('email')
-  sessionStorage.removeItem('name')
-  sessionStorage.removeItem('preferred_username')
-  sessionStorage.removeItem('sub')
-  sessionStorage.removeItem('userAbilities')
+  clearLocalSession()
 
   try {
-    await initKeycloak()
+    if (kc) {
+      await kc.logout({
+        redirectUri: window.location.origin,
+      })
 
-    const kc = getKeycloak()
+      return
+    }
 
-    await kc.logout({
-      redirectUri: window.location.origin, // o `${window.location.origin}/login`
-    })
+    await router.push('/login')
   } catch (err) {
     console.error('Error en logout de Keycloak', err)
     await router.push('/login')

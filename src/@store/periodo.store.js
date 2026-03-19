@@ -12,6 +12,14 @@ import { obtenerDatosReporte } from "@core/utils/reportes"
 
 const audit = useAudit()
 
+// Helper: derivar tiporeporte desde datos legacy
+const derivarTipo = periodo => {
+  if (periodo.tiporeporte) return periodo.tiporeporte
+  if (periodo.esconsolidado) return "consolidado"
+
+  return "individual"
+}
+
 export const usePeriodoStore = defineStore("periodos", {
   state: () => ({
     periodos: [],
@@ -32,27 +40,21 @@ export const usePeriodoStore = defineStore("periodos", {
       const api = usePeriodoService()
       const logic = usePeriodoLogic()
 
-      // Carga desde IndexedDB o API
       const lista = await cache.getOrFetch(
         "periodos",
         () => api.fetch(userId),
         { force },
       )
 
-      // normalizar
       let periodos = lista.map(normalizePeriodo)
 
-      // filtrar eliminados
       periodos = logic.periodosActivos(periodos)
-
-      // marcar duplicados
       periodos = logic.marcarDuplicados(periodos)
 
       this.periodos = periodos
       this.loaded = true
     },
 
-    // periodo.store.js
     async add(periodoNuevo) {
       const api = usePeriodoService()
       const cache = useCache()
@@ -60,12 +62,10 @@ export const usePeriodoStore = defineStore("periodos", {
 
       console.log("periodoNuevo: ", periodoNuevo)
 
-      // Llamada a la API: asumimos que devuelve un axios response o el objeto directamente
       const res = await api.create(periodoNuevo)
 
-      console.log('res periodo', res)
+      console.log("res periodo", res)
 
-      // Invalidar cache y recargar lista
       await cache.invalidatePeriodos()
       this.loaded = false
       await this.load()
@@ -73,26 +73,39 @@ export const usePeriodoStore = defineStore("periodos", {
       const body = res?.data
       const rows = Array.isArray(body?.data) ? body.data : []
 
-      // intenta encontrar el periodo exacto por empresa + periodo (+ userid si aplica)
+      // Si el backend devuelve el objeto creado directamente
+      if (body?.data && !Array.isArray(body.data) && body.data.id) {
+        const creado = body.data
+
+        audit.registrar({
+          modulo: "periodos",
+          accion: "create",
+          targetId: creado.id,
+          empresaId: creado.empresaid,
+          periodoId: creado.id,
+          antes: null,
+          despues: creado,
+        })
+
+        return creado
+      }
+
+      // Fallback: buscar en array de rows
       let creado =
         rows.find(r =>
           r &&
           r.empresaid === periodoNuevo.empresaid &&
           Number(r.periodo) === Number(periodoNuevo.periodo) &&
+          derivarTipo(r) === (periodoNuevo.tiporeporte || "individual") &&
           (r.userid ? r.userid === periodoNuevo.userid : true),
         )
 
-      // fallback: el de mayor id (normalmente el recién insertado)
       if (!creado && rows.length) {
         creado = [...rows].sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0))[0]
       }
 
-      console.log("rows devueltos:", rows)
       console.log("creado resuelto:", creado)
 
-      console.log("creado: ", creado)
-
-      // Registrar auditoría con lo que tengamos (opcional, como ya lo tenías)
       audit.registrar({
         modulo: "periodos",
         accion: "create",
@@ -103,20 +116,8 @@ export const usePeriodoStore = defineStore("periodos", {
         despues: creado,
       })
 
-      console.log('audit: ', {
-        modulo: "periodos",
-        accion: "create",
-        targetId: creado?.id ?? null,
-        empresaId: creado?.empresaid,
-        periodoId: creado?.id ?? null,
-        antes: null,
-        despues: creado,
-      })
-
-      // 👉 Devolver el periodo creado (o null si no pudimos identificarlo)
       return creado
     },
-
 
     async remove(id) {
       const api = usePeriodoService()
@@ -143,16 +144,23 @@ export const usePeriodoStore = defineStore("periodos", {
         return null
       }
 
+      const origenTipo = derivarTipo(origen)
+
+      // Solo consolidado puede duplicarse
+      if (origenTipo !== "consolidado") {
+        console.warn("[periodos.store] duplicate: tipo no duplicable:", origenTipo)
+
+        return null
+      }
+
       const siguientePeriodo = Number(origen.periodo) + 1
 
-      // Seguridad extra: si ya existe el periodo siguiente, no duplicar
-      const origenEsConsolidado = Boolean(origen.esconsolidado)
-
+      // Verificar si ya existe el periodo siguiente con el mismo tipo
       const yaExiste = this.periodos.some(
         p =>
           p.empresaid === origen.empresaid &&
           Number(p.periodo) === siguientePeriodo &&
-          Boolean(p.esconsolidado) === origenEsConsolidado &&
+          derivarTipo(p) === origenTipo &&
           !p.deletedat,
       )
 
@@ -164,12 +172,12 @@ export const usePeriodoStore = defineStore("periodos", {
 
       this.loading = true
       try {
-        // 1) Crear el nuevo período (igual que desde el drawer)
+        // 1) Crear el nuevo período con tiporeporte
         const nuevoPeriodo = await this.add({
           periodo: siguientePeriodo,
           empresaid: origen.empresaid,
           userid: userId,
-          esconsolidado: origen.esconsolidado,
+          tiporeporte: origenTipo,
         })
 
         if (!nuevoPeriodo || !nuevoPeriodo.id) {
@@ -185,13 +193,12 @@ export const usePeriodoStore = defineStore("periodos", {
           origen.empresaid,
         )
 
-        periodoData.reporte.esconsolidado = Boolean(origen.esconsolidado)
+        periodoData.reporte.tiporeporte = origenTipo
 
         // 3) Buscar el reporte del período origen y sus values
         let prevValuesPerTipo = null
 
         try {
-          // 3.1) Lookup del reporte del período origen
           const lookupBody = await reportesService.getByEmpresaPeriodo({
             empresaid: origen.empresaid,
             periodoid: origen.id,
@@ -206,7 +213,6 @@ export const usePeriodoStore = defineStore("periodos", {
           const prevReporteId = reporteAnterior?.reporteid
 
           if (prevReporteId) {
-            // 3.2) Traer TODOS los values del reporte anterior
             const valuesBody = await reportesService.getValues(prevReporteId)
             const allValues = valuesBody?.data ?? {}
 
@@ -273,10 +279,9 @@ export const usePeriodoStore = defineStore("periodos", {
           patchBlock(periodoData.resultadosparticipacioncontroladoraconvertex_ant, prevEri, "eri_")
         }
 
-        // 5) Crear el reporte + values del nuevo período (actual + anteriores ya parcheados)
+        // 5) Crear el reporte + values del nuevo período
         await reportesStore.addReporteConvertex(periodoData)
 
-        // El add() ya recargó periodos; reportesStore.addReporteConvertex recarga reportes.
         return nuevoPeriodo
       } finally {
         this.loading = false

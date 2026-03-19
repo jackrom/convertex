@@ -1,3 +1,4 @@
+// src/plugins/vuetify/index.js
 import { deepMerge } from '@antfu/utils'
 import { useI18n } from 'vue-i18n'
 import { createVuetify } from 'vuetify'
@@ -14,6 +15,9 @@ import { getI18n } from '@/plugins/i18n/index'
 import { cookieRef } from '@/@layouts/stores/config'
 import '@core/scss/template/libs/vuetify/index.scss'
 import 'vuetify/styles'
+
+import '@core/scss/template/index.scss'
+import '@styles/styles.scss'
 
 export default function (app) {
   const cookieThemeValues = {

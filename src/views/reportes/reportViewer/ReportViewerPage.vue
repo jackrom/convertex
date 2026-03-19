@@ -506,7 +506,6 @@ const onChangeValue = payload => {
                   />
                   ECP Saldos Iniciales
                 </VBtn>
-
                 <VBtn
                   size="small"
                   color="primary"
@@ -659,7 +658,7 @@ const onChangeValue = payload => {
   z-index: 9999;
   background-color: rgb(255, 255, 255);
   margin-top: -60px;
-  right: 80px;
+  right: 350px;
 }
 
 .button-resumen-ecp-sf {
@@ -667,6 +666,6 @@ const onChangeValue = payload => {
   z-index: 9999;
   background-color: rgb(255, 255, 255);
   margin-top: -60px;
-  right: 350px;
+  right: 80px;
 }
 </style>

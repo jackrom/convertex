@@ -1,3 +1,4 @@
+// src/plugins/axios/axios.js
 import axios from 'axios'
 import { environment } from '@/utils/environments'
 import { getKeycloak } from '@/plugins/keycloak/keycloak'

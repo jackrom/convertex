@@ -1,3 +1,4 @@
+// src/plugins/i18n/index.js
 import { createI18n } from 'vue-i18n'
 import { cookieRef } from '@layouts/stores/config'
 import { themeConfig } from '@themeConfig'

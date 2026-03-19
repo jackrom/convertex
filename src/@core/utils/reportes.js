@@ -1,3 +1,5 @@
+// src/@core/utils/reportes.js
+
 import { useReportStore } from "@/@store/reportStore"
 import { fillReportTemplatesFromFlatArray } from "@/views/reportes/reportViewer/components/mapeo/helpers/reportesFill"
 

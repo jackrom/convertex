@@ -1,3 +1,4 @@
+// src/plugins/1.router/guards.js
 import { canNavigate } from '@layouts/plugins/casl'
 import { syncAbilityFromKeycloak } from '@/plugins/keycloak/keycloak-casl'
 import api from "@/plugins/axios/axios"

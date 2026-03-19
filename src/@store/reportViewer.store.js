@@ -221,17 +221,19 @@ export const useReportViewerStore = defineStore("reportViewer", {
         const isAnt = String(field.nombrecampo ?? "").toLowerCase().endsWith("_ant")
         const v = toNum(field.valor)
 
+        console.log('key', key)
+
         if (key === "activoscorrientes") totals[`ac`] += v
         else if (key === "activosnocorrientes") totals[`anc`] += v
         else if (key === "pasivoscorrientes") totals[`pc`] += v
         else if (key === "pasivosnocorrientes") totals[`pnc`] += v
-        else if (key === "patrimonio") totals[`pat}`] += v
+        else if (key === "patrimonio") totals[`pat`] += v
 
         if (key === "activoscorrientesant") totals[`ac_ant`] += v
         else if (key === "activosnocorrientesant") totals[`anc_ant`] += v
         else if (key === "pasivoscorrientesant") totals[`pc_ant`] += v
         else if (key === "pasivosnocorrientesant") totals[`pnc_ant`] += v
-        else if (key === "patrimonioant") totals[`pat_ant}`] += v
+        else if (key === "patrimonioant") totals[`pat_ant`] += v
       }
 
       const round2 = n => Math.round((n + Number.EPSILON) * 100) / 100

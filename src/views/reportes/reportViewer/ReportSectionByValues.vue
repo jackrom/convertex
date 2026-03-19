@@ -195,7 +195,6 @@ const NEGATIVE_FIELDS = new Set(
     "eri_40113",
     "eri_40114",
     "eri_40115",
-    "eri_40116",
 
     "eri_40112_ant",
     "eri_40113_ant",
@@ -484,7 +483,7 @@ const groups = computed(() => {
   })
 
   // Paso 3: Calcular totales jerárquicos y ordenar
-   // Ordenamos los grupos por el `orderIndex`
+  // Ordenamos los grupos por el `orderIndex`
   return Object.values(groupedByTabla)
     .map(group => {
       const rows = Object.values(group.rowsByCodigo)
@@ -639,6 +638,8 @@ const FORCE_FIELD_VALUE = new Set(
     "efe_md_9505",
     "efe_md_9506",
     "efe_md_9507",
+    "efe_md_9820",
+    "efe_md_98",
   ].map(s => s.toLowerCase()),
 )
 
@@ -1368,16 +1369,113 @@ const recomputeEfeFormulas = () => {
   // efe_md_9507 = efe_md_9505 + efe_md_9506
 
   const v96 = getFrom(eriList, "eri_600")
-  const v95 = getFrom(efeList, "efe_md_95")
-  const v9504 = getFrom(efeList, "efe_md_9504")
+
+  const v95010101 = getFrom(efeList, "efe_md_95010101")
+  const v95010102 = getFrom(efeList, "efe_md_95010102")
+  const v95010103 = getFrom(efeList, "efe_md_95010103")
+  const v95010104 = getFrom(efeList, "efe_md_95010104")
+  const v95010105 = getFrom(efeList, "efe_md_95010105")
+
+  const v95010201 = getFrom(efeList, "efe_md_95010201")
+  const v95010202 = getFrom(efeList, "efe_md_95010202")
+  const v95010203 = getFrom(efeList, "efe_md_95010203")
+  const v95010204 = getFrom(efeList, "efe_md_95010204")
+  const v95010205 = getFrom(efeList, "efe_md_95010205")
+
+  const v950103 = getFrom(efeList, "efe_md_950103")
+  const v950104 = getFrom(efeList, "efe_md_950104")
+  const v950105 = getFrom(efeList, "efe_md_950105")
+  const v950106 = getFrom(efeList, "efe_md_950106")
+  const v950107 = getFrom(efeList, "efe_md_950107")
+  const v950108 = getFrom(efeList, "efe_md_950108")
+
+  const v9501 = roundTo(v95010101 + v95010102 + v95010103 + v95010104 + v95010105 + v95010201+ v95010202+ v95010203+ v95010204+ v95010205 + v950103 + v950104 + v950105 + v950106 + v950107 + v950108, 2)
+
+  const v950201 = getFrom(efeList, "efe_md_950201")
+  const v950202 = getFrom(efeList, "efe_md_950202")
+  const v950203 = getFrom(efeList, "efe_md_950203")
+  const v950204 = getFrom(efeList, "efe_md_950204")
+  const v950205 = getFrom(efeList, "efe_md_950205")
+  const v950206 = getFrom(efeList, "efe_md_950206")
+  const v950207 = getFrom(efeList, "efe_md_950207")
+  const v950208 = getFrom(efeList, "efe_md_950208")
+  const v950209 = getFrom(efeList, "efe_md_950209")
+  const v950210 = getFrom(efeList, "efe_md_950210")
+  const v950211 = getFrom(efeList, "efe_md_950211")
+  const v950212 = getFrom(efeList, "efe_md_950212")
+  const v950213 = getFrom(efeList, "efe_md_950213")
+  const v950214 = getFrom(efeList, "efe_md_950214")
+  const v950215 = getFrom(efeList, "efe_md_950215")
+  const v950216 = getFrom(efeList, "efe_md_950216")
+  const v950217 = getFrom(efeList, "efe_md_950217")
+  const v950218 = getFrom(efeList, "efe_md_950218")
+  const v950219 = getFrom(efeList, "efe_md_950219")
+  const v950220 = getFrom(efeList, "efe_md_950220")
+  const v950221 = getFrom(efeList, "efe_md_950221")
+  const v9502 = roundTo(v950201 + v950202 + v950203 + v950204 + v950205 + v950206 + v950207 + v950208 + v950209 + v950210 + v950211 + v950212 + v950213 + v950214 + v950215 + v950216 + v950217 + v950218 + v950219 + v950220 + v950221, 2)
+
+  const v950301 = getFrom(efeList, "efe_md_950301")
+  const v950302 = getFrom(efeList, "efe_md_950302")
+  const v950303 = getFrom(efeList, "efe_md_950303")
+  const v950304 = getFrom(efeList, "efe_md_950304")
+  const v950305 = getFrom(efeList, "efe_md_950305")
+  const v950306 = getFrom(efeList, "efe_md_950306")
+  const v950307 = getFrom(efeList, "efe_md_950307")
+  const v950308 = getFrom(efeList, "efe_md_950308")
+  const v950309 = getFrom(efeList, "efe_md_950309")
+  const v950310 = getFrom(efeList, "efe_md_950310")
+  const v9503 = roundTo(v950301 + v950302 + v950303 + v950304 + v950305 + v950306 + v950307 + v950308 + v950309 + v950310, 2)
+
+  console.log('9503', v9503)
+
+  const v95 = roundTo(v9501 + v9502 + v9503, 2)
+  const v9504 = getFrom(efeList, "efe_md_950401")
+
+  console.log('9504', v9504)
+
   const v9505 = roundTo(v95 + v9504, 2)
-  const v9506 = getFrom(esfList, "esf_10101_ant")
+
+  const v1010101ant = getFrom(esfList, "esf_1010101_ant")
+  const v1010102ant = getFrom(esfList, "esf_1010102_ant")
+  const v1010103ant = getFrom(esfList, "esf_1010103_ant")
+
+  const v9506 = roundTo(v1010101ant + v1010102ant + v1010103ant, 2)
+
   const v9507 = roundTo(v9505 + v9506, 2)
+
+  const v9701 = getFrom(efeList, "efe_md_9701")
+  const v9702 = getFrom(efeList, "efe_md_9702")
+  const v9703 = getFrom(efeList, "efe_md_9703")
+  const v9704 = getFrom(efeList, "efe_md_9704")
+  const v9705 = getFrom(efeList, "efe_md_9705")
+  const v9706 = getFrom(efeList, "efe_md_9706")
+  const v9707 = getFrom(efeList, "efe_md_9707")
+  const v9708 = getFrom(efeList, "efe_md_9708")
+  const v9709 = getFrom(efeList, "efe_md_9709")
+  const v9710 = getFrom(efeList, "efe_md_9710")
+  const v9711 = getFrom(efeList, "efe_md_9711")
+
+  const v9801 = getFrom(efeList, "efe_md_9801")
+  const v9802 = getFrom(efeList, "efe_md_9802")
+  const v9803 = getFrom(efeList, "efe_md_9803")
+  const v9804 = getFrom(efeList, "efe_md_9804")
+  const v9805 = getFrom(efeList, "efe_md_9805")
+  const v9806 = getFrom(efeList, "efe_md_9806")
+  const v9807 = getFrom(efeList, "efe_md_9807")
+  const v9808 = getFrom(efeList, "efe_md_9808")
+  const v9809 = getFrom(efeList, "efe_md_9809")
+  const v9810 = getFrom(efeList, "efe_md_9810")
+
+  const v98 = roundTo(v9801 + v9802 + v9803 + v9804 + v9805 + v9806 + v9807 + v9808 + v9809 + v9810, 2)
+
+  const v9820 = roundTo(v96 + v9701 + v9702 + v9703 + v9704 + v9705 + v9706 + v9707 + v9708 + v9709 + v9710 + v9711 + v9801 + v9802 + v9803 + v9804 + v9805 + v9806 + v9807 + v9808 + v9809 + v9810, 2)
 
   setIfChanged("efe_md_96", v96)
   setIfChanged("efe_md_9505", v9505)
   setIfChanged("efe_md_9506", v9506)
   setIfChanged("efe_md_9507", v9507)
+  setIfChanged("efe_md_98", v98)
+  setIfChanged("efe_md_9820", v9820)
 }
 
 // ===================================================
@@ -1567,6 +1665,10 @@ const onInput = (group, row, which, rawValue) => {
               <tr
                 v-for="row in group.rows"
                 :key="row.codigo"
+                :class="{
+                  'rv-row-parent': row.hasChildren,
+                  'rv-row-leaf': !row.hasChildren,
+                }"
               >
                 <td>
                   {{ row.nombreCuenta || row.codigo }}
@@ -1577,13 +1679,17 @@ const onInput = (group, row, which, rawValue) => {
                 </td>
 
                 <td>
+                  <!-- PERIODO ACTUAL -->
                   <VTextField
                     type="number"
                     density="compact"
                     variant="outlined"
                     hide-details
                     class="ma-0 pa-0"
-                    :class="{ 'rv-readonly': isReadOnlyField(row, 'actual') }"
+                    :class="{
+                      'rv-readonly': isReadOnlyField(row, 'actual'),
+                      'rv-editable': !isReadOnlyField(row, 'actual'),
+                    }"
                     :readonly="isReadOnlyField(row, 'actual')"
                     :model-value="getDisplayValue(row.actual, row.sumActual, row.hasChildren)"
                     @update:modelValue="val => onInput(group, row, 'actual', val)"
@@ -1591,13 +1697,17 @@ const onInput = (group, row, which, rawValue) => {
                 </td>
 
                 <td v-if="hasPeriodoAnterior">
+                  <!-- PERIODO ANTERIOR (igual) -->
                   <VTextField
                     type="number"
                     density="compact"
                     variant="outlined"
                     hide-details
                     class="ma-0 pa-0"
-                    :class="{ 'rv-readonly': isReadOnlyField(row, 'anterior') }"
+                    :class="{
+                      'rv-readonly': isReadOnlyField(row, 'anterior'),
+                      'rv-editable': !isReadOnlyField(row, 'anterior'),
+                    }"
                     :readonly="isReadOnlyField(row, 'anterior')"
                     :model-value="getDisplayValue(row.anterior, row.sumAnterior, row.hasChildren)"
                     @update:modelValue="val => onInput(group, row, 'anterior', val)"
@@ -1620,3 +1730,80 @@ const onInput = (group, row, which, rawValue) => {
     </VExpansionPanels>
   </section>
 </template>
+
+<style scoped>
+/* ========================================
+   FILAS PADRE (totales jerárquicos)
+   ======================================== */
+.rv-row-parent td {
+  background-color: #f5f3ff;
+  font-weight: 600;
+}
+
+.rv-row-parent td:first-child {
+  border-left: 3px solid #2c3555;
+}
+
+/* ========================================
+   CAMPOS READONLY (padre o calculado)
+   ======================================== */
+.rv-readonly :deep(.v-field) {
+  background-color: #f4f5f7;
+  border-color: transparent;
+  cursor: default;
+}
+
+.rv-readonly :deep(.v-field__outline) {
+  opacity: 0;
+}
+
+.rv-readonly :deep(input) {
+  color: #2c3555;
+  font-weight: 600;
+  cursor: default;
+  -moz-appearance: textfield;
+}
+
+.rv-readonly :deep(input::-webkit-outer-spin-button),
+.rv-readonly :deep(input::-webkit-inner-spin-button) {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ========================================
+   CAMPOS EDITABLES
+   ======================================== */
+.rv-editable :deep(.v-field) {
+  background-color: #ffffff;
+  border: 1.5px solid #d0d5dd;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.rv-editable :deep(.v-field:hover) {
+  border-color: #2c3555;
+}
+
+.rv-editable :deep(.v-field--focused) {
+  border-color: #db7e3b;
+  box-shadow: 0 0 0 3px rgba(219, 126, 59, 0.15);
+}
+
+.rv-editable :deep(input) {
+  color: #1a1a2e;
+  font-weight: 400;
+}
+
+/* ========================================
+   NIVEL DE INDENTACIÓN POR CÓDIGO
+   (más dígitos = más profundo)
+   ======================================== */
+.rv-row-parent td:first-child {
+  font-size: 0.875rem;
+}
+
+.rv-row-leaf td:first-child {
+  padding-left: 24px;
+  font-size: 0.825rem;
+  color: #444;
+}
+</style>

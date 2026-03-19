@@ -1,3 +1,4 @@
+// src/plugins/layouts.js
 import { createLayouts } from '@layouts'
 import { layoutConfig } from '@themeConfig'
 

@@ -1,3 +1,4 @@
+<!-- src/views/periodos/PeriodoList.vue -->
 <script setup>
 import { onMounted, ref, computed } from "vue"
 import { usePeriodoStore } from "@/@store/periodo.store"
@@ -11,9 +12,24 @@ const reportStore = useReportesStore()
 
 const isDrawerOpen = ref(false)
 
-// ────────────────────────────────
-// Diálogos de confirmación
-// ────────────────────────────────
+// ══════════════════════════════════════════════
+// Tipos que NO se pueden duplicar
+// ══════════════════════════════════════════════
+const TIPOS_NO_DUPLICABLES = new Set(["inicial", "individual"])
+
+// ══════════════════════════════════════════════
+// Derivar tiporeporte (compatibilidad legacy)
+// ══════════════════════════════════════════════
+const derivarTipo = periodo => {
+  if (periodo.tiporeporte) return periodo.tiporeporte
+  if (periodo.esconsolidado) return "consolidado"
+
+  return "individual"
+}
+
+// ══════════════════════════════════════════════
+// Diálogos
+// ══════════════════════════════════════════════
 const deleteDialogOpen = ref(false)
 const duplicateDialogOpen = ref(false)
 const targetPeriodo = ref(null)
@@ -28,13 +44,72 @@ onMounted(async () => {
 const periodos = computed(() => periodoStore.periodos)
 const isLoading = computed(() => !periodoStore.loaded)
 
-const abrirDrawer = () => {
-  isDrawerOpen.value = true
+// ══════════════════════════════════════════════
+// Reglas de duplicación
+// ══════════════════════════════════════════════
+const puedeDuplicar = periodo => {
+  const tipo = derivarTipo(periodo)
+
+  // Inicial e Individual NUNCA se duplican
+  if (TIPOS_NO_DUPLICABLES.has(tipo)) return false
+
+  // Consolidado: respetar la lógica original de isDuplicated
+  return !periodo.isDuplicated
+
+
 }
 
-// ────────────────────────────────
-// Eliminar periodo (con confirmación)
-// ────────────────────────────────
+const duplicarTooltipText = periodo => {
+  const tipo = derivarTipo(periodo)
+
+  if (tipo === "inicial") {
+    return "Los periodos iniciales no se pueden duplicar"
+  }
+
+  if (tipo === "individual") {
+    return "Los periodos individuales no se pueden duplicar"
+  }
+
+  if (periodo.isDuplicated) {
+    return `Ya existe el periodo ${Number(periodo.periodo) + 1} (${tipoLabel(periodo)})`
+  }
+
+  return `Duplicar periodo ${periodo.periodo} (${tipoLabel(periodo)})`
+}
+
+// ══════════════════════════════════════════════
+// Helpers de presentación
+// ══════════════════════════════════════════════
+const tipoLabel = periodo => {
+  const tipo = derivarTipo(periodo)
+
+  if (tipo === "inicial") return "Inicial"
+  if (tipo === "consolidado") return "Consolidado"
+
+  return "Individual"
+}
+
+const tipoColor = periodo => {
+  const tipo = derivarTipo(periodo)
+
+  if (tipo === "inicial") return "info"
+  if (tipo === "consolidado") return "primary"
+
+  return "secondary"
+}
+
+const tipoIcon = periodo => {
+  const tipo = derivarTipo(periodo)
+
+  if (tipo === "inicial") return "tabler-calendar-check"
+  if (tipo === "consolidado") return "tabler-building-bank"
+
+  return "tabler-user"
+}
+
+// ══════════════════════════════════════════════
+// Eliminar
+// ══════════════════════════════════════════════
 const pedirEliminar = periodo => {
   targetPeriodo.value = periodo
   deleteDialogOpen.value = true
@@ -45,10 +120,7 @@ const confirmarEliminar = async () => {
 
   deleting.value = true
   try {
-    // Eliminar el periodo
     await periodoStore.remove(targetPeriodo.value.id)
-
-    // Refrescar la lista de reportes
     await reportStore.load({ force: true })
   } finally {
     deleting.value = false
@@ -57,9 +129,9 @@ const confirmarEliminar = async () => {
   }
 }
 
-// ────────────────────────────────
-// Duplicar periodo (con confirmación)
-// ────────────────────────────────
+// ══════════════════════════════════════════════
+// Duplicar
+// ══════════════════════════════════════════════
 const pedirDuplicar = periodo => {
   targetPeriodo.value = periodo
   duplicateDialogOpen.value = true
@@ -91,104 +163,126 @@ const confirmarDuplicar = async () => {
           <VCardText>
             <VBtn
               prepend-icon="tabler-plus"
-              @click="abrirDrawer"
               :disabled="empresaStore.empresas.length === 0"
+              @click="isDrawerOpen = true"
             >
               Nuevo Periodo
             </VBtn>
 
-            <p
+            <VAlert
               v-if="empresaStore.empresas.length === 0"
-              class="text-red mt-2"
+              type="warning"
+              variant="tonal"
+              density="compact"
+              class="mt-4"
             >
               Debe crear una empresa antes de crear periodos.
-            </p>
+            </VAlert>
           </VCardText>
 
           <VTable>
             <thead>
-              <tr>
-                <th>Empresa</th>
-                <th>Periodo</th>
-                <th>Tipo EEFF</th>
-                <th>Creado</th>
-                <th class="text-center">
-                  Acciones
-                </th>
-              </tr>
+            <tr>
+              <th>Empresa</th>
+              <th>Periodo</th>
+              <th>Tipo</th>
+              <th>Creado</th>
+              <th class="text-center">
+                Acciones
+              </th>
+            </tr>
             </thead>
 
             <tbody>
-              <tr v-if="isLoading">
-                <td
-                  colspan="4"
-                  class="text-center py-6"
-                >
-                  Cargando reportes...
-                </td>
-              </tr>
-              <tr
-                v-else
-                v-for="p in periodos"
-                :key="p.id"
+            <tr v-if="isLoading">
+              <td
+                colspan="5"
+                class="text-center py-6"
               >
-                <td>
-                  {{ p.empresa?.nombre || p.empresaid }}
-                </td>
+                <VProgressCircular
+                  indeterminate
+                  size="24"
+                  class="me-2"
+                />
+                Cargando periodos...
+              </td>
+            </tr>
 
-                <td>
-                  {{ p.periodo }}
-                </td>
+            <tr v-else-if="!periodos.length">
+              <td
+                colspan="5"
+                class="text-center py-6 text-medium-emphasis"
+              >
+                No hay periodos creados. Use el botón "Nuevo Periodo" para comenzar.
+              </td>
+            </tr>
 
-                <td>
-                  <VChip
-                    v-if="p.esconsolidado"
-                    size="x-small"
-                    color="primary"
-                    variant="flat"
-                  >
-                    Consolidado
-                  </VChip>
-                  <VChip
-                    v-else
-                    size="x-small"
-                    color="secondary"
-                    variant="flat"
-                  >
-                    Individual
-                  </VChip>
-                </td>
+            <tr
+              v-else
+              v-for="p in periodos"
+              :key="p.id"
+            >
+              <td>{{ p.empresa?.nombre || p.empresaid }}</td>
+              <td>{{ p.periodo }}</td>
+              <td>
+                <VChip
+                  size="x-small"
+                  :color="tipoColor(p)"
+                  variant="flat"
+                >
+                  <VIcon
+                    :icon="tipoIcon(p)"
+                    start
+                    size="14"
+                  />
+                  {{ tipoLabel(p) }}
+                </VChip>
+              </td>
+              <td>{{ p.createdat }}</td>
+              <td class="text-center">
+                <div class="d-flex justify-center gap-1">
+                  <!-- Duplicar -->
+                  <VTooltip location="top">
+                    <template #activator="{ props: tp }">
+                      <!--
+                        Wrap en span para que tooltip funcione
+                        incluso con el botón disabled
+                      -->
+                      <span v-bind="tp">
+                          <VBtn
+                            icon
+                            variant="text"
+                            size="small"
+                            :color="puedeDuplicar(p) ? 'primary' : 'default'"
+                            :disabled="!puedeDuplicar(p)"
+                            @click="pedirDuplicar(p)"
+                          >
+                            <VIcon icon="tabler-copy" />
+                          </VBtn>
+                        </span>
+                    </template>
+                    <span>{{ duplicarTooltipText(p) }}</span>
+                  </VTooltip>
 
-                <td>{{ p.createdat }}</td>
-
-                <td class="text-center">
-                  <!-- 🔁 Duplicar periodo -->
-                  <VBtn
-                    icon
-                    variant="text"
-                    color="primary"
-                    class="mr-1"
-                    :disabled="p.isDuplicated"
-                    :title="p.isDuplicated
-                      ? `Ya existe el periodo ${Number(p.periodo) + 1} (${p.esconsolidado ? 'Consolidado' : 'Individual'})`
-                      : `Duplicar periodo ${p.periodo} (${p.esconsolidado ? 'Consolidado' : 'Individual'})`"
-                    @click="pedirDuplicar(p)"
-                  >
-                    <VIcon icon="tabler-copy" />
-                  </VBtn>
-
-                  <!-- 🗑️ Eliminar periodo -->
-                  <VBtn
-                    icon
-                    variant="text"
-                    color="default"
-                    :title="`Eliminar periodo ${p.periodo}`"
-                    @click="pedirEliminar(p)"
-                  >
-                    <VIcon icon="tabler-trash" />
-                  </VBtn>
-                </td>
-              </tr>
+                  <!-- Eliminar -->
+                  <VTooltip location="top">
+                    <template #activator="{ props: tp }">
+                      <VBtn
+                        v-bind="tp"
+                        icon
+                        variant="text"
+                        size="small"
+                        color="error"
+                        @click="pedirEliminar(p)"
+                      >
+                        <VIcon icon="tabler-trash" />
+                      </VBtn>
+                    </template>
+                    <span>Eliminar periodo {{ p.periodo }}</span>
+                  </VTooltip>
+                </div>
+              </td>
+            </tr>
             </tbody>
           </VTable>
         </VCard>
@@ -200,7 +294,7 @@ const confirmarDuplicar = async () => {
       @periodo-creado="periodoStore.load"
     />
 
-    <!-- Diálogo: confirmar eliminación -->
+    <!-- Diálogo: eliminar -->
     <VDialog
       v-model="deleteDialogOpen"
       max-width="420"
@@ -213,11 +307,13 @@ const confirmarDuplicar = async () => {
           <div v-if="targetPeriodo">
             ¿Seguro que deseas eliminar el periodo
             <strong>{{ targetPeriodo.periodo }}</strong>
+            ({{ tipoLabel(targetPeriodo) }})
             de la empresa
             <strong>{{ targetPeriodo.empresa?.nombre || targetPeriodo.empresaid }}</strong>?
-            <br>
-            Esta acción también debería eliminar los reportes asociados a este periodo
-            (según como tengas configurada la API / cascade).
+            <br><br>
+            <span class="text-medium-emphasis">
+              Esta acción también eliminará los reportes asociados.
+            </span>
           </div>
         </VCardText>
         <VCardActions>
@@ -241,7 +337,7 @@ const confirmarDuplicar = async () => {
       </VCard>
     </VDialog>
 
-    <!-- Diálogo: confirmar duplicado -->
+    <!-- Diálogo: duplicar -->
     <VDialog
       v-model="duplicateDialogOpen"
       max-width="480"
@@ -252,12 +348,12 @@ const confirmarDuplicar = async () => {
         </VCardTitle>
         <VCardText>
           <div v-if="targetPeriodo">
-            Se creará un nuevo periodo para el año
-            <strong>{{ Number(targetPeriodo.periodo) + 1 }}</strong>
+            Se creará un nuevo periodo <strong>{{ tipoLabel(targetPeriodo) }}</strong>
+            para el año <strong>{{ Number(targetPeriodo.periodo) + 1 }}</strong>
             de la empresa
             <strong>{{ targetPeriodo.empresa?.nombre || targetPeriodo.empresaid }}</strong>.
-            <br>
-            <br>
+            <br><br>
+            Los valores del reporte actual se copiarán al nuevo periodo.
             ¿Deseas continuar?
           </div>
         </VCardText>
@@ -283,9 +379,3 @@ const confirmarDuplicar = async () => {
     </VDialog>
   </section>
 </template>
-
-<style scoped>
-.text-red {
-  color: red;
-}
-</style>

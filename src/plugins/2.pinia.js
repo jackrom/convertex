@@ -1,3 +1,4 @@
+// src/plugins/2.pinia.js
 import { createPinia } from 'pinia'
 
 export const store = createPinia()

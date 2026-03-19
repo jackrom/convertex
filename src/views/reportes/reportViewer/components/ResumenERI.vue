@@ -109,6 +109,12 @@ const sufijosIngresoPorImpuestosSugerido = ["eri_606"]
 
 const sufijosResultadoNetoDelEjercicioSegunERI = ["eri_607"]
 
+const sufijosGananciaBruta = [
+  "eri_402",
+]
+
+const sufijosGananciaPerdidad = ["eri_600"]
+
 const esf_307_resumen = computed(() => {
   const esf_30701 = store.values.esf["esf_30701"]
   const esf_30702 = store.values.esf["esf_30702"]
@@ -193,11 +199,31 @@ const sufijosIngresoPorImpuestosSugeridoAnt = ["eri_606_ant"]
 
 const sufijosResultadoNetoDelEjercicioSegunERIAnt = ["eri_607_ant"]
 
+const sufijosGananciaBrutaAnt = ["eri_402_ant"]
+
+const sufijosGananciaPerdidadAnt = ["eri_600_ant"]
+
 const esf_307_ant_resumen = computed(() => {
   const esf_30701_ant = store.values.esf["esf_30701_ant"]
   const esf_30702_ant = store.values.esf["esf_30702_ant"]
 
   return (esf_30701_ant && esf_30702_ant) ? (Number(esf_30701_ant.valor || 0) + Number(esf_30702_ant.valor || 0)) : 0
+})
+
+const eri_402_resumen = computed(() => {
+  return store.values.eri["eri_402"]
+})
+
+const eri_402_ant_resumen = computed(() => {
+  return store.values.eri["eri_402_ant"]
+})
+
+const eri_600_resumen = computed(() => {
+  return store.values.eri["eri_600"]
+})
+
+const eri_600_ant_resumen = computed(() => {
+  return store.values.eri["eri_600_ant"]
 })
 
 // 🧩 Flatten genérico (sirve para arreglos y arreglos de arreglos)
@@ -258,6 +284,11 @@ const eriResumen = computed(() => {
   const gastoImpDifActual = sumEriBySufijos(sufijosGastoPorImpuestosSugerido)
   const ingresoImpDifActual = sumEriBySufijos(sufijosIngresoPorImpuestosSugerido)
 
+  const gananciaBrutaActual = sumEriBySufijos(sufijosGananciaBruta)
+  const gananciaPerdidadActual = sumEriBySufijos(sufijosGananciaPerdidad)
+
+  console.log('gananciaBrutaActual: ', sumEriBySufijos(sufijosGananciaBruta))
+
   const resultadoNetoEriActual = sumEriBySufijos(sufijosResultadoNetoDelEjercicioSegunERI)
 
   const diferenciaResultadoPeriodoActual = round2(resultadoNetoEriActual - esf_307_resumen.value)
@@ -275,6 +306,9 @@ const eriResumen = computed(() => {
   const impRentaCausadoAnt = sumEriBySufijos(sufijosImpuestosALaRentaCausadosAnt)
   const gastoImpDifAnt = sumEriBySufijos(sufijosGastoPorImpuestosSugeridoAnt)
   const ingresoImpDifAnt = sumEriBySufijos(sufijosIngresoPorImpuestosSugeridoAnt)
+
+  const gananciaBrutaAnt = sumEriBySufijos(sufijosGananciaBrutaAnt)
+  const gananciaPerdidadAnt = sumEriBySufijos(sufijosGananciaPerdidadAnt)
 
   const resultadoNetoEriAnt = sumEriBySufijos(sufijosResultadoNetoDelEjercicioSegunERIAnt)
 
@@ -294,6 +328,8 @@ const eriResumen = computed(() => {
     impRentaCausadoActual,
     gastoImpDifActual,
     ingresoImpDifActual,
+    gananciaBrutaActual,
+    gananciaPerdidadActual,
     resultadoNetoEriActual,
     diferenciaResultadoPeriodoActual,
 
@@ -309,6 +345,8 @@ const eriResumen = computed(() => {
     impRentaCausadoAnt,
     gastoImpDifAnt,
     ingresoImpDifAnt,
+    gananciaBrutaAnt,
+    gananciaPerdidadAnt,
     resultadoNetoEriAnt,
     diferenciaResultadoPeriodoAnterior,
   }
@@ -367,6 +405,11 @@ watchEffect(() => {
               <td>{{ formatMoney(eriResumen.costosAnt) }}</td>
             </tr>
             <tr>
+              <td>GANANCIA BRUTA</td>
+              <td>{{ formatMoney(eriResumen.gananciaBrutaActual) }}</td>
+              <td>{{ formatMoney(eriResumen.gananciaBrutaAnt) }}</td>
+            </tr>
+            <tr>
               <td>GASTOS DE VENTA</td>
               <td>{{ formatMoney(eriResumen.gastosVentaActual) }}</td>
               <td>{{ formatMoney(eriResumen.gastosVentaAnt) }}</td>
@@ -390,6 +433,11 @@ watchEffect(() => {
               <td>OTROS INGRESOS</td>
               <td>{{ formatMoney(eriResumen.otrosIngresosActual) }}</td>
               <td>{{ formatMoney(eriResumen.otrosIngresosAnt) }}</td>
+            </tr>
+            <tr>
+              <td>GANANCIA (PÉRDIDA) ANTES DE 15% A TRABAJADORES E IMPUESTO A LA RENTA DE OPERACIONES CONTINUADAS.</td>
+              <td>{{ formatMoney(eriResumen.gananciaPerdidadActual) }}</td>
+              <td>{{ formatMoney(eriResumen.gananciaPerdidadAnt) }}</td>
             </tr>
             <tr>
               <td>PARTICIPACIÓN TRABAJADORES</td>

@@ -6,7 +6,7 @@ import { useAudit } from "@/composables/useAudit"
 import { useLogger } from "@/composables/useLogger"
 import { usePerformanceStore } from "@/@store/performance.store"
 import { toNumber } from "@/views/reportes/reportViewer/components/functions"
-import { useReportViewerStore } from "@/@store/reportViewer.store"
+import { roundTo, useReportViewerStore } from "@/@store/reportViewer.store"
 
 const props = defineProps({
   // Recibe: 'esf' | 'eri' | 'ecp' | 'efe' desde ReportViewerPage.vue
@@ -516,35 +516,6 @@ const parseCellCode = codigo => {
   }
 }
 
-const normalizeInputValue = (codigo, raw) => {
-  let v = raw
-
-  if (typeof v === "string") {
-    v = v.trim()
-  }
-
-  if (v === "" || v == null) {
-    return null
-  }
-
-  const n = Number(typeof v === "string" ? v.replace(",", ".") : v)
-
-  if (!Number.isFinite(n)) {
-    return null
-  }
-
-  return normalizeSignedValue(codigo, n)
-}
-
-const patchMatrixValue = (codigo, numericVal) => {
-  const parsed = parseCellCode(codigo)
-  if (!parsed) return
-
-  ensureCell(parsed.grupo, parsed.col).value = numericVal
-}
-
-const getStoreRow = codigo => store.values?.ecp?.[codigo]
-
 
 const hydrateFromBase = () => {
   // Construye/asegura todas las celdas relevantes
@@ -573,6 +544,8 @@ watch(
   { immediate: true },
 )
 
+
+const esfValues = computed(() => store.values?.esf ?? {})
 
 const draft = reactive({})
 
@@ -660,6 +633,65 @@ const commitNow = (codigo, tipoStore, storeSource) => {
   isLocalEditing.value = false
 }
 
+watch(
+  () => [
+    toNumber(esfValues.value["esf_30701"]?.valor),
+    toNumber(esfValues.value["esf_30702"]?.valor),
+  ],
+  ([new30701, new30702]) => {
+    const current30701 = toNumber(
+      draft["ecp_990210_30701"]
+      ?? store.values.ecp["ecp_990210_30701"]?.valor
+      ?? 0,
+    )
+    const current30702 = toNumber(
+      draft["ecp_990210_30702"]
+      ?? store.values.ecp["ecp_990210_30702"]?.valor
+      ?? 0,
+    )
+
+    const batch = []
+
+    if (roundTo(current30701, 2) !== roundTo(new30701, 2)) {
+      // Actualizar celda local
+      ensureCell("990210", "30701").value = new30701
+
+      batch.push({
+        tipo: "ecp",
+        id: "ecp_990210_30701",
+        valor: String(new30701),
+        row: { nombrecampo: "ecp_990210_30701", valor: new30701, tablaorigen: "Ecp" },
+        meta: { autoCalc: true, linkedFrom: "esf_30701" },
+      })
+    }
+
+    if (roundTo(current30702, 2) !== roundTo(new30702, 2)) {
+      ensureCell("990210", "30702").value = new30702
+
+      batch.push({
+        tipo: "ecp",
+        id: "ecp_990210_30702",
+        valor: String(new30702),
+        row: { nombrecampo: "ecp_990210_30702", valor: new30702, tablaorigen: "Ecp" },
+        meta: { autoCalc: true, linkedFrom: "esf_30702" },
+      })
+    }
+
+    if (batch.length) {
+      // Recalcular derivados (30, agregados, totales)
+      recalc30()
+      recalcAggregatedColumns()
+      recalcTotals()
+
+      // Agregar derivados al batch
+      batch.push(...buildDerivedBatch(store))
+
+      emit("change-value", { batch })
+    }
+  },
+  { immediate: true },
+)
+
 // ======================================================
 // 8. Mostrar/ocultar columnas (tu lógica original con jQuery)
 // ======================================================
@@ -679,13 +711,9 @@ const hideColumn = prefix => {
 
 
 <template>
-  <VCard
-    id="invoice-list"
-  >
+  <VCard id="invoice-list">
     <!-- SECTION Table -->
-    <VTable
-      class="text-no-wrap invoice-list-table"
-    >
+    <VTable class="text-no-wrap invoice-list-table">
       <!-- 👉 Table head -->
       <thead class="text-uppercase sticky-header">
         <tr>
@@ -9539,6 +9567,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30701'] ?? (store.values.ecp['ecp_990210_30701']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30701', val, 'ecp')"
@@ -9563,6 +9592,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30702'] ?? (store.values.ecp['ecp_990210_30702']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30702', val, 'ecp')"

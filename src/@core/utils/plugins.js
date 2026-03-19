@@ -1,3 +1,4 @@
+// src/@core/utils/plugins.js
 /**
  * This is helper function to register plugins like a nuxt
  * To register a plugin just export a const function `defineVuePlugin` that takes `app` as argument and call `app.use`

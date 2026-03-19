@@ -1,3 +1,4 @@
+// src/plugins/vuetify/theme.js
 export const staticPrimaryColor = '#2c3555'
 export const staticPrimaryDarkenColor = '#2c3555'
 export const themes = {

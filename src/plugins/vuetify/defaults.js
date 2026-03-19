@@ -1,3 +1,4 @@
+// src/plugins/vuetify/defaults.js
 export default {
   IconBtn: {
     icon: true,

@@ -1,3 +1,4 @@
+<!-- src/views/reportes/ReportList.vue -->
 <script setup>
 import { computed, onMounted, ref } from "vue"
 import { storeToRefs } from "pinia"
@@ -147,20 +148,28 @@ const editarReporte = rep => {
                 <td>{{ rep.periodo?.periodo }}</td>
                 <td>
                   <VChip
-                    v-if="rep.esconsolidado"
                     size="x-small"
-                    color="primary"
+                    :color="
+      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'info' :
+      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'primary' :
+      'secondary'
+    "
                     variant="flat"
                   >
-                    Consolidado
-                  </VChip>
-                  <VChip
-                    v-else
-                    size="x-small"
-                    color="secondary"
-                    variant="flat"
-                  >
-                    Individual
+                    <VIcon
+                      :icon="
+        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'tabler-calendar-check' :
+        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'tabler-building-bank' :
+        'tabler-user'
+      "
+                      start
+                      size="14"
+                    />
+                    {{
+                      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'Inicial' :
+                        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'Consolidado' :
+                          'Individual'
+                    }}
                   </VChip>
                 </td>
                 <td>{{ rep.createdat }}</td>

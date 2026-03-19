@@ -395,20 +395,6 @@ const submitLabel = computed(() => {
             </VAlert>
           </VCol>
 
-          <VCol
-            v-if="tipoSelect === TIPOS.INDIVIDUAL"
-            cols="12"
-          >
-            <VAlert
-              type="warning"
-              variant="tonal"
-              density="compact"
-              class="text-body-2"
-            >
-              El periodo <strong>Individual</strong> no puede duplicarse una vez creado.
-            </VAlert>
-          </VCol>
-
           <!-- Error -->
           <VCol
             v-if="errorMsg"

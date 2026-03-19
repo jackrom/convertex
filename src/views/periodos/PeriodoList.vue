@@ -15,7 +15,7 @@ const isDrawerOpen = ref(false)
 // ══════════════════════════════════════════════
 // Tipos que NO se pueden duplicar
 // ══════════════════════════════════════════════
-const TIPOS_NO_DUPLICABLES = new Set(["inicial", "individual"])
+const TIPOS_NO_DUPLICABLES = new Set(["inicial"])
 
 // ══════════════════════════════════════════════
 // Derivar tiporeporte (compatibilidad legacy)
@@ -64,10 +64,6 @@ const duplicarTooltipText = periodo => {
 
   if (tipo === "inicial") {
     return "Los periodos iniciales no se pueden duplicar"
-  }
-
-  if (tipo === "individual") {
-    return "Los periodos individuales no se pueden duplicar"
   }
 
   if (periodo.isDuplicated) {

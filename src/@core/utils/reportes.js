@@ -1184,7 +1184,6 @@ export const buildActividadesDeInversion = (tipo, usuario, periodo, empresa, rep
 export const buildActividadesDeFinanciamiento = (tipo, usuario, periodo, empresa, reporte) => {
   let data =  {
     efe_md_95:	0.00,
-    efe_md_9501:	0.00,
     efe_md_9503:	0.00,
     efe_md_950301:	0.00,
     efe_md_950302:	0.00,

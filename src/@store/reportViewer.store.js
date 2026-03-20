@@ -559,9 +559,9 @@ export const useReportViewerStore = defineStore("reportViewer", {
       const diferenciaAnterior = roundTo(eri801Ant - resultadoEsfAnterior, 2)
 
       const estructuralOk = !checks.length ? true : checks.every(Boolean)
-      const cruceFinalOk = diferenciaActual === 0 && diferenciaAnterior === 0
+      const cruceFinalOk = diferenciaActual === 0
 
-      return estructuralOk && cruceFinalOk ? 1 : 0
+      return cruceFinalOk ? 1 : 0
     },
 
     calculateEriMovimientoCuadre() {

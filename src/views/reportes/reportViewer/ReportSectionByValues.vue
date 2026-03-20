@@ -200,7 +200,6 @@ const NEGATIVE_FIELDS = new Set(
     "eri_40113_ant",
     "eri_40114_ant",
     "eri_40115_ant",
-    "eri_40116_ant",
 
     "eri_601_ant",
     "eri_603_ant",

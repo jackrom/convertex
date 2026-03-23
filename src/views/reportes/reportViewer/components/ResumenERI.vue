@@ -460,7 +460,7 @@ watchEffect(() => {
               <td>{{ formatMoney(eriResumen.ingresoImpDifActual) }}</td>
               <td>{{ formatMoney(eriResumen.ingresoImpDifAnt) }}</td>
             </tr>
-            <tr>
+            <tr style="background: #F5F3FF;">
               <td>RESULTADO NETO DEL EJERCICIO SEGÚN ERI</td>
               <td>{{ formatMoney(eriResumen.resultadoNetoEriActual) }}</td>
               <td>{{ formatMoney(eriResumen.resultadoNetoEriAnt) }}</td>

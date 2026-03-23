@@ -1089,6 +1089,7 @@ export const buildResultadosParticipacionControladora = (tipo, usuario, periodo,
 
 export const buildActividadesDeOperacion = (tipo, usuario, periodo, empresa, reporte) => {
   let data =  {
+    efe_md_9501:	0.00,
     efe_md_950101:	0.00,
     efe_md_95010101:	0.00,
     efe_md_95010102:	0.00,

@@ -1,3 +1,4 @@
+<!-- src/views/reportes/reportViewer/components/mapeo/TxtMapeo101PA.vue -->
 <script setup>
 import { ref, computed, nextTick } from "vue"
 import * as XLSX from "xlsx"
@@ -282,14 +283,12 @@ function handleFileUpload(event) {
       })
     }
     reader.readAsText(file, "utf-8")
-
-    return
   }
 }
 </script>
 
 <template>
-  <Label>
+  <label>
     Descargue en el siguiente enlace el archivo modelo:
     <a
       href="https://www.facilcontabilidad.com/mapeo101"
@@ -298,7 +297,7 @@ function handleFileUpload(event) {
     >
       https://www.facilcontabilidad.com/mapeo101
     </a>
-  </Label>
+  </label>
 
   <VContainer>
     <VFileInput
@@ -335,19 +334,19 @@ function handleFileUpload(event) {
 
       <VTable dense>
         <thead>
-        <tr>
-          <th v-for="(header, index) in data.headers" :key="index">
-            {{ header }}
-          </th>
-        </tr>
+          <tr>
+            <th v-for="(header, index) in data.headers" :key="index">
+              {{ header }}
+            </th>
+          </tr>
         </thead>
 
         <tbody>
-        <tr v-for="(row, rowIndex) in data.previewRows" :key="rowIndex">
-          <td v-for="(cell, cellIndex) in row" :key="cellIndex">
-            {{ cell }}
-          </td>
-        </tr>
+          <tr v-for="(row, rowIndex) in data.previewRows" :key="rowIndex">
+            <td v-for="(cell, cellIndex) in row" :key="cellIndex">
+              {{ cell }}
+            </td>
+          </tr>
         </tbody>
       </VTable>
     </div>

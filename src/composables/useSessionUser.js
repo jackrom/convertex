@@ -14,7 +14,7 @@ export function useSessionUser() {
   const aplicaciones = parsed?.applications ?? []
   const convertexApp = aplicaciones.find(a => a.application?.app_key === "convertex")
 
-  console.log("aplicaciones", aplicaciones)
+  // console.log("aplicaciones", aplicaciones)
 
   return {
     userId,

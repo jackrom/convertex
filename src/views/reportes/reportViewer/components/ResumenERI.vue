@@ -1,3 +1,4 @@
+<!-- src/views/reportes/reportViewer/components/ResumenERI.vue -->
 <script setup>
 import { formatMoney, round2, isZero, toNumber } from "./functions"
 import { computed, ref, defineProps, defineEmits, watchEffect } from "vue"

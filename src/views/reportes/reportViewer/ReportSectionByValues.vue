@@ -1,3 +1,4 @@
+<!-- src/views/reportes/reportViewer/ReportSectionByValues.vue -->
 <script setup>
 import { computed, ref, watch } from "vue"
 import { getNombreCuenta, parseNombreCampo } from "@/utils/plan-cuentas"
@@ -381,7 +382,7 @@ const PARENT_LENGTHS_EFE = [4, 6, 8, 10, 12, 14]
 // Agrupar por tablaorigen y calcular totales jerárquicos
 // ---------------------------------------------
 const groups = computed(() => {
-  const tPlan = planTipo.value // 'esf' | 'eri' | 'efe' | 'ecp'
+  const tPlan = planTipo.value
   const items = Array.isArray(props.values) ? props.values : []
 
   const groupedByTabla = {}
@@ -427,53 +428,48 @@ const groups = computed(() => {
     }
   }
 
-  // Paso 2: Crear filas padre "sintéticas" si no existen (para 3,5,7,9 dígitos)
+  // Paso 2: Construir índice global de códigos reales (con dato real)
+  // para evitar crear sintéticos que ya existen en otro grupo
+  const globalRealCodes = new Set()
+  Object.values(groupedByTabla).forEach(g => {
+    Object.keys(g.rowsByCodigo).forEach(code => {
+      const row = g.rowsByCodigo[code]
+      if (row.actual || row.anterior) {
+        globalRealCodes.add(code)
+      }
+    })
+  })
+
+  // Paso 3: Crear filas padre "sintéticas" si no existen
   Object.values(groupedByTabla).forEach(group => {
     const existingCodes = Object.keys(group.rowsByCodigo)
     const extraRows = {}
 
     for (const code of existingCodes) {
       const codeStr = String(code)
+      const parentLengths = tPlan === "efe" ? PARENT_LENGTHS_EFE : PARENT_LENGTHS
 
-      if (tPlan === "efe") {
-        for (const len of PARENT_LENGTHS_EFE) {
-          if (len >= codeStr.length) continue
+      for (const len of parentLengths) {
+        if (len >= codeStr.length) continue
 
-          const parentCode = codeStr.slice(0, len)
+        const parentCode = codeStr.slice(0, len)
 
-          if (group.rowsByCodigo[parentCode] || extraRows[parentCode]) continue
+        if (group.rowsByCodigo[parentCode] || extraRows[parentCode]) continue
 
-          extraRows[parentCode] = {
-            tipo: storeTipo.value,
-            codigo: parentCode,
-            nombreCuenta: getNombreCuenta(tPlan, parentCode) || parentCode,
-            tablaorigen: group.rowsByCodigo[code].tablaorigen,
-            actual: null,
-            anterior: null,
-            sumActual: 0,
-            sumAnterior: 0,
-            hasChildren: false,
-          }
-        }
-      } else {
-        for (const len of PARENT_LENGTHS) {
-          if (len >= codeStr.length) continue
+        // ✅ Si ese código ya existe como campo real en cualquier grupo,
+        // no crear sintético — pertenece a otro grupo intencionalmente
+        if (globalRealCodes.has(parentCode)) continue
 
-          const parentCode = codeStr.slice(0, len)
-
-          if (group.rowsByCodigo[parentCode] || extraRows[parentCode]) continue
-
-          extraRows[parentCode] = {
-            tipo: storeTipo.value,
-            codigo: parentCode,
-            nombreCuenta: getNombreCuenta(tPlan, parentCode) || parentCode,
-            tablaorigen: group.rowsByCodigo[code].tablaorigen,
-            actual: null,
-            anterior: null,
-            sumActual: 0,
-            sumAnterior: 0,
-            hasChildren: false,
-          }
+        extraRows[parentCode] = {
+          tipo: storeTipo.value,
+          codigo: parentCode,
+          nombreCuenta: getNombreCuenta(tPlan, parentCode) || parentCode,
+          tablaorigen: group.rowsByCodigo[code]?.tablaorigen,
+          actual: null,
+          anterior: null,
+          sumActual: 0,
+          sumAnterior: 0,
+          hasChildren: false,
         }
       }
     }
@@ -481,13 +477,12 @@ const groups = computed(() => {
     Object.assign(group.rowsByCodigo, extraRows)
   })
 
-  // Paso 3: Calcular totales jerárquicos y ordenar
-  // Ordenamos los grupos por el `orderIndex`
+  // Paso 4: Calcular totales jerárquicos y ordenar
   return Object.values(groupedByTabla)
     .map(group => {
       const rows = Object.values(group.rowsByCodigo)
 
-      // 3.1 Resetear flags de hijos
+      // 4.1 Resetear flags de hijos
       for (const r of rows) {
         r.hasChildren = false
       }
@@ -499,7 +494,7 @@ const groups = computed(() => {
         return compareCodigo(a.codigo, b.codigo)
       })
 
-      // 3.2 Detectar quién es padre (tiene hijos por prefijo)
+      // 4.2 Detectar quién es padre (tiene hijos por prefijo)
       for (const r of sortedByLengthDesc) {
         const code = String(r.codigo)
 
@@ -513,9 +508,7 @@ const groups = computed(() => {
         }
       }
 
-      // 3.3 Inicializar totales:
-      //     - Si tiene hijos → 0 (solo sumará hijos)
-      //     - Si no tiene hijos → usa su valor propio
+      // 4.3 Inicializar totales
       for (const r of rows) {
         if (r.hasChildren) {
           r.sumActual = 0
@@ -526,7 +519,7 @@ const groups = computed(() => {
         }
       }
 
-      // 3.4 Propagar sumas de abajo hacia arriba
+      // 4.4 Propagar sumas de abajo hacia arriba
       for (const r of sortedByLengthDesc) {
         const code = String(r.codigo)
 
@@ -541,8 +534,8 @@ const groups = computed(() => {
         }
       }
 
-      // 3.5 Ordenar los grupos según `GROUP_LABEL_ORDER`
-      group.orderIndex = getGroupOrderIndex(tPlan, group.label)  // Añadimos el índice de orden a cada grupo
+      // 4.5 Ordenar grupos según GROUP_LABEL_ORDER
+      group.orderIndex = getGroupOrderIndex(tPlan, group.label)
 
       const sortedRows = rows.sort((a, b) =>
         compareCodigo(a.codigo, b.codigo),
@@ -551,7 +544,7 @@ const groups = computed(() => {
       return {
         key: group.key,
         label: group.label,
-        orderIndex: group.orderIndex, // Usamos el índice de orden aquí
+        orderIndex: group.orderIndex,
         rows: sortedRows,
       }
     })
@@ -1425,12 +1418,12 @@ const recomputeEfeFormulas = () => {
   const v950310 = getFrom(efeList, "efe_md_950310")
   const v9503 = roundTo(v950301 + v950302 + v950303 + v950304 + v950305 + v950306 + v950307 + v950308 + v950309 + v950310, 2)
 
-  console.log('9503', v9503)
+  // console.log('9503', v9503)
 
   const v95 = roundTo(v9501 + v9502 + v9503, 2)
   const v9504 = getFrom(efeList, "efe_md_950401")
 
-  console.log('9504', v9504)
+  // console.log('9504', v9504)
 
   const v9505 = roundTo(v95 + v9504, 2)
 
@@ -1478,7 +1471,27 @@ const recomputeEfeFormulas = () => {
 }
 
 // ===================================================
-// WATCH LIGERO SOLO PARA LA CARGA INICIAL EN ERI
+// UTILIDAD: debounce simple
+// ===================================================
+const debounce = (fn, delay) => {
+  let timer = null
+
+  return (...args) => {
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => fn(...args), delay)
+  }
+}
+
+const debouncedRecomputeEri = debounce(() => {
+  recomputeEriFormulas()
+}, 300)
+
+const debouncedRecomputeEfe = debounce(() => {
+  recomputeEfeFormulas()
+}, 300)
+
+// ===================================================
+// WATCHERS ERI
 // ===================================================
 let initialEriSetupDone = false
 
@@ -1489,56 +1502,94 @@ if (props.tipo === "eri") {
       eriLen: eriStoreValues.value.length,
     }),
     ({ esfLen, eriLen }) => {
-      // Hasta que no haya datos no hacemos nada
       if (initialEriSetupDone) return
       if (!esfLen && !eriLen) return
 
       initialEriSetupDone = true
-
-      // 1 sola pasada inicial: mapeos ESF->ERI + fórmulas ERI
       syncEsfToEri()
-      recomputeEriFormulas()
+      recomputeEriFormulas() // solo en carga inicial, sin debounce
     },
     { immediate: true },
   )
 }
 
 if (props.tipo === "eri") {
-  const pick = name => {
-    const row = (eriStoreValues.value ?? []).find(
-      r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase(),
-    )
-
-    return row ? Number(row.valor) : 0
-  }
-
-  watch(
-    () => [
-      pick("eri_401"),
-      pick("eri_501"),
-      pick("eri_401_ant"),
-      pick("eri_501_ant"),
-    ],
-    () => {
-      // ✅ cada vez que cambie cualquiera de estos, recalculamos fórmulas (incluye eri_402)
-      recomputeEriFormulas()
-    },
-    { immediate: true },
-  )
-}
-
-if (props.tipo === "eri") {
-  const eriSignature = computed(() => {
+  // ✅ Un solo watcher con firma liviana (solo los campos que disparan fórmulas)
+  const eriFormulaSignature = computed(() => {
     const list = eriStoreValues.value ?? []
 
-    // firma simple: nombrecampo+valor (si cambia cualquier hijo, cambia la firma)
-    return list.map(r => `${String(r?.nombrecampo)}=${String(r?.valor)}`).join("|")
+    // Solo observar los campos hoja que afectan fórmulas, no TODOS
+    const FORMULA_FIELDS = new Set([
+      "eri_40101","eri_40103","eri_40104","eri_40105","eri_40107",
+      "eri_40108","eri_40112","eri_40113","eri_40114","eri_40115","eri_40116",
+      "eri_40301","eri_40302","eri_40303",
+      "eri_601","eri_603","eri_605","eri_606",
+      "eri_700","eri_701","eri_703","eri_705",
+      "eri_80001","eri_80002","eri_80003","eri_80004","eri_80005",
+      "eri_80006","eri_80007","eri_80008","eri_80009",
+      // anteriores
+      "eri_40101_ant","eri_40103_ant","eri_40104_ant","eri_40105_ant",
+      "eri_40107_ant","eri_40108_ant","eri_40112_ant","eri_40113_ant",
+      "eri_40114_ant","eri_40115_ant","eri_40116_ant",
+      "eri_40301_ant","eri_40302_ant","eri_40303_ant",
+      "eri_601_ant","eri_603_ant","eri_605_ant","eri_606_ant",
+      "eri_700_ant","eri_701_ant","eri_703_ant","eri_705_ant",
+    ])
+
+    return list
+      .filter(r => FORMULA_FIELDS.has(String(r?.nombrecampo).toLowerCase()))
+      .map(r => `${r.nombrecampo}=${r.valor}`)
+      .join("|")
   })
 
   watch(
-    () => eriSignature.value,
+    () => eriFormulaSignature.value,
     () => {
-      recomputeEriFormulas()
+      if (!initialEriSetupDone) return
+      debouncedRecomputeEri()
+    },
+  )
+}
+
+// ===================================================
+// WATCHER EFE
+// ===================================================
+if (props.tipo === "efe") {
+  const pickValue = (listRef, name) => {
+    const row = (listRef.value ?? []).find(
+      r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase(),
+    )
+
+    return row ? String(row.valor ?? "") : ""
+  }
+
+  const efeFormulaSignature = computed(() => {
+    return [
+      pickValue(eriStoreValues, "eri_600"),
+      pickValue(esfStoreValues, "esf_1010101_ant"),
+      pickValue(esfStoreValues, "esf_1010102_ant"),
+      pickValue(esfStoreValues, "esf_1010103_ant"),
+      pickValue(efeStoreValues, "efe_md_9504"),
+
+      // campos de operación que afectan v9501
+      pickValue(efeStoreValues, "efe_md_95010101"),
+      pickValue(efeStoreValues, "efe_md_95010102"),
+      pickValue(efeStoreValues, "efe_md_95010103"),
+      pickValue(efeStoreValues, "efe_md_95010104"),
+      pickValue(efeStoreValues, "efe_md_95010105"),
+      pickValue(efeStoreValues, "efe_md_950103"),
+      pickValue(efeStoreValues, "efe_md_950104"),
+      pickValue(efeStoreValues, "efe_md_950105"),
+      pickValue(efeStoreValues, "efe_md_950106"),
+      pickValue(efeStoreValues, "efe_md_950107"),
+      pickValue(efeStoreValues, "efe_md_950108"),
+    ].join("|")
+  })
+
+  watch(
+    () => efeFormulaSignature.value,
+    () => {
+      debouncedRecomputeEfe()
     },
     { immediate: true },
   )
@@ -1575,6 +1626,51 @@ if (props.tipo === "efe") {
     { immediate: true },
   )
 }
+
+
+// ---------------------------------------------
+// Cuadre EFE vs ESF (solo para Financiamiento)
+// ---------------------------------------------
+const efeEsfCuadre = computed(() => {
+  if (planTipo.value !== "efe") return null
+
+  const efeList = efeStoreValues.value ?? []
+  const esfList = esfStoreValues.value ?? []
+
+  const getEfe = name => {
+    const row = efeList.find(r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase())
+
+    return row ? roundTo(toNumber(row.valor), 2) : 0
+  }
+
+  const getEsf = name => {
+    const row = esfList.find(r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase())
+
+    return row ? roundTo(toNumber(row.valor), 2) : 0
+  }
+
+  const v9507 = getEfe("efe_md_9507")
+
+  const esf10101 = roundTo(
+    getEsf("esf_1010101") + getEsf("esf_1010102") + getEsf("esf_1010103"),
+    2,
+  )
+
+  const diferencia = roundTo(v9507 - esf10101, 2)
+
+  // ✅ Para Conciliación
+  const v9820 = getEfe("efe_md_9820")
+
+  return {
+    v9507,
+    esf10101,
+    diferencia,
+    cuadra: diferencia === 0,
+    // Conciliación
+    v9820,
+    conciliacionCuadra: v9820 === 0,
+  }
+})
 
 // ---------------------------------------------
 // Manejo de inputs del usuario
@@ -1639,7 +1735,41 @@ const onInput = (group, row, which, rawValue) => {
         :value="index"
       >
         <VExpansionPanelTitle>
-          {{ group.label }}
+          <div class="d-flex align-center justify-space-between w-100 pr-2">
+            <span>{{ group.label }}</span>
+
+            <!-- ✅ Check/alerta para Actividades de Financiamiento -->
+            <template v-if="planTipo === 'efe' && group.label === 'ACTIVIDADES DE FINANCIAMIENTO' && efeEsfCuadre">
+              <VIcon
+                v-if="efeEsfCuadre.cuadra"
+                icon="tabler-check"
+                color="success"
+                size="18"
+              />
+              <VIcon
+                v-else
+                icon="tabler-alert-circle"
+                color="error"
+                size="18"
+              />
+            </template>
+
+            <!-- ✅ Check/alerta para Conciliación -->
+            <template v-if="planTipo === 'efe' && group.label === 'CONCILIACION' && efeEsfCuadre">
+              <VIcon
+                v-if="efeEsfCuadre.conciliacionCuadra"
+                icon="tabler-check"
+                color="success"
+                size="18"
+              />
+              <VIcon
+                v-else
+                icon="tabler-alert-circle"
+                color="error"
+                size="18"
+              />
+            </template>
+          </div>
         </VExpansionPanelTitle>
 
         <VExpansionPanelText>
@@ -1669,16 +1799,9 @@ const onInput = (group, row, which, rawValue) => {
                   'rv-row-leaf': !row.hasChildren,
                 }"
               >
+                <td>{{ row.nombreCuenta || row.codigo }}</td>
+                <td>{{ row.codigo }}</td>
                 <td>
-                  {{ row.nombreCuenta || row.codigo }}
-                </td>
-
-                <td>
-                  {{ row.codigo }}
-                </td>
-
-                <td>
-                  <!-- PERIODO ACTUAL -->
                   <VTextField
                     type="number"
                     density="compact"
@@ -1694,9 +1817,7 @@ const onInput = (group, row, which, rawValue) => {
                     @update:modelValue="val => onInput(group, row, 'actual', val)"
                   />
                 </td>
-
                 <td v-if="hasPeriodoAnterior">
-                  <!-- PERIODO ANTERIOR (igual) -->
                   <VTextField
                     type="number"
                     density="compact"
@@ -1713,6 +1834,73 @@ const onInput = (group, row, which, rawValue) => {
                   />
                 </td>
               </tr>
+
+              <!-- ✅ FUERA del v-for, después del cierre del tr -->
+              <template v-if="planTipo === 'efe' && group.label === 'ACTIVIDADES DE FINANCIAMIENTO' && efeEsfCuadre">
+                <tr class="rv-row-extra">
+                  <td>EFECTIVO Y EQUIVALENTES AL EFECTIVO SEGÚN ESF</td>
+                  <td></td>
+                  <td>
+                    <VTextField
+                      type="number"
+                      density="compact"
+                      variant="outlined"
+                      hide-details
+                      class="ma-0 pa-0 rv-readonly"
+                      readonly
+                      :model-value="efeEsfCuadre.esf10101"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rv-row-extra"
+                  :style="{
+                    backgroundColor: efeEsfCuadre.cuadra
+                      ? 'rgba(76, 175, 80, 0.2)'
+                      : 'rgba(244, 67, 54, 0.2)',
+                  }"
+                >
+                  <td>DIFERENCIA POR CUADRAR</td>
+                  <td></td>
+                  <td>
+                    <VTextField
+                      type="number"
+                      density="compact"
+                      variant="outlined"
+                      hide-details
+                      class="ma-0 pa-0 rv-readonly"
+                      readonly
+                      :model-value="efeEsfCuadre.diferencia"
+                    />
+                  </td>
+                </tr>
+              </template>
+
+              <!-- ✅ Fila extra en Conciliación -->
+              <template v-if="planTipo === 'efe' && group.label === 'CONCILIACION' && efeEsfCuadre">
+                <tr
+                  class="rv-row-extra"
+                  :style="{
+        backgroundColor: efeEsfCuadre.conciliacionCuadra
+          ? 'rgba(76, 175, 80, 0.2)'
+          : 'rgba(244, 67, 54, 0.2)',
+      }"
+                >
+                  <td>DIFERENCIA POR CUADRAR</td>
+                  <td></td>
+                  <td>
+                    <VTextField
+                      type="number"
+                      density="compact"
+                      variant="outlined"
+                      hide-details
+                      class="ma-0 pa-0 rv-readonly"
+                      readonly
+                      :model-value="efeEsfCuadre.v9820"
+                    />
+                  </td>
+                </tr>
+              </template>
 
               <tr v-if="!group.rows.length">
                 <td
@@ -1804,5 +1992,14 @@ const onInput = (group, row, which, rawValue) => {
   padding-left: 24px;
   font-size: 0.825rem;
   color: #444;
+}
+
+.rv-row-extra td {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.rv-row-extra td:first-child {
+  border-left: 3px solid #2c3555;
 }
 </style>

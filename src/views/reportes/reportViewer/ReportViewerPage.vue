@@ -1,3 +1,4 @@
+<!-- src/views/reportes/reportViewer/ReportViewerPage.vue -->
 <script setup>
 import { ref, computed, onMounted, watch } from "vue"
 import { useRoute } from "vue-router"
@@ -58,11 +59,13 @@ const refreshCuadres = () => {
   if (cuadreTimer) clearTimeout(cuadreTimer)
 
   cuadreTimer = setTimeout(() => {
+    const eriResult = store.calculateEriCuadre()
+
     esfOk.value = store.calculateEsfCuadre() === 1
-    eriOk.value = store.calculateEriCuadre() === 1
+    eriOk.value = eriResult === 1
     ecpOk.value = store.calculateEcpCuadre() === 1
     efeOk.value = store.calculateEfeCuadre() === 1
-  }, 180)
+  }, 500)
 }
 
 watch(
@@ -573,7 +576,7 @@ const onChangeValue = payload => {
       v-model="showResumenEsf"
       :esf-cuadre="esfOk"
       :values="esfValues"
-      @update:showResumenEsf="showResumenEsf = $event"
+      @update:show-resumen-esf="showResumenEsf = $event"
     />
 
     <!-- Diálogo resumen ERI -->
@@ -581,7 +584,7 @@ const onChangeValue = payload => {
       v-model="showEriResumen"
       :eri-cuadre="eriOk"
       :values="eriValues"
-      @update:showEriResumen="showEriResumen = $event"
+      @update:show-eri-resumen="showEriResumen = $event"
     />
 
     <!-- Diálogo resumen ECP -->
@@ -589,7 +592,6 @@ const onChangeValue = payload => {
       v-model="showResumenEcpSI"
       :esf-values="esfValues"
       :ecp-values="ecpValues"
-      :showResumenEcpSI="showResumenEcpSI"
       @update:showResumenEcpSI="showResumenEcpSI = $event"
       @update:ecpSICuadre="ecpSICuadre = $event"
     />
@@ -598,7 +600,6 @@ const onChangeValue = payload => {
       v-model="showResumenEcpSF"
       :esf-values="esfValues"
       :ecp-values="ecpValues"
-      :showResumenEcpSF="showResumenEcpSF"
       @update:showResumenEcpSF="showResumenEcpSF = $event"
       @update:ecpSFCuadre="ecpSFCuadre = $event"
     />

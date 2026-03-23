@@ -599,7 +599,12 @@ const READONLY_ERI_ANTERIOR = new Set(
 
 const READONLY_EFE_ACTUAL = new Set(
   [
+    "efe_md_95",
+    "efe_md_9501",
+    "efe_md_9502",
+    "efe_md_9503",
     "efe_md_96",
+    "efe_md_97",
     "efe_md_9505",
     "efe_md_9506",
     "efe_md_9507",
@@ -626,12 +631,17 @@ const FORCE_FIELD_VALUE = new Set(
     "eri_602_ant",
     "eri_604_ant",
     "eri_607_ant",
+    "efe_md_95",
+    "efe_md_9501",
+    "efe_md_9502",
+    "efe_md_9503",
     "efe_md_96",
     "efe_md_9505",
     "efe_md_9506",
     "efe_md_9507",
     "efe_md_9820",
     "efe_md_98",
+    "efe_md_97",
   ].map(s => s.toLowerCase()),
 )
 
@@ -1325,6 +1335,8 @@ const recomputeEfeFormulas = () => {
   const eriList = eriStoreValues.value ?? []
   const esfList = esfStoreValues.value ?? []
 
+  if (!eriList.length) return
+
   const findByName = (list, name) =>
     list.find(r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase())
 
@@ -1360,7 +1372,7 @@ const recomputeEfeFormulas = () => {
   // efe_md_9506 = esf_10101_ant
   // efe_md_9507 = efe_md_9505 + efe_md_9506
 
-  const v96 = getFrom(eriList, "eri_600")
+  const v96 = getFrom(eriList, "eri_607")
 
   const v95010101 = getFrom(efeList, "efe_md_95010101")
   const v95010102 = getFrom(efeList, "efe_md_95010102")
@@ -1382,6 +1394,8 @@ const recomputeEfeFormulas = () => {
   const v950108 = getFrom(efeList, "efe_md_950108")
 
   const v9501 = roundTo(v95010101 + v95010102 + v95010103 + v95010104 + v95010105 + v95010201+ v95010202+ v95010203+ v95010204+ v95010205 + v950103 + v950104 + v950105 + v950106 + v950107 + v950108, 2)
+
+  console.log('v9501 ', v9501)
 
   const v950201 = getFrom(efeList, "efe_md_950201")
   const v950202 = getFrom(efeList, "efe_md_950202")
@@ -1406,6 +1420,8 @@ const recomputeEfeFormulas = () => {
   const v950221 = getFrom(efeList, "efe_md_950221")
   const v9502 = roundTo(v950201 + v950202 + v950203 + v950204 + v950205 + v950206 + v950207 + v950208 + v950209 + v950210 + v950211 + v950212 + v950213 + v950214 + v950215 + v950216 + v950217 + v950218 + v950219 + v950220 + v950221, 2)
 
+  console.log('v9502 ', v9502)
+
   const v950301 = getFrom(efeList, "efe_md_950301")
   const v950302 = getFrom(efeList, "efe_md_950302")
   const v950303 = getFrom(efeList, "efe_md_950303")
@@ -1421,11 +1437,19 @@ const recomputeEfeFormulas = () => {
   // console.log('9503', v9503)
 
   const v95 = roundTo(v9501 + v9502 + v9503, 2)
+
+  console.log('v95', v95)
+
   const v9504 = getFrom(efeList, "efe_md_950401")
 
   // console.log('9504', v9504)
 
   const v9505 = roundTo(v95 + v9504, 2)
+
+  setIfChanged("efe_md_9501", v9501)
+  setIfChanged("efe_md_9502", v9502)
+  setIfChanged("efe_md_9503", v9503)
+  setIfChanged("efe_md_95", v95)
 
   const v1010101ant = getFrom(esfList, "esf_1010101_ant")
   const v1010102ant = getFrom(esfList, "esf_1010102_ant")
@@ -1446,6 +1470,10 @@ const recomputeEfeFormulas = () => {
   const v9709 = getFrom(efeList, "efe_md_9709")
   const v9710 = getFrom(efeList, "efe_md_9710")
   const v9711 = getFrom(efeList, "efe_md_9711")
+
+  const v97 = roundTo(v9701 + v9702 + v9703 + v9704 + v9705 + v9706 + v9707 + v9708 + v9709 + v9710 + v9711, 2)
+
+  setIfChanged("efe_md_97", v97)
 
   const v9801 = getFrom(efeList, "efe_md_9801")
   const v9802 = getFrom(efeList, "efe_md_9802")

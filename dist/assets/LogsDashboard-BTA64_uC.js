@@ -1,1 +1,0 @@
-import{c as o,d as s,o as a}from"./index-DqEQY88-.js";const n={__name:"LogsDashboard",setup(r){return console.log("LOGS"),(t,e)=>(a(),o("div",null,[...e[0]||(e[0]=[s("p",null,"LOGS",-1)])]))}};export{n as default};

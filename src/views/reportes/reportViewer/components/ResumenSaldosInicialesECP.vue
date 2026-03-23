@@ -381,7 +381,7 @@ watchEffect(() => {
               <th>CÓDIGO</th>
               <th>SALDO INICIAL SEGÚN ESF</th>
               <th>SALDO INICIAL SEGÚN ECP</th>
-              <th>DIFERENCIA POR CUADRAR</th>
+              <th style="background: #F5F3FF;">DIFERENCIA POR CUADRAR</th>
               <th>CONTROL</th>
             </tr>
           </thead>
@@ -395,7 +395,7 @@ watchEffect(() => {
               <td>{{ row.codigo }}</td>
               <td>{{ row.saldoEsf }}</td>
               <td>{{ row.saldoEcp }}</td>
-              <td>{{ row.diferencia }}</td>
+              <td style="background: #F5F3FF;">{{ row.diferencia }}</td>
               <td>
                 <VIcon
                   v-if="row.diferencia === 0"

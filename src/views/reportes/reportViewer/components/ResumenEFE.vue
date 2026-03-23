@@ -30,10 +30,10 @@ const EFE_RE = /^efe(?:_)?md_(\d+)$/i
 // -------------------------
 // MAPAS REACTIVOS (desde props.*Values)
 // -------------------------
-const makeMapByNombrecampo = (list) =>
+const makeMapByNombrecampo = listGetter =>
   computed(() => {
     const m = {}
-    for (const r of list || []) {
+    for (const r of listGetter() || []) {
       const k = String(r?.nombrecampo ?? "").toLowerCase()
       if (!k) continue
       m[k] = r
@@ -42,9 +42,9 @@ const makeMapByNombrecampo = (list) =>
     return m
   })
 
-const esfMap = makeMapByNombrecampo(props.esfValues)
-const eriMap = makeMapByNombrecampo(props.eriValues)
-const efeMap = makeMapByNombrecampo(props.efeValues)
+const esfMap = makeMapByNombrecampo(() => props.esfValues)
+const eriMap = makeMapByNombrecampo(() => props.eriValues)
+const efeMap = makeMapByNombrecampo(() => props.efeValues)
 
 const get = (mapRef, key) => toNumber(mapRef.value?.[String(key).toLowerCase()]?.valor)
 
@@ -129,7 +129,7 @@ const efeNodeSum = code => round2(efeHierarchy.value?.[String(code)]?.sum ?? 0)
 // ✅ Índices reactivos: cuando cambia cualquier .valor en esfValues/ecpValues, se recalcula
 const esfByName = computed(() => {
   const m = {}
-  for (const r of props.esfValues) {
+  for (const r of props.esfValues) {  // ← esto SÍ es reactivo porque accede a props directamente dentro del computed
     if (r?.nombrecampo) m[r.nombrecampo] = r
   }
 
@@ -149,17 +149,32 @@ const v9501 = computed(() => efeNodeSum("9501"))
 const v9502 = computed(() => efeNodeSum("9502"))
 const v9503 = computed(() => efeNodeSum("9503"))
 const v9504 = computed(() => efeNodeSum("9504"))
-const v9505 = computed(() => round2(v9501.value + v9502.value + v9503.value + v9504.value))
 
-// 96 + 97 + 98
-const v96   = computed(() => get(eriMap, "eri_607"))
+const v9505 = computed(() => get(efeMap, "efe_md_9505"))
+const v9506 = computed(() => get(efeMap, "efe_md_9506"))
+const v9507 = computed(() => get(efeMap, "efe_md_9507"))
+const v9820 = computed(() => get(efeMap, "efe_md_9820"))
+const v96   = computed(() => get(efeMap, "efe_md_96"))
+
+
+console.log("v96: ", v96)
+
 const v97v  = computed(() => efeNodeSum("97"))
+
+console.log(' v97v: ',  v97v)
+
 const v98v  = computed(() => efeNodeSum("98"))
-const v9820 = computed(() => round2(v96.value + v97v.value + v98v.value))
+
+console.log(' v98v: ',  v98v)
+
+
+console.log(' v9820: ',  v9820)
 
 // ✅ AJUSTA a tu ESF real (efectivo y equivalentes)
 const esfCashInicial = [
-  "esf_10101",
+  "esf_1010101_ant",
+  "esf_1010102_ant",
+  "esf_1010103_ant",
 ]
 
 const esfCashFinal = [
@@ -167,9 +182,6 @@ const esfCashFinal = [
 ]
 
 const sumEsf = codes => round2((codes || []).reduce((acc, c) => acc + get(esfMap, c), 0))
-
-const v9506 = computed(() => sumEsf(esfCashInicial))
-const v9507 = computed(() => round2(v9505.value + v9506.value))
 
 const esf1010101 = computed(() => getValor("esf_1010101"))
 const esf1010102 = computed(() => getValor("esf_1010102"))
@@ -254,7 +266,7 @@ const closeDialog = () => { dialog.value = false }
           </div>
         </div>
 
-        <div class="efe-row">
+        <div class="efe-row" style="padding: 5px 10px; background: #F5F3FF;">
           <div class="efe-col efe-col--concepto">Saldo final de efectivo y equivalentes según EFE</div>
           <div class="efe-col efe-col--cuenta"><span class="efe-account">9507</span></div>
           <div class="efe-col efe-col--valor">
@@ -269,7 +281,7 @@ const closeDialog = () => { dialog.value = false }
           </div>
         </div>
 
-        <div class="efe-row">
+        <div class="efe-row" style="padding: 5px 10px; background: #F5F3FF;">
           <div class="efe-col efe-col--concepto">Saldo final de efectivo y equivalentes según ESF</div>
           <div class="efe-col efe-col--cuenta"></div>
           <div class="efe-col efe-col--valor">

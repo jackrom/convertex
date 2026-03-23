@@ -405,7 +405,7 @@ watchEffect(() => {
               <td>{{ formatMoney(eriResumen.costos) }}</td>
               <td>{{ formatMoney(eriResumen.costosAnt) }}</td>
             </tr>
-            <tr>
+            <tr style="background: #F5F3FF;">
               <td>GANANCIA BRUTA</td>
               <td>{{ formatMoney(eriResumen.gananciaBrutaActual) }}</td>
               <td>{{ formatMoney(eriResumen.gananciaBrutaAnt) }}</td>
@@ -435,7 +435,7 @@ watchEffect(() => {
               <td>{{ formatMoney(eriResumen.otrosIngresosActual) }}</td>
               <td>{{ formatMoney(eriResumen.otrosIngresosAnt) }}</td>
             </tr>
-            <tr>
+            <tr style="background: #F5F3FF;">
               <td>GANANCIA (PÉRDIDA) ANTES DE 15% A TRABAJADORES E IMPUESTO A LA RENTA DE OPERACIONES CONTINUADAS.</td>
               <td>{{ formatMoney(eriResumen.gananciaPerdidadActual) }}</td>
               <td>{{ formatMoney(eriResumen.gananciaPerdidadAnt) }}</td>
@@ -465,7 +465,7 @@ watchEffect(() => {
               <td>{{ formatMoney(eriResumen.resultadoNetoEriActual) }}</td>
               <td>{{ formatMoney(eriResumen.resultadoNetoEriAnt) }}</td>
             </tr>
-            <tr>
+            <tr style="background: #F5F3FF;">
               <td>RESULTADO DEL EJERCICIO SEGÚN ESF</td>
               <td>{{ formatMoney(esf_307_resumen) }}</td>
               <td>{{ formatMoney(esf_307_ant_resumen) }}</td>

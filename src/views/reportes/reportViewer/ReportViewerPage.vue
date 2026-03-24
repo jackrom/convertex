@@ -74,7 +74,6 @@ const refreshCuadres = () => {
   // Segunda pasada: por si las fórmulas EFE tardaron más en propagarse
   cuadreTimer2 = setTimeout(() => {
     efeOk.value = store.calculateEfeCuadre() === 1
-    console.log('efeOk: ', store.calculateEfeCuadre())
   }, 1500)
 }
 
@@ -162,8 +161,6 @@ onMounted(async () => {
   const reporteId = typeof paramId === "string" ? Number(paramId) : paramId
 
   if (!Number.isFinite(reporteId)) {
-    console.error("[ReportViewer] reporteid inválido en ruta:", paramId)
-
     return
   }
 
@@ -190,8 +187,6 @@ watch(
 
 // Maneja los cambios emitidos por ReportSectionByValues (Individuales y en Batch)
 const onChangeValue = payload => {
-  console.log("onChangeValue", payload)
-
   // ✅ Soporte para import masivo
   if (payload && Array.isArray(payload.batch)) {
     for (const p of payload.batch) {

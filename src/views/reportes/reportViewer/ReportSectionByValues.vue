@@ -35,7 +35,6 @@ const store = useReportViewerStore()
 
 const activePanel = ref(null)
 
-// Todo: corregir funcion porque no permite negativos
 const roundTo = (n, decimals = 2) => {
   const num = Number(n)
   if (!Number.isFinite(num)) return 0

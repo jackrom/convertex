@@ -1091,7 +1091,7 @@ export const useReportViewerStore = defineStore("reportViewer", {
           }
         }
 
-        // Sólo si TODO fue bien, limpiamos dirty
+        // Sólo si todo fue bien, limpiamos dirty
         const cleanDirty = tipo => {
           const dirtyTipo = this.dirty[tipo]
           for (const nombrecampo of Object.keys(dirtyCopy[tipo])) {

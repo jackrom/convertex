@@ -188,7 +188,9 @@
       "esfTitle": "ESF",
       "eriTitle": "ERI",
       "efeTitle": "EFE",
-      "ecpTitle": "ECP"
+      "ecpTitle": "ECP",
+      "efeMdTitle": "Cash Flow Statement (EFE) - Direct Method",
+      "esfTitle": "Statement of Financial Position (ESF)"
     }
   }
 }

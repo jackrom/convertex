@@ -150,25 +150,25 @@ const editarReporte = rep => {
                   <VChip
                     size="x-small"
                     :color="
-      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'info' :
-      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'primary' :
-      'secondary'
-    "
+                      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'info' :
+                      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'primary' :
+                      'secondary'
+                    "
                     variant="flat"
                   >
                     <VIcon
                       :icon="
-        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'tabler-calendar-check' :
-        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'tabler-building-bank' :
-        'tabler-user'
-      "
+                        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'tabler-calendar-check' :
+                        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'tabler-building-bank' :
+                        'tabler-user'
+                      "
                       start
                       size="14"
                     />
                     {{
                       (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'Inicial' :
-                        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'Consolidado' :
-                          'Individual'
+                      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'Consolidado' :
+                      'Individual'
                     }}
                   </VChip>
                 </td>

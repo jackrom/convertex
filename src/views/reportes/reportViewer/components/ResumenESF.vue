@@ -5,7 +5,7 @@ import { computed, ref, defineProps, defineEmits } from "vue"
 const props = defineProps({
   // Recibe: 'esf' | 'eri' | 'ecp' | 'efe' desde ReportViewerPage.vue
   esfCuadre: {
-    type: String,
+    type: Boolean,
     required: true,
   },
   values: {

@@ -7,7 +7,7 @@ import { useReportViewerStore } from "@/@store/reportViewer.store"
 const props = defineProps({
   // Recibe: 'esf' | 'eri' | 'ecp' | 'efe' desde ReportViewerPage.vue
   eriCuadre: {
-    type: String,
+    type: Boolean,
     required: true,
   },
   modelValue: {

@@ -617,7 +617,7 @@ const onChangeValue = payload => {
 
     <ResumenEFE
       v-model="showResumenEfe"
-      :efe-cuadre="efeCuadre"
+      :efe-cuadre="efeOk"
       :esf-values="esfValues"
       :eri-values="eriValues"
       :efe-values="efeValues"

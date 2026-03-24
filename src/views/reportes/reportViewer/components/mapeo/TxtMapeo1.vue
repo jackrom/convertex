@@ -287,7 +287,7 @@ function handleFileUpload(event) {
 </script>
 
 <template>
-  <Label>
+  <label>
     Descargue en el siguiente enlace el archivo modelo:
     <a
       href="https://www.facilcontabilidad.com/mapeo101"
@@ -296,7 +296,7 @@ function handleFileUpload(event) {
     >
       https://www.facilcontabilidad.com/mapeo101
     </a>
-  </Label>
+  </label>
 
   <VContainer>
     <VFileInput

@@ -94,7 +94,7 @@ const showResumenEfe = ref(false)
 
 
 
-const activePanel = ref(null)
+const activePanel = ref('')
 
 // --- HELPERS PARA RESUMEN --------------------------------------
 

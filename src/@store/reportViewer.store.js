@@ -695,9 +695,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
       const siOk = allRowsCuadran(esfIndex, ecpIndex, rowDefsSI)
       const sfOk = allRowsCuadran(esfIndex, ecpIndex, rowDefsSF)
 
-      console.log("siOk", siOk)
-      console.log("sfOk", sfOk)
-
       return (siOk && sfOk) ? 1 : 0
     },
 
@@ -1126,9 +1123,9 @@ export const useReportViewerStore = defineStore("reportViewer", {
           despues: null,
           meta: {
             tipos: {
-              esf:   Object.keys(dirtyCopy.esf),
-              eri:   Object.keys(dirtyCopy.eri),
-              ecp:   Object.keys(dirtyCopy.ecp),
+              esf: Object.keys(dirtyCopy.esf),
+              eri: Object.keys(dirtyCopy.eri),
+              ecp: Object.keys(dirtyCopy.ecp),
               efemd: Object.keys(dirtyCopy.efemd),
             },
           },

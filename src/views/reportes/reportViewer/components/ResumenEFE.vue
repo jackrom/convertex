@@ -161,12 +161,6 @@ const v98v  = computed(() => efeNodeSum("98"))
 
 const v9820 = computed(() => round2(v96.value + v97v.value + v98v.value))
 
-
-console.log("v96: ", v96)
-console.log(' v97v: ',  v97v)
-console.log(' v98v: ',  v98v)
-console.log(' v9820: ',  v9820)
-
 // ✅ AJUSTA a tu ESF real (efectivo y equivalentes)
 const esfCashInicial = [
   "esf_1010101_ant",
@@ -193,12 +187,6 @@ const diferenciaOperacion = computed(() => round2(v9501.value - v9820.value))
 
 watchEffect(() => {
   emit("update:efeCuadre", cuadreEfe.value)
-})
-
-// 🔎 Debug útil (se actualiza al editar)
-watchEffect(() => {
-  // comenta cuando ya esté OK
-  console.log("[ResumenEFE] 9501/9502/9503/9504 =>", v9501.value, v9502.value, v9503.value, v9504.value)
 })
 
 const closeDialog = () => { dialog.value = false }

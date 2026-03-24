@@ -192,5 +192,9 @@
       "efeMdTitle": "Cash Flow Statement (EFE) - Direct Method",
       "esfTitle": "Statement of Financial Position (ESF)"
     }
-  }
+  },
+  "Períodos": "Periods",
+  "Auditoría": "Audit",
+  "Logs del Sistema": "System Logs",
+  "Performance": "Performance"
 }

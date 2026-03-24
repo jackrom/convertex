@@ -15,10 +15,7 @@ const PUBLIC_REDIRECT = 'http://localhost:5173/not-authorized';
 (async () => {
   const authenticated = await initKeycloak('login-required')
 
-  console.log('authenticated', authenticated)
-
   if (!authenticated) {
-    console.error('Usuario no autenticado en Keycloak')
     window.location.href = PUBLIC_REDIRECT
 
     return
@@ -33,7 +30,6 @@ const PUBLIC_REDIRECT = 'http://localhost:5173/not-authorized';
 
   if (!puedeMontar) return
 
-  console.log('Montando app...')
   app.mount('#app')
 })()
 
@@ -43,17 +39,12 @@ async function verificarEntitlements(authenticationUserStore) {
   try {
     const me = await authenticationUserStore.fetchMeAndAbilities()
 
-    console.log('me:', me)
-
     const entResp = await authenticationUserStore.fetchEntitlements()
     const data = entResp?.data || {}
-
-    console.log('entitlements:', data)
 
     const ifluc = data.apps?.find(a => a.key === 'ifluc')
 
     if (!ifluc || !ifluc.isActive) {
-      console.warn('Usuario sin Ifluc activo, cerrando sesión…')
       if (kc) await kc.logout({ redirectUri: PUBLIC_REDIRECT })
       else window.location.href = PUBLIC_REDIRECT
 
@@ -69,7 +60,6 @@ async function verificarEntitlements(authenticationUserStore) {
     }
 
     if (error.response && [401, 403].includes(error.response.status)) {
-      console.warn('Backend devolvió', error.response.status, 'cerrando sesión…')
 
       const kcInner = getKeycloak()
       if (kcInner) await kcInner.logout({ redirectUri: PUBLIC_REDIRECT })
@@ -78,7 +68,6 @@ async function verificarEntitlements(authenticationUserStore) {
       return false
     }
 
-    console.error('Error al cargar datos iniciales:', error)
     await router.replace({ name: 'error-entitlements', query: { reason: 'entitlements' } })
 
     return true

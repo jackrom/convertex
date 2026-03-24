@@ -31,12 +31,6 @@ const persistSessionData = kc => {
   if (parsed.email) sessionStorage.setItem('email', parsed.email)
   if (parsed.preferred_username) sessionStorage.setItem('preferred_username', parsed.preferred_username)
   if (parsed.name) sessionStorage.setItem('name', parsed.name)
-
-  console.log('TOKEN:', kc.token)
-  console.log('sub:', parsed.sub)
-  console.log('email:', parsed.email)
-  console.log('preferred_username:', parsed.preferred_username)
-  console.log('usuario:', parsed)
 }
 
 const startTokenRefresh = kc => {
@@ -73,6 +67,7 @@ export const initKeycloak = async (onLoad = 'login-required') => {
 
   if (initPromise) {
     await initPromise
+
     return kc.authenticated === true
   }
 
@@ -91,9 +86,6 @@ export const initKeycloak = async (onLoad = 'login-required') => {
     const authenticated = await initPromise
 
     initialized = true
-
-    console.log('authenticated:', authenticated)
-    console.log('Keycloak initialized:', kc)
 
     window.__kc = kc
 

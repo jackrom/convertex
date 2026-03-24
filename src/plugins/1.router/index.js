@@ -32,7 +32,7 @@ const router = createRouter({
   ],
 })
 
-console.log(router.getRoutes().map(r => r.name))
+// console.log(router.getRoutes().map(r => r.name))
 
 setupGuards(router)
 

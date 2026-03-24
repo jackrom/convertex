@@ -27,8 +27,6 @@ const safeT = (key, fallback) => {
     return raw
 
   if (raw !== undefined) {
-    console.warn("[i18n] clave", key, "no es string. Tipo =", typeof raw, "Valor =", raw)
-
     return fallback ?? key
   }
 

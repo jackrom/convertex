@@ -7,7 +7,7 @@ import { useReportViewerStore } from "@/@store/reportViewer.store"
 const props = defineProps({
   // Recibe: 'esf' | 'eri' | 'ecp' | 'efe' desde ReportViewerPage.vue
   eriCuadre: {
-    type: Boolean,
+    type: [String, Boolean],
     required: true,
   },
   modelValue: {
@@ -122,8 +122,6 @@ const esf_307_resumen = computed(() => {
 
   return (esf_30701 && esf_30702) ? (Number(esf_30701.valor || 0) + Number(esf_30702.valor || 0)) : 0
 })
-
-// console.log('esf_307_resumen', esf_307_resumen.value)
 
 // diferenciaresultadoperiodoactual = (eri_607) - (eri_30701 + eri_30702)
 
@@ -287,8 +285,6 @@ const eriResumen = computed(() => {
 
   const gananciaBrutaActual = sumEriBySufijos(sufijosGananciaBruta)
   const gananciaPerdidadActual = sumEriBySufijos(sufijosGananciaPerdidad)
-
-  console.log('gananciaBrutaActual: ', sumEriBySufijos(sufijosGananciaBruta))
 
   const resultadoNetoEriActual = sumEriBySufijos(sufijosResultadoNetoDelEjercicioSegunERI)
 

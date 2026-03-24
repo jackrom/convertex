@@ -34,8 +34,6 @@ onMounted(async () => {
   if (!loaded.value) await reportStore.load({ force: true })
 })
 
-console.log('reportes: ', reportes)
-
 // ----------------------
 // Acciones
 // ----------------------
@@ -58,8 +56,6 @@ const exportarPdf = async (rep, index) => {
 }
 
 const exportarXls = async (rep, index) => {
-  console.log(rep)
-
   loadingsXls.value[index] = true
 
   try {
@@ -99,8 +95,6 @@ const exportarTxt = async (rep, index) => {
 }
 
 const editarReporte = rep => {
-  console.log('REPORTE: ', rep)
-
   router.push(`/reportes/reportviewer/ReportViewerPage?action=editar&reporteid=${rep.reporteid}`)
 }
 </script>

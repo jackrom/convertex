@@ -16,6 +16,9 @@ import ResumenEFE from "@/views/reportes/reportViewer/components/ResumenEFE.vue"
 
 const route = useRoute()
 const store = useReportViewerStore()
+
+window.__store = store
+
 const { safeT } = useSafeI18n("global")
 
 const currentTab = ref("esf")
@@ -54,18 +57,25 @@ const ecpOk = ref(false)
 const efeOk = ref(false)
 
 let cuadreTimer = null
+let cuadreTimer2 = null
 
 const refreshCuadres = () => {
   if (cuadreTimer) clearTimeout(cuadreTimer)
+  if (cuadreTimer2) clearTimeout(cuadreTimer2)
 
+  // Primera pasada: después de que debounces terminen (300ms + margen)
   cuadreTimer = setTimeout(() => {
-    const eriResult = store.calculateEriCuadre()
-
     esfOk.value = store.calculateEsfCuadre() === 1
-    eriOk.value = eriResult === 1
+    eriOk.value = store.calculateEriCuadre() === 1
     ecpOk.value = store.calculateEcpCuadre() === 1
     efeOk.value = store.calculateEfeCuadre() === 1
-  }, 500)
+  }, 800)
+
+  // Segunda pasada: por si las fórmulas EFE tardaron más en propagarse
+  cuadreTimer2 = setTimeout(() => {
+    efeOk.value = store.calculateEfeCuadre() === 1
+    console.log('efeOk: ', store.calculateEfeCuadre())
+  }, 1500)
 }
 
 watch(
@@ -181,6 +191,7 @@ watch(
 // Maneja los cambios emitidos por ReportSectionByValues (Individuales y en Batch)
 const onChangeValue = payload => {
   console.log("onChangeValue", payload)
+
   // ✅ Soporte para import masivo
   if (payload && Array.isArray(payload.batch)) {
     for (const p of payload.batch) {

@@ -1,3 +1,4 @@
+<!--src/views/reportes/reportViewer/components/ResumenEFE.vue -->
 <script setup>
 import { computed, watchEffect } from "vue"
 import { formatMoney, isZero, toNumber, round2 } from "./functions"
@@ -149,25 +150,21 @@ const v9501 = computed(() => efeNodeSum("9501"))
 const v9502 = computed(() => efeNodeSum("9502"))
 const v9503 = computed(() => efeNodeSum("9503"))
 const v9504 = computed(() => efeNodeSum("9504"))
+const v9505 = computed(() => round2(v9501.value + v9502.value + v9503.value + v9504.value))
 
-const v9505 = computed(() => get(efeMap, "efe_md_9505"))
 const v9506 = computed(() => get(efeMap, "efe_md_9506"))
 const v9507 = computed(() => get(efeMap, "efe_md_9507"))
-const v9820 = computed(() => get(efeMap, "efe_md_9820"))
-const v96   = computed(() => get(efeMap, "efe_md_96"))
+
+const v96   = computed(() => get(eriMap, "eri_600"))
+const v97v  = computed(() => efeNodeSum("97"))
+const v98v  = computed(() => efeNodeSum("98"))
+
+const v9820 = computed(() => round2(v96.value + v97v.value + v98v.value))
 
 
 console.log("v96: ", v96)
-
-const v97v  = computed(() => efeNodeSum("97"))
-
 console.log(' v97v: ',  v97v)
-
-const v98v  = computed(() => efeNodeSum("98"))
-
 console.log(' v98v: ',  v98v)
-
-
 console.log(' v9820: ',  v9820)
 
 // ✅ AJUSTA a tu ESF real (efectivo y equivalentes)

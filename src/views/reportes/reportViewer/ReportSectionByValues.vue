@@ -35,6 +35,7 @@ const store = useReportViewerStore()
 
 const activePanel = ref(null)
 
+// Todo: corregir funcion porque no permite negativos
 const roundTo = (n, decimals = 2) => {
   const num = Number(n)
   if (!Number.isFinite(num)) return 0
@@ -431,6 +432,7 @@ const groups = computed(() => {
   // Paso 2: Construir índice global de códigos reales (con dato real)
   // para evitar crear sintéticos que ya existen en otro grupo
   const globalRealCodes = new Set()
+
   Object.values(groupedByTabla).forEach(g => {
     Object.keys(g.rowsByCodigo).forEach(code => {
       const row = g.rowsByCodigo[code]
@@ -1372,7 +1374,7 @@ const recomputeEfeFormulas = () => {
   // efe_md_9506 = esf_10101_ant
   // efe_md_9507 = efe_md_9505 + efe_md_9506
 
-  const v96 = getFrom(eriList, "eri_607")
+  const v96 = getFrom(eriList, "eri_600")
 
   const v95010101 = getFrom(efeList, "efe_md_95010101")
   const v95010102 = getFrom(efeList, "efe_md_95010102")
@@ -1582,48 +1584,6 @@ if (props.tipo === "eri") {
 // ===================================================
 // WATCHER EFE
 // ===================================================
-if (props.tipo === "efe") {
-  const pickValue = (listRef, name) => {
-    const row = (listRef.value ?? []).find(
-      r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase(),
-    )
-
-    return row ? String(row.valor ?? "") : ""
-  }
-
-  const efeFormulaSignature = computed(() => {
-    return [
-      pickValue(eriStoreValues, "eri_600"),
-      pickValue(esfStoreValues, "esf_1010101_ant"),
-      pickValue(esfStoreValues, "esf_1010102_ant"),
-      pickValue(esfStoreValues, "esf_1010103_ant"),
-      pickValue(efeStoreValues, "efe_md_9504"),
-
-      // campos de operación que afectan v9501
-      pickValue(efeStoreValues, "efe_md_95010101"),
-      pickValue(efeStoreValues, "efe_md_95010102"),
-      pickValue(efeStoreValues, "efe_md_95010103"),
-      pickValue(efeStoreValues, "efe_md_95010104"),
-      pickValue(efeStoreValues, "efe_md_95010105"),
-      pickValue(efeStoreValues, "efe_md_950103"),
-      pickValue(efeStoreValues, "efe_md_950104"),
-      pickValue(efeStoreValues, "efe_md_950105"),
-      pickValue(efeStoreValues, "efe_md_950106"),
-      pickValue(efeStoreValues, "efe_md_950107"),
-      pickValue(efeStoreValues, "efe_md_950108"),
-    ].join("|")
-  })
-
-  watch(
-    () => efeFormulaSignature.value,
-    () => {
-      debouncedRecomputeEfe()
-    },
-    { immediate: true },
-  )
-}
-
-
 if (props.tipo === "efe") {
   const pickValue = (listRef, name) => {
     const row = (listRef.value ?? []).find(
@@ -1866,7 +1826,7 @@ const onInput = (group, row, which, rawValue) => {
               <!-- ✅ FUERA del v-for, después del cierre del tr -->
               <template v-if="planTipo === 'efe' && group.label === 'ACTIVIDADES DE FINANCIAMIENTO' && efeEsfCuadre">
                 <tr class="rv-row-extra">
-                  <td>EFECTIVO Y EQUIVALENTES AL EFECTIVO SEGÚN ESF</td>
+                  <td>EFECTIVO Y EQUIVALENTES AL EFECTIVO AL FINAL SEGÚN ESF</td>
                   <td></td>
                   <td>
                     <VTextField

@@ -1,0 +1,1 @@
+import{E as e,c as o,o as a}from"./index-BEt47t2r.js";const c={class:"pa-6"},_={__name:"login",setup(n){return e(async()=>{}),(s,t)=>(a(),o("div",c,"Redirigiendo a Keycloak..."))}};export{_ as default};

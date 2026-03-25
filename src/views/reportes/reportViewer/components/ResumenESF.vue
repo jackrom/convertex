@@ -418,7 +418,7 @@ const updateEsfCuadre = () => {
               </td>
             </tr>
 
-            <tr>
+            <tr style="background: #F5F3FF;">
               <td><strong>ACTIVOS</strong></td>
               <td class="text-right">
                 <strong>{{ formatMoney(esfResumen.activosActual) }}</strong>
@@ -458,7 +458,7 @@ const updateEsfCuadre = () => {
               </td>
             </tr>
 
-            <tr>
+            <tr style="background: #F5F3FF;">
               <td><strong>TOTAL PASIVOS Y PATRIMONIO</strong></td>
               <td class="text-right">
                 <strong>

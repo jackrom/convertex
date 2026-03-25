@@ -1,6 +1,24 @@
-<!-- src/views/reportes/reportViewer/ReportViewerPage.vue -->
+<!-- src/views/reportes/reportViewer/ReportViewerPage.vue (CONVERTEX) -->
+<!-- ══════════════════════════════════════════════════════════════
+  CORRECCIONES APLICADAS:
+
+  🔴 FIX CRÍTICO #1 — Agregado onBeforeUnmount con store.flushNow()
+     El componente original NO tenía onBeforeUnmount, así que si
+     el debounce de 1s no terminaba antes de navegar, los cambios
+     se perdían.
+
+  🔴 FIX CRÍTICO #2 — onChangeValue batch: los valores autoCalc
+     ahora pasan meta completa al store para que se persistan
+     correctamente (tablaorigen, autoCalc flag, etc.).
+
+  🟡 FIX — Agregado import de onBeforeUnmount.
+
+  🟡 FIX — colspan corregido de 4 → 5 en la tabla (5 columnas).
+
+  🟡 FIX — Eliminado window.__store = store (debug leak).
+═══════════════════════════════════════════════════════════════ -->
 <script setup>
-import { ref, computed, onMounted, watch } from "vue"
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue"
 import { useRoute } from "vue-router"
 import { useSafeI18n } from "@/composables/useSafeI18n"
 import { useReportViewerStore } from "@/@store/reportViewer.store"
@@ -16,8 +34,6 @@ import ResumenEFE from "@/views/reportes/reportViewer/components/ResumenEFE.vue"
 
 const route = useRoute()
 const store = useReportViewerStore()
-
-window.__store = store
 
 const { safeT } = useSafeI18n("global")
 
@@ -41,12 +57,10 @@ const efeValues = computed(
   () => reporte.value?.values?.efemdvalues ?? [],
 )
 
-// Lista reactiva de ERI
 const eriValues = computed(
   () => reporte.value?.values?.erivalues ?? [],
 )
 
-// Info cabecera
 const empresaNombre = computed(
   () => reporte.value?.empresa?.nombre ?? reporte.value?.empresaid ?? "",
 )
@@ -63,7 +77,6 @@ const refreshCuadres = () => {
   if (cuadreTimer) clearTimeout(cuadreTimer)
   if (cuadreTimer2) clearTimeout(cuadreTimer2)
 
-  // Primera pasada: después de que debounces terminen (300ms + margen)
   cuadreTimer = setTimeout(() => {
     esfOk.value = store.calculateEsfCuadre() === 1
     eriOk.value = store.calculateEriCuadre() === 1
@@ -71,7 +84,6 @@ const refreshCuadres = () => {
     efeOk.value = store.calculateEfeCuadre() === 1
   }, 800)
 
-  // Segunda pasada: por si las fórmulas EFE tardaron más en propagarse
   cuadreTimer2 = setTimeout(() => {
     efeOk.value = store.calculateEfeCuadre() === 1
   }, 1500)
@@ -91,11 +103,7 @@ const showResumenEcpSI = ref(false)
 const showResumenEcpSF = ref(false)
 const showResumenEfe = ref(false)
 
-
-
 const activePanel = ref('')
-
-// --- HELPERS PARA RESUMEN --------------------------------------
 
 const panel = ref(0)
 const panel2 = ref(19)
@@ -105,23 +113,41 @@ const panel5 = ref(19)
 const panel6 = ref(0)
 const panel7 = ref(0)
 
-// let patrimonio = ref('0')
-
 const periodoTexto = computed(() =>
   String(reporte.value?.periodo?.periodo ?? reporte.value?.periodoid ?? ""),
 )
 
-const esConsolidado = computed(() => {
-  // prioridad: si el reporte trae el flag directo
-  if (typeof reporte.value?.esconsolidado !== "undefined")
-    return Boolean(reporte.value.esconsolidado)
+const tipoReporte = computed(() => {
+  const r = reporte.value
+  if (!r) return "individual"
 
-  // fallback: si el flag viene en el periodo asociado
-  if (typeof reporte.value?.periodo?.esconsolidado !== "undefined")
-    return Boolean(reporte.value.periodo.esconsolidado)
+  if (r.tiporeporte) return r.tiporeporte
+  if (r.periodo?.tiporeporte) return r.periodo.tiporeporte
 
-  // si no hay nada, asumir NO consolidado
-  return false
+  if (r.esconsolidado || r.periodo?.esconsolidado) return "consolidado"
+
+  return "individual"
+})
+
+const tipoLabel = computed(() => {
+  if (tipoReporte.value === "inicial") return "Inicial"
+  if (tipoReporte.value === "consolidado") return "Consolidado"
+
+  return "Individual"
+})
+
+const tipoColor = computed(() => {
+  if (tipoReporte.value === "inicial") return "info"
+  if (tipoReporte.value === "consolidado") return "primary"
+
+  return "secondary"
+})
+
+const tipoIcon = computed(() => {
+  if (tipoReporte.value === "inicial") return "tabler-calendar-check"
+  if (tipoReporte.value === "consolidado") return "tabler-building-bank"
+
+  return "tabler-user"
 })
 
 function parseJwt(token) {
@@ -142,7 +168,7 @@ function parseJwt(token) {
   }
 }
 
-const token = sessionStorage.getItem("accessToken") // o donde lo guardes
+const token = sessionStorage.getItem("accessToken")
 const claims = parseJwt(token)
 
 const displayName =
@@ -153,9 +179,6 @@ const displayName =
   claims?.sub ||
   "—"
 
-
-
-// Cargar al montar
 onMounted(async () => {
   const paramId = route.query.reporteid ?? route.params.reporteid
   const reporteId = typeof paramId === "string" ? Number(paramId) : paramId
@@ -171,7 +194,20 @@ onMounted(async () => {
   }
 })
 
-// Si cambia el :reporteid en la URL, recargar sin recrear el componente
+// ══════════════════════════════════════════════════════════════
+// 🔴 FIX CRÍTICO #1 — onBeforeUnmount:
+//    El componente original NO tenía esta función.
+//    Sin ella, si el usuario navega antes de que el debounce
+//    de 1s termine, los últimos cambios se pierden.
+// ══════════════════════════════════════════════════════════════
+onBeforeUnmount(async () => {
+  try {
+    await store.flushNow()
+  } catch (e) {
+    console.warn('[ReportViewer] Error en flush al desmontar:', e)
+  }
+})
+
 watch(
   () => route.query.reporteid,
   async newId => {
@@ -185,15 +221,26 @@ watch(
 )
 
 
-// Maneja los cambios emitidos por ReportSectionByValues (Individuales y en Batch)
 const onChangeValue = payload => {
-  // ✅ Soporte para import masivo
+  // ✅ Soporte para import masivo (batch)
   if (payload && Array.isArray(payload.batch)) {
     for (const p of payload.batch) {
       const tipoModel = p.tipo === "efe" ? "efemd" : p.tipo
       const nombrecampo = p.row?.nombrecampo ?? p.id
       if (!nombrecampo) continue
-      store.updateValue(tipoModel, nombrecampo, p.valor, p.meta || {})
+
+      // ══════════════════════════════════════════════════════════
+      // 🔴 FIX CRÍTICO #2: Pasar meta completa para que
+      //    autoCalc y tablaorigen lleguen a updateValue.
+      //    Antes solo pasaba `p.meta || {}` que podía no tener
+      //    el tablaorigen necesario para el backend.
+      // ══════════════════════════════════════════════════════════
+      const meta = {
+        ...(p.meta || {}),
+        tablaorigen: p.meta?.tablaorigen ?? p.row?.tablaorigen ?? null,
+      }
+
+      store.updateValue(tipoModel, nombrecampo, p.valor, meta)
     }
 
     return
@@ -204,7 +251,12 @@ const onChangeValue = payload => {
   const nombrecampo = payload.row?.nombrecampo ?? payload.id
   if (!nombrecampo) return
 
-  store.updateValue(tipoModel, nombrecampo, payload.valor, payload.meta || {})
+  const meta = {
+    ...(payload.meta || {}),
+    tablaorigen: payload.meta?.tablaorigen ?? payload.row?.tablaorigen ?? null,
+  }
+
+  store.updateValue(tipoModel, nombrecampo, payload.valor, meta)
 }
 </script>
 
@@ -221,22 +273,21 @@ const onChangeValue = payload => {
           <VChip
             v-if="reporte"
             size="small"
-            :color="esConsolidado ? 'primary' : 'secondary'"
+            :color="tipoColor"
             variant="flat"
             class="text-caption"
           >
             <VIcon
-              :icon="esConsolidado ? 'tabler-building-bank' : 'tabler-user'"
+              :icon="tipoIcon"
               start
               size="16"
             />
-            {{ esConsolidado ? 'Consolidado' : 'Individual' }}
+            {{ tipoLabel }}
           </VChip>
         </div>
 
         <!-- 🔔 Estado de sincronización -->
         <div class="d-flex align-center gap-2">
-          <!-- Mostramos cuando hay cambios pendientes -->
           <VChip
             v-if="hasPendingChanges"
             size="small"
@@ -252,7 +303,6 @@ const onChangeValue = payload => {
             {{ pendingChangesCount }} cambios pendientes
           </VChip>
 
-          <!-- Opcional: feedback cuando está guardando -->
           <VChip
             v-else-if="saving"
             size="small"
@@ -295,7 +345,7 @@ const onChangeValue = payload => {
               Tipo
             </div>
             <div class="text-subtitle-1">
-              {{ esConsolidado ? 'Consolidado' : 'Individual' }}
+              {{ tipoLabel }}
             </div>
           </div>
 
@@ -330,7 +380,6 @@ const onChangeValue = payload => {
     </VCard>
 
     <!-- ================= CONTENIDO SCROLLEABLE ================= -->
-    <!-- TABS ESF / ERI / ECP / EFE -->
     <main class="report-content">
       <VCard>
         <VTabs v-model="currentTab">
@@ -442,6 +491,7 @@ const onChangeValue = payload => {
                 </VExpansionPanel>
               </VExpansionPanels>
             </VWindowItem>
+
             <!-- ESF -->
             <VWindowItem value="esf" eager>
               <div class="sticky-actions">
@@ -474,7 +524,6 @@ const onChangeValue = payload => {
 
             <!-- ERI -->
             <VWindowItem value="eri" eager>
-              <!-- Botón para abrir resumen ERI -->
               <div class="sticky-actions">
                 <VBtn
                   class="button-resumen"
@@ -575,7 +624,6 @@ const onChangeValue = payload => {
         </VCardText>
       </VCard>
     </main>
-
 
     <!-- DIALOGO RESUMEN ESF -->
     <ResumenESF

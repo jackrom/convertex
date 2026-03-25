@@ -1,10 +1,25 @@
-<!-- src/views/reportes/ReportList.vue -->
+<!-- src/views/reportes/ReportList.vue (CONVERTEX) -->
+<!-- ══════════════════════════════════════════════════════════════
+  CORRECCIONES APLICADAS:
+
+  🔴 FIX CRÍTICO — exportarTxt/exportarPdf/exportarXls:
+     Ahora verifican si el reportViewerStore tiene cambios
+     pendientes y hacen flush ANTES de solicitar la descarga
+     al backend.
+
+  🟡 FIX colspan: corregido de 4 → 5 (la tabla tiene 5 columnas).
+
+  🟡 LIMPIEZA: eliminadas variables ref no utilizadas
+     (loadingsTurboNotas, loadingsInformeSocietario, loadings,
+     indice, message, messageText, counter, loadingRow).
+═══════════════════════════════════════════════════════════════ -->
 <script setup>
 import { computed, onMounted, ref } from "vue"
 import { storeToRefs } from "pinia"
 import { useReportesStore } from "@/@store/reportes.store"
 import { useRouter } from "vue-router"
 import { useReportesService } from "@/services/reportes.service"
+import { useReportViewerStore } from "@/@store/reportViewer.store"
 
 
 const router = useRouter()
@@ -12,21 +27,11 @@ const router = useRouter()
 const reportStore = useReportesStore()
 const reportesService = useReportesService()
 
-// const { reportes, load, remove, getOne } = useReportesList()
-
-const loadingRow = ref({})
 const isLoading = computed(() => !reportStore.loaded)
 
 const loadingsXls = ref([])
 const loadingsPdf = ref([])
 const loadingsTxt = ref([])
-const loadingsTurboNotas = ref([])
-const loadingsInformeSocietario = ref([])
-const loadings = ref([])
-const indice = ref([])
-let message = ref(false)
-let messageText = ref('')
-const counter = ref([])
 
 const { reportes: reportes, loaded } = storeToRefs(reportStore)
 
@@ -34,19 +39,45 @@ onMounted(async () => {
   if (!loaded.value) await reportStore.load({ force: true })
 })
 
+
+// ══════════════════════════════════════════════════════════════
+// 🔴 NUEVO HELPER: ensureFlush()
+//
+//    Verifica si el reportViewerStore tiene cambios pendientes
+//    para el reporte que se va a descargar. Si los tiene, fuerza
+//    un flush inmediato y espera un momento para que el backend
+//    procese los cambios antes de generar el archivo.
+// ══════════════════════════════════════════════════════════════
+const ensureFlush = async (reporteid) => {
+  const viewerStore = useReportViewerStore()
+
+  if (
+    viewerStore.reporte?.reporteid === reporteid &&
+    viewerStore.hasPendingChanges
+  ) {
+    console.log(`[ReportList] Flushing ${viewerStore.pendingChangesCount} pending changes for reporte ${reporteid}...`)
+    await viewerStore.flushNow()
+
+    // Esperar 500ms para que el backend procese los últimos cambios
+    await new Promise(resolve => setTimeout(resolve, 500))
+    console.log('[ReportList] Flush completado, procediendo con descarga')
+  }
+}
+
+
 // ----------------------
 // Acciones
 // ----------------------
-
 
 const exportarPdf = async (rep, index) => {
   loadingsPdf.value[index] = true
 
   try {
-    // 🔹 Si NO envías "tipo" → el backend genera un PDF con TODOS los estados (esf, eri, ecp, efemd)
+    // ✅ FIX: Flush cambios pendientes antes de descargar
+    await ensureFlush(rep.reporteid)
+
     await reportesService.downloadPdf(rep.reporteid, {
-      // tipo: "esf",      // si algún día quieres solo un estado en concreto
-      forceRefresh: true,  // para forzar regeneración; pon false si quieres respetar caché
+      forceRefresh: true,
     })
   } catch (err) {
     console.error("Error descargando PDF:", err)
@@ -59,8 +90,11 @@ const exportarXls = async (rep, index) => {
   loadingsXls.value[index] = true
 
   try {
+    // ✅ FIX: Flush cambios pendientes antes de descargar
+    await ensureFlush(rep.reporteid)
+
     await reportesService.downloadExcel(rep.reporteid, {
-      forceRefresh: true, // para regenerar siempre
+      forceRefresh: true,
     })
   } catch (err) {
     console.error("Error descargando Excel:", err)
@@ -73,20 +107,19 @@ const exportarTxt = async (rep, index) => {
   loadingsTxt.value[index] = true
 
   try {
-    // 🔹 Si quieres que el botón siga generando los 4 archivos como antes:
+    // ✅ FIX: Flush cambios pendientes antes de descargar
+    await ensureFlush(rep.reporteid)
+
     const tipos = ["esf", "eri", "efe", "ecp"]
 
     await Promise.all(
       tipos.map(tipo =>
         reportesService.downloadTxt(rep.reporteid, {
           tipo,
-          forceRefresh: true, // o false si quieres respetar el caché
+          forceRefresh: true,
         }),
       ),
     )
-
-    // Si quisieras solo ESF, sería simplemente:
-    // await reportesService.downloadTxt(rep.reporteid, { tipo: "esf", forceRefresh: true })
   } catch (err) {
     console.error("Error descargando TXT SRI:", err)
   } finally {
@@ -123,8 +156,9 @@ const editarReporte = rep => {
 
             <tbody>
               <tr v-if="isLoading">
+                <!-- 🟡 FIX: colspan corregido de 4 → 5 -->
                 <td
-                  colspan="4"
+                  colspan="5"
                   class="text-center py-6"
                 >
                   Cargando reportes...
@@ -161,8 +195,8 @@ const editarReporte = rep => {
                     />
                     {{
                       (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'Inicial' :
-                      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'Consolidado' :
-                      'Individual'
+                        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'Consolidado' :
+                          'Individual'
                     }}
                   </VChip>
                 </td>
@@ -171,8 +205,6 @@ const editarReporte = rep => {
                 <td class="d-flex gap-2">
                   <VBtn
                     icon
-                    :loading="loadings[index]"
-                    :disabled="loadings[index]"
                     size="x-small"
                     color="default"
                     variant="text"
@@ -234,9 +266,10 @@ const editarReporte = rep => {
                 </td>
               </tr>
 
-              <tr v-if="!reportes.length">
+              <tr v-if="!isLoading && !reportes.length">
+                <!-- 🟡 FIX: colspan corregido de 4 → 5 -->
                 <td
-                  colspan="4"
+                  colspan="5"
                   class="text-center"
                 >
                   No hay reportes creados

@@ -1,4 +1,29 @@
-// src/@store/reportViewer.store.js
+// src/@store/reportViewer.store.js (CONVERTEX)
+// ══════════════════════════════════════════════════════════════
+// CORRECCIONES APLICADAS:
+//
+// 🔴 FIX CRÍTICO #1 — Nuevo action: flushNow()
+//    Cancela el debounce timer y ejecuta _flushChanges()
+//    inmediatamente. Se usa desde onBeforeUnmount y antes
+//    de descargas TXT/PDF/Excel en ReportList.
+//
+// 🔴 FIX CRÍTICO #2 — _flushChanges(): añadido _savingLock
+//    para evitar que múltiples flush concurrentes corrompan
+//    el estado dirty.
+//
+// 🟡 FIX LÓGICA #1 — updateValue(): el early return cuando
+//    oldValue es null y parsed es 0 impedía que se persistan
+//    valores iniciales de totales calculados (autoCalc).
+//    → Se permite pasar cuando meta.autoCalc === true.
+//
+// 🟡 FIX LÓGICA #2 — updateValue(): el early return en
+//    string vacío ahora permite valores "0" y valores
+//    provenientes de autoCalc.
+//
+// 🟡 FIX — load(): limpia _saveTimer antes de cargar un
+//    reporte nuevo para evitar flush del reporte anterior.
+// ══════════════════════════════════════════════════════════════
+
 import { defineStore } from "pinia"
 import { useIndexedDBService } from "@/services/indexeddb.service"
 import { useLogger } from "@/composables/useLogger"
@@ -47,7 +72,6 @@ export const roundTo = (n, decimals = 2) => {
 }
 
 function sumCodes(index, codes) {
-  // dedupe para no sumar 3 veces si el array trae repetidos
   const unique = new Set(codes)
   let acc = 0
   for (const c of unique) acc += toNum(index[c]?.valor)
@@ -86,14 +110,9 @@ export const useReportViewerStore = defineStore("reportViewer", {
     loading: false,
     saving: false,
 
-    // Metadatos del reporte (mezcla de API + normalizeReporte)
     reporte: null,
-
-    // Estructura normalizada adicional (por si la quieres aprovechar luego)
     normalizedMeta: null,
 
-    // Valores normalizados por tipo + nombrecampo
-    // values.esf["esf_100101"] = { id, tipo, nombrecampo, tablaorigen, valor, userid }
     values: {
       esf: {},
       eri: {},
@@ -101,7 +120,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
       efemd: {},
     },
 
-    // Campos sucios (pendientes de enviar al backend)
     dirty: {
       esf: {},
       eri: {},
@@ -109,10 +127,10 @@ export const useReportViewerStore = defineStore("reportViewer", {
       efemd: {},
     },
 
-    // Mini-log de cambios en memoria
     changeLog: [],
 
     _saveTimer: null,
+    _savingLock: false,
 
     movementCheckpoint: {
       esf: {},
@@ -130,17 +148,14 @@ export const useReportViewerStore = defineStore("reportViewer", {
 
     hasReport: state => !!state.reporte,
 
-    // compat con ReportViewerPage.vue
     current: state => state.reporte,
 
-    // cuántos campos sucios hay en total
     pendingChangesCount: state =>
       Object.keys(state.dirty.esf).length +
       Object.keys(state.dirty.eri).length +
       Object.keys(state.dirty.ecp).length +
       Object.keys(state.dirty.efemd).length,
 
-    // flag simple
     hasPendingChanges: state =>
       Object.keys(state.dirty.esf).length > 0 ||
       Object.keys(state.dirty.eri).length > 0 ||
@@ -149,7 +164,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
   },
 
   actions: {
-    // Función para calcular el cuadre de ESF
     calculateEsfCuadre() {
       const canon = s =>
         String(s ?? "")
@@ -163,9 +177,7 @@ export const useReportViewerStore = defineStore("reportViewer", {
         return Number.isFinite(n) ? n : 0
       }
 
-      // ✅ usa el diccionario normalizado
       const esfDict = this.values?.esf ?? {}
-
       const rows = Object.values(esfDict)
 
       const parseCodigo = nombrecampo => {
@@ -176,7 +188,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
         return noPrefix.endsWith("_ant") ? noPrefix.slice(0, -4) : noPrefix
       }
 
-      // 1) construir lista de códigos existentes
       const codes = []
       const byCode = Object.create(null)
 
@@ -187,11 +198,9 @@ export const useReportViewerStore = defineStore("reportViewer", {
         byCode[codigo] = true
       }
 
-      // 2) detectar padres por prefijo (cualquier código que sea prefijo de otro más largo)
       const isParent = Object.create(null)
       for (const c of codes) isParent[c] = false
 
-      // O(n^2) pero ESF no suele ser gigante; si lo es, lo optimizamos luego.
       for (const a of codes) {
         for (const b of codes) {
           if (b.length <= a.length) continue
@@ -202,7 +211,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
         }
       }
 
-      // 3) acumular SOLO hojas
       const totals = {
         ac: 0, anc: 0, pc: 0, pnc: 0, pat: 0,
         ac_ant: 0, anc_ant: 0, pc_ant: 0, pnc_ant: 0, pat_ant: 0,
@@ -214,11 +222,9 @@ export const useReportViewerStore = defineStore("reportViewer", {
         const codigo = parseCodigo(field.nombrecampo)
         if (!codigo) continue
 
-        // ✅ ignorar padres (autoCalc)
         if (isParent[codigo]) continue
 
         const key = canon(field.tablaorigen)
-        const isAnt = String(field.nombrecampo ?? "").toLowerCase().endsWith("_ant")
         const v = toNum(field.valor)
 
         if (key === "activoscorrientes") totals[`ac`] += v
@@ -244,12 +250,9 @@ export const useReportViewerStore = defineStore("reportViewer", {
       const diffAct = round2(totalActivo - totalPasPat)
       const diffAnt = round2(totalActivoAnt - totalPasPatAnt)
 
-      const ok = (diffAct === 0 && diffAnt === 0)
-
       return (diffAct === 0 && diffAnt === 0) ? 1 : 0
     },
 
-    // Función para calcular el cuadre de EFE
     calculateEriCuadre() {
       const eriList = Object.values(this.values?.eri ?? [])
       const esfList = Object.values(this.values?.esf ?? [])
@@ -285,7 +288,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
         const PARENT_LENGTHS = [3, 5, 7, 9, 11, 13]
         const rowsByCodigo = Object.create(null)
 
-        // 1) cargar valores reales
         for (const row of rows) {
           if (!row?.nombrecampo) continue
 
@@ -312,7 +314,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
           else rowsByCodigo[codigo].actualVal = roundTo(safeValue, 2)
         }
 
-        // 2) crear padres sintéticos faltantes
         const existingCodes = Object.keys(rowsByCodigo)
         const extra = Object.create(null)
 
@@ -339,7 +340,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
 
         const rows2 = Object.values(rowsByCodigo)
 
-        // 3) detectar padres
         for (const r of rows2) {
           r.hasChildren = false
         }
@@ -365,7 +365,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
           }
         }
 
-        // 4) inicializar sumas
         for (const r of rows2) {
           if (r.hasChildren) {
             r.sumActual = 0
@@ -376,7 +375,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
           }
         }
 
-        // 5) propagar a padres
         for (const r of sortedByLengthDesc) {
           const code = String(r.codigo)
 
@@ -425,9 +423,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
         checks.push(eq(getEriValue(fieldName), expectedValue))
       }
 
-      // =========================
-      // PERIODO ACTUAL
-      // =========================
       const eri401 = sumActual("401")
       const eri501 = sumActual("501")
       const eri402 = roundTo(eri401 - eri501, 2)
@@ -486,13 +481,8 @@ export const useReportViewerStore = defineStore("reportViewer", {
       addCheck("eri_800", eri800)
       addCheck("eri_801", eri801)
 
-      // =========================
-      // PERIODO ANTERIOR
-      // =========================
       const eri401Ant = sumAnterior("401")
       const eri501Ant = sumAnterior("501")
-      const eri402Ant = roundTo(eri401Ant - eri501Ant, 2)
-
       const eri502Ant = roundTo(
         sumAnterior("50201") +
         sumAnterior("50202") +
@@ -511,58 +501,13 @@ export const useReportViewerStore = defineStore("reportViewer", {
       const eri606Ant = sumAnterior("606")
       const eri607Ant = roundTo(eri604Ant + eri605Ant + eri606Ant, 2)
 
-      const eri700Ant = sumAnterior("700")
-      const eri701Ant = sumAnterior("701")
-      const eri702Ant = roundTo(eri700Ant - eri701Ant, 2)
-      const eri703Ant = sumAnterior("703")
-      const eri704Ant = roundTo(eri702Ant - eri703Ant, 2)
-      const eri705Ant = sumAnterior("705")
-      const eri706Ant = roundTo(eri704Ant - eri705Ant, 2)
-      const eri707Ant = roundTo(eri607Ant + eri706Ant, 2)
-
-      const eri800Ant = sumAnterior("800")
-      const eri801Ant = roundTo(eri707Ant + eri800Ant, 2)
-
-      addCheck("eri_401_ant", eri401Ant)
-      addCheck("eri_501_ant", eri501Ant)
-      addCheck("eri_402_ant", eri402Ant)
-      addCheck("eri_502_ant", eri502Ant)
-      addCheck("eri_403_ant", eri403Ant)
-      addCheck("eri_600_ant", eri600Ant)
-      addCheck("eri_601_ant", eri601Ant)
-      addCheck("eri_602_ant", eri602Ant)
-      addCheck("eri_603_ant", eri603Ant)
-      addCheck("eri_604_ant", eri604Ant)
-      addCheck("eri_605_ant", eri605Ant)
-      addCheck("eri_606_ant", eri606Ant)
-      addCheck("eri_607_ant", eri607Ant)
-      addCheck("eri_700_ant", eri700Ant)
-      addCheck("eri_701_ant", eri701Ant)
-      addCheck("eri_702_ant", eri702Ant)
-      addCheck("eri_703_ant", eri703Ant)
-      addCheck("eri_704_ant", eri704Ant)
-      addCheck("eri_705_ant", eri705Ant)
-      addCheck("eri_706_ant", eri706Ant)
-      addCheck("eri_707_ant", eri707Ant)
-      addCheck("eri_800_ant", eri800Ant)
-      addCheck("eri_801_ant", eri801Ant)
-
-      // =========================
-      // CRUCE FINAL ERI vs ESF
-      // =========================
       const resultadoEsfActual = getEsfValue("esf_30701") + getEsfValue("esf_30702")
-      const resultadoEsfAnterior = getEsfValue("esf_30701_ant") + getEsfValue("esf_30702_ant")
 
       const diferenciaActual = roundTo(eri607 - resultadoEsfActual, 2)
 
-      const hayDatosAnteriores = resultadoEsfAnterior !== 0 || eri607Ant !== 0
-      const anteriorOk = !hayDatosAnteriores || roundTo(eri607Ant - resultadoEsfAnterior, 2) === 0
-
       return (diferenciaActual === 0) ? 1 : 0
-
     },
 
-    // Función para calcular el cuadre de ERI
     calculateEfeCuadre() {
       const efemd = this.values?.efemd ?? {}
       const eri = this.values?.eri ?? {}
@@ -577,14 +522,12 @@ export const useReportViewerStore = defineStore("reportViewer", {
       const sum = (bucket, names) =>
         roundTo(names.reduce((a, n) => a + g(bucket, n), 0), 2)
 
-      // 9501 desde hojas
       const expected9501 = sum(efemd, [
         "efe_md_95010101","efe_md_95010102","efe_md_95010103","efe_md_95010104","efe_md_95010105",
         "efe_md_95010201","efe_md_95010202","efe_md_95010203","efe_md_95010204","efe_md_95010205",
         "efe_md_950103","efe_md_950104","efe_md_950105","efe_md_950106","efe_md_950107","efe_md_950108",
       ])
 
-      // 9502 desde hojas
       const expected9502 = sum(efemd, [
         "efe_md_950201","efe_md_950202","efe_md_950203","efe_md_950204","efe_md_950205",
         "efe_md_950206","efe_md_950207","efe_md_950208","efe_md_950209","efe_md_950210",
@@ -592,13 +535,11 @@ export const useReportViewerStore = defineStore("reportViewer", {
         "efe_md_950216","efe_md_950217","efe_md_950218","efe_md_950219","efe_md_950220","efe_md_950221",
       ])
 
-      // 9503 desde hojas
       const expected9503 = sum(efemd, [
         "efe_md_950301","efe_md_950302","efe_md_950303","efe_md_950304","efe_md_950305",
         "efe_md_950306","efe_md_950307","efe_md_950308","efe_md_950309","efe_md_950310",
       ])
 
-      // 95 → 9505 → 9506 → 9507
       const expected95 = roundTo(expected9501 + expected9502 + expected9503, 2)
       const expected9505 = roundTo(expected95 + g(efemd, "efe_md_950401"), 2)
 
@@ -608,7 +549,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
 
       const expected9507 = roundTo(expected9505 + expected9506, 2)
 
-      // 9820 = eri_600 + 97hojas + 98hojas
       const expected96 = g(eri, "eri_600")
 
       const sum97 = sum(efemd, [
@@ -623,30 +563,22 @@ export const useReportViewerStore = defineStore("reportViewer", {
 
       const expected9820 = roundTo(expected96 + sum97 + sum98, 2)
 
-      // ESF cash actual
       const esfCash = roundTo(
         g(esf, "esf_1010101") + g(esf, "esf_1010102") + g(esf, "esf_1010103"), 2,
       )
 
-      // Solo 2 cuadres de negocio
       const cuadre1 = roundTo(expected9507 - esfCash, 2) === 0
       const cuadre2 = roundTo(expected9501 - expected9820, 2) === 0
 
       return (cuadre1 && cuadre2) ? 1 : 0
     },
 
-    // Función para calcular el cuadre de ECP
     calculateEcpCuadre() {
-      // ✅ usar fuente viva (this.values), no snapshot (this.reporte.values)
       const esfList = Object.values(this.values?.esf ?? {})
       const ecpList = Object.values(this.values?.ecp ?? {})
 
       const esfIndex = buildIndexByNombrecampo(esfList)
       const ecpIndex = buildIndexByNombrecampo(ecpList)
-
-      // ========= DEFINICIONES (base) =========
-      // ESF: saldos iniciales = sufijo _ant, saldos finales = sin sufijo
-      // ECP: saldos iniciales = ecp_990101/02/03_XXXX, saldos finales = ecp_99_XXXX
 
       const rowDefsSI = [
         { codigo: "301", esfCodigos: ["esf_30101_ant","esf_30102_ant","esf_30103_ant","esf_30104_ant","esf_3010501_ant","esf_3010502_ant"], ecpCodigos: ["ecp_990101_301","ecp_990102_301","ecp_990103_301"] },
@@ -698,7 +630,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
       return (siOk && sfOk) ? 1 : 0
     },
 
-    // Helper interno para mantener this.reporte.values en sync
     _syncReporteValues() {
       if (!this.reporte) return
 
@@ -712,8 +643,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
 
     // -------------------------------------------
     // Cargar reporte por ID
-    // 1) intenta IndexedDB
-    // 2) si no existe, llama a servicio getReporteFull
     // -------------------------------------------
     async load(reporteid) {
       if (!Number.isFinite(Number(reporteid))) {
@@ -723,7 +652,14 @@ export const useReportViewerStore = defineStore("reportViewer", {
       const logger = useLogger()
       const api = useReportViewerService()
 
-      // 1) Intentar cache local
+      // ══════════════════════════════════════════════════════════
+      // 🟡 FIX: limpiar timer de autosave del reporte anterior
+      // ══════════════════════════════════════════════════════════
+      if (this._saveTimer) {
+        clearTimeout(this._saveTimer)
+        this._saveTimer = null
+      }
+
       const fromCache = await this.loadFromCache(Number(reporteid))
       if (fromCache) {
         logger.info("Reporte cargado desde IndexedDB", { reporteid })
@@ -731,7 +667,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
         return
       }
 
-      // 2) Ir al backend vía servicio
       try {
         this.loading = true
 
@@ -745,7 +680,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
 
     // -------------------------------------------
     // Inicializar desde un reporte "rico"
-    // (ej: /by-user/:userid/values o getReporteFull)
     // -------------------------------------------
     async initFromFullReport(fullReport) {
       if (!fullReport) return
@@ -756,7 +690,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
       this.loading = true
 
       try {
-        // Normalizamos con tu helper
         const normalized = normalizeReporte(fullReport)
 
         this.normalizedMeta = normalized
@@ -771,12 +704,8 @@ export const useReportViewerStore = defineStore("reportViewer", {
           ...rest
         } = fullReport
 
-        // Mezclamos datos "raw" + normalizados en this.reporte
         this.reporte = {
-          // id interno (si tu tabla lo usa)
           id: normalized.id ?? fullReport.id ?? null,
-
-          // identificadores coherentes (camel y snake)
           reporteid: reporteid ?? normalized.id ?? null,
 
           empresaId: normalized.empresaId ?? empresaid ?? null,
@@ -788,10 +717,8 @@ export const useReportViewerStore = defineStore("reportViewer", {
           userid: userid ?? fullReport.userid ?? null,
           nombre_reporte: nombre_reporte ?? fullReport.nombre_reporte ?? null,
 
-          // otros campos que traiga el API
           ...rest,
 
-          // información extra del normalizer (por si la quieres usar luego)
           sector: normalized.sector ?? rest.sector ?? null,
           origen: normalized.origen ?? rest.origen ?? "api",
           createdAt:
@@ -806,7 +733,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
             null,
         }
 
-        // Normalizar arrays a diccionarios por nombrecampo
         const normalizeValuesArray = (arr = [], tipo) =>
           arr.reduce((acc, row) => {
             if (!row || !row.nombrecampo) return acc
@@ -834,12 +760,10 @@ export const useReportViewerStore = defineStore("reportViewer", {
         this.dirty.efemd = {}
         this.changeLog = []
 
-        // Mantener this.reporte.values sincronizado (para ReportViewerPage)
         this._syncReporteValues()
 
         this.movementCheckpoint = cloneBuckets(this.values)
 
-        // Cachear snapshot completo en IndexedDB (store: reportesconvertexs)
         const snapshot = buildPlainSnapshot(this.reporte, this.values)
 
         await idb.put("reportes", snapshot)
@@ -857,7 +781,7 @@ export const useReportViewerStore = defineStore("reportViewer", {
     },
 
     // -------------------------------------------
-    // Cargar desde IndexedDB por reporteid (fallback)
+    // Cargar desde IndexedDB (fallback)
     // -------------------------------------------
     async loadFromCache(reporteid) {
       const idb = useIndexedDBService()
@@ -871,11 +795,7 @@ export const useReportViewerStore = defineStore("reportViewer", {
     },
 
     // -------------------------------------------
-    // Actualizar un valor de campo (con autosave + mini-log)
-    // tipo: 'esf' | 'eri' | 'ecp' | 'efemd'
-    // nombrecampo: ej. 'esf_10101'
-    // newRawValue: string/number desde el input
-    // meta: info adicional (autoCalc, codigo, tablaorigen, periodo, etc.)
+    // Actualizar un valor de campo
     // -------------------------------------------
     updateValue(tipo, nombrecampo, newRawValue, meta = {}) {
       if (!this.reporte) return
@@ -899,6 +819,15 @@ export const useReportViewerStore = defineStore("reportViewer", {
         userid: this.reporte.userid,
       }
 
+      // ══════════════════════════════════════════════════════════
+      // 🟡 FIX: Actualizar tablaorigen desde meta si viene
+      // ══════════════════════════════════════════════════════════
+      if (meta?.tablaorigen) {
+        entry.tablaorigen = meta.tablaorigen
+      } else if (meta?.row?.tablaorigen && !entry.tablaorigen) {
+        entry.tablaorigen = meta.row.tablaorigen
+      }
+
       const oldValue = entry.valor
 
       let normalizedRaw = newRawValue
@@ -907,9 +836,14 @@ export const useReportViewerStore = defineStore("reportViewer", {
         normalizedRaw = normalizedRaw.trim()
       }
 
-      // Si el input vino vacío por focus/blur, no machacar el valor actual.
-      // Solo permitir vaciar explícitamente si algún día mandas meta.allowNull = true
-      if ((normalizedRaw === "" || normalizedRaw == null) && !meta?.allowNull) {
+      // ══════════════════════════════════════════════════════════
+      // 🟡 FIX LÓGICA #2: Permitir valores "0" y autoCalc.
+      //    ANTES: hacía return si normalizedRaw era "" o null
+      //    sin distinguir si venía de autoCalc (donde "" = "0").
+      //    AHORA: solo hace return si NO es autoCalc y no tiene
+      //    allowNull.
+      // ══════════════════════════════════════════════════════════
+      if ((normalizedRaw === "" || normalizedRaw == null) && !meta?.allowNull && !meta?.autoCalc) {
         return
       }
 
@@ -920,27 +854,45 @@ export const useReportViewerStore = defineStore("reportViewer", {
       )
 
       if (!Number.isFinite(parsed)) {
+        // ══════════════════════════════════════════════════════════
+        // 🟡 FIX: Si es autoCalc y el valor es NaN (por ""),
+        //    tratarlo como 0 en vez de retornar silenciosamente.
+        // ══════════════════════════════════════════════════════════
+        if (meta?.autoCalc) {
+          entry.valor = 0
+          bucket[nombrecampo] = entry
+          dirtyBucket[nombrecampo] = { oldValue, newValue: 0, meta }
+          this._syncReporteValues()
+          this._scheduleSave()
+
+          return
+        }
+
         return
       }
 
-      // Si realmente no cambió, no ensuciar estado ni disparar guardado
-      if (roundTo(oldValue ?? 0, 2) === roundTo(parsed, 2)) {
+      // ══════════════════════════════════════════════════════════
+      // 🟡 FIX LÓGICA #1: El early return cuando oldValue es null
+      //    y parsed es 0 impedía persistir valores iniciales.
+      //    ANTES: roundTo(null ?? 0, 2) === roundTo(0, 2) → true
+      //           → retornaba sin marcar dirty.
+      //    AHORA: si es autoCalc, siempre continúa (los totales
+      //    calculados deben llegar al backend aunque sean 0).
+      // ══════════════════════════════════════════════════════════
+      if (roundTo(oldValue ?? 0, 2) === roundTo(parsed, 2) && !meta?.autoCalc) {
         return
       }
 
       entry.valor = parsed
 
-      // Guardar en la colección principal
       bucket[nombrecampo] = entry
 
-      // Marcar como dirty (incluyendo meta)
       dirtyBucket[nombrecampo] = {
         oldValue,
         newValue: entry.valor,
         meta,
       }
 
-      // Mini-log (solo las últimas 20 entradas)
       this.changeLog.unshift({
         id: crypto.randomUUID(),
         timestamp: new Date().toISOString(),
@@ -954,10 +906,8 @@ export const useReportViewerStore = defineStore("reportViewer", {
         this.changeLog.pop()
       }
 
-      // Mantener this.reporte.values sincronizado
       this._syncReporteValues()
 
-      // Log local
       logger.info("Campo de reporte modificado", {
         reporteid: this.reporte.reporteid,
         tipo,
@@ -967,7 +917,6 @@ export const useReportViewerStore = defineStore("reportViewer", {
         meta,
       })
 
-      // Programar guardado en background (debounce)
       this._scheduleSave()
     },
 
@@ -986,14 +935,46 @@ export const useReportViewerStore = defineStore("reportViewer", {
       }, 1000)
     },
 
+    // ══════════════════════════════════════════════════════════
+    // 🔴 NUEVO ACTION: flushNow()
+    //
+    //    Cancela el debounce timer y ejecuta _flushChanges()
+    //    de forma inmediata. Se usa:
+    //      - En onBeforeUnmount de ReportViewerPage
+    //      - Antes de descargas TXT/PDF/Excel en ReportList
+    // ══════════════════════════════════════════════════════════
+    async flushNow() {
+      // 1) Cancelar debounce pendiente
+      if (this._saveTimer) {
+        clearTimeout(this._saveTimer)
+        this._saveTimer = null
+      }
+
+      // 2) Si hay un flush en curso, esperar a que termine
+      if (this._savingLock) {
+        let waited = 0
+        while (this._savingLock && waited < 5000) {
+          await new Promise(r => setTimeout(r, 100))
+          waited += 100
+        }
+      }
+
+      // 3) Si aún hay cambios pendientes, flush
+      if (this.hasPendingChanges) {
+        await this._flushChanges()
+      }
+    },
+
     // -------------------------------------------
-    // Enviar cambios acumulados a backend + cache local + audit
-    // -------------------------------------------
+    // Enviar cambios acumulados al backend
     // -------------------------------------------
     async _flushChanges() {
       if (!this.reporte) return
+      if (this._savingLock) return
 
-      const logger= useLogger()
+      this._savingLock = true
+
+      const logger = useLogger()
       const { registrar } = useAudit()
       const idb = useIndexedDBService()
       const api = useReportViewerService()
@@ -1018,6 +999,8 @@ export const useReportViewerStore = defineStore("reportViewer", {
         !Object.keys(dirtyCopy.ecp).length   &&
         !Object.keys(dirtyCopy.efemd).length
       ) {
+        this._savingLock = false
+
         return
       }
 
@@ -1058,13 +1041,11 @@ export const useReportViewerStore = defineStore("reportViewer", {
         const bodiesEcp   = buildBodies("ecp")
         const bodiesEfemd = buildBodies("efemd")
 
-        // Enviar al backend
         if (bodiesEsf.length)   await api.bulkSave("esf",   bodiesEsf)
         if (bodiesEri.length)   await api.bulkSave("eri",   bodiesEri)
         if (bodiesEcp.length)   await api.bulkSave("ecp",   bodiesEcp)
         if (bodiesEfemd.length) await api.bulkSave("efemd", bodiesEfemd)
 
-        // 🔹 Registrar en auditoría cambios autocalculados (totales de padres)
         for (const tipo of ["esf", "eri", "ecp", "efemd"]) {
           const dirtyTipo = dirtyCopy[tipo]
 
@@ -1082,13 +1063,12 @@ export const useReportViewerStore = defineStore("reportViewer", {
               despues: change.newValue,
               meta: {
                 tipo,
-                ...change.meta, // incluye autoCalc, codigo, tablaorigen, periodo, etc.
+                ...change.meta,
               },
             })
           }
         }
 
-        // Sólo si todo fue bien, limpiamos dirty
         const cleanDirty = tipo => {
           const dirtyTipo = this.dirty[tipo]
           for (const nombrecampo of Object.keys(dirtyCopy[tipo])) {
@@ -1106,16 +1086,16 @@ export const useReportViewerStore = defineStore("reportViewer", {
           empresaid,
           periodoid,
           tipos: {
-            esf:   Object.keys(dirtyCopy.esf),
-            eri:   Object.keys(dirtyCopy.eri),
-            ecp:   Object.keys(dirtyCopy.ecp),
+            esf: Object.keys(dirtyCopy.esf),
+            eri: Object.keys(dirtyCopy.eri),
+            ecp: Object.keys(dirtyCopy.ecp),
             efemd: Object.keys(dirtyCopy.efemd),
           },
         })
 
         registrar({
-          modulo:  "reportViewer",
-          accion:  "update",
+          modulo: "reportViewer",
+          accion: "update",
           targetId: reporteid,
           empresaId: empresaid,
           periodoId: periodoid,
@@ -1137,21 +1117,23 @@ export const useReportViewerStore = defineStore("reportViewer", {
           error: String(err),
         })
 
-        // 🔢 calcular cuántos cambios intentamos enviar
         const pendingCount =
           Object.keys(dirtyCopy.esf).length +
           Object.keys(dirtyCopy.eri).length +
           Object.keys(dirtyCopy.ecp).length +
           Object.keys(dirtyCopy.efemd).length
 
-        // 🔔 Mostrar toast al usuario
         uiSnackbar.show({
           message: `No se pudieron sincronizar ${pendingCount} cambio(s). Se guardaron localmente y se reintentarán cuando la conexión se recupere.`,
           color: "warning",
           timeout: 8000,
         })
       } finally {
-        // 💾 SIEMPRE guardamos snapshot local del estado ACTUAL
+        // ══════════════════════════════════════════════════════════
+        // 🟡 FIX: _savingLock se libera en UN SOLO finally
+        // ══════════════════════════════════════════════════════════
+        this._savingLock = false
+
         try {
           const snapshot = buildPlainSnapshot(this.reporte, this.values)
 

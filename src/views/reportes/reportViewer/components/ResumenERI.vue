@@ -96,6 +96,8 @@ const sufijosGastosFinancieros = [
 
 const sufijosOtrosGastos = ["eri_5020401", "eri_5020402"]
 
+const sufijosTotalGastos = ["eri_502"]
+
 const sufijosOtrosIngresos = ["eri_40301", "eri_40302", "eri_40303"]
 
 const sufijosResultados = ["eri_604", "eri_605", "eri_606"]
@@ -184,6 +186,8 @@ const sufijosGastosFinancierosAnt = [
 
 const sufijosOtrosGastosAnt = ["eri_5020401_ant", "eri_5020402_ant"]
 
+const sufijosTotalGastosAnt = ["eri_502_ant"]
+
 const sufijosOtrosIngresosAnt = ["eri_40301_ant", "eri_40302_ant", "eri_40303_ant"]
 
 const sufijosResultadosAnt = ["eri_604_ant", "eri_605_ant", "eri_606_ant"]
@@ -267,6 +271,7 @@ const eriCuadre = computed(
     isZero(eriResumen.value.diferenciaResultadoPeriodoActual) &&
     isZero(eriResumen.value.diferenciaResultadoPeriodoAnterior),
 )
+
 // Resumen de ERI (Optimizado para no depender de ESF)
 const eriResumen = computed(() => {
   // Solo recalculamos ERI cuando se han detectado cambios directos en ERI
@@ -277,6 +282,7 @@ const eriResumen = computed(() => {
   const gastosAdmActual = sumEriBySufijos(sufijosGastosAdministrativos)
   const gastosFinActual = sumEriBySufijos(sufijosGastosFinancieros)
   const otrosGastosActual = sumEriBySufijos(sufijosOtrosGastos)
+  const totalGastosActual = sumEriBySufijos(sufijosTotalGastos)
   const otrosIngresosActual = sumEriBySufijos(sufijosOtrosIngresos)
   const participacionTrabActual = sumEriBySufijos(sufijosParticipacionTrabajadores)
   const impRentaCausadoActual = sumEriBySufijos(sufijosImpuestosALaRentaCausados)
@@ -297,6 +303,7 @@ const eriResumen = computed(() => {
   const gastosAdmAnt = sumEriBySufijos(sufijosGastosAdministrativosAnt)
   const gastosFinAnt = sumEriBySufijos(sufijosGastosFinancierosAnt)
   const otrosGastosAnt = sumEriBySufijos(sufijosOtrosGastosAnt)
+  const totalGastosAnt = sumEriBySufijos(sufijosTotalGastosAnt)
   const otrosIngresosAnt = sumEriBySufijos(sufijosOtrosIngresosAnt)
 
   const participacionTrabAnt = sumEriBySufijos(sufijosParticipacionTrabajadoresAnt)
@@ -320,6 +327,7 @@ const eriResumen = computed(() => {
     gastosAdmActual,
     gastosFinActual,
     otrosGastosActual,
+    totalGastosActual,
     otrosIngresosActual,
     participacionTrabActual,
     impRentaCausadoActual,
@@ -337,6 +345,7 @@ const eriResumen = computed(() => {
     gastosAdmAnt,
     gastosFinAnt,
     otrosGastosAnt,
+    totalGastosAnt,
     otrosIngresosAnt,
     participacionTrabAnt,
     impRentaCausadoAnt,
@@ -425,6 +434,11 @@ watchEffect(() => {
               <td>OTROS GASTOS</td>
               <td>{{ formatMoney(eriResumen.otrosGastosActual) }}</td>
               <td>{{ formatMoney(eriResumen.otrosGastosAnt) }}</td>
+            </tr>
+            <tr style="background: #F5F3FF;">
+              <td>TOTAL GASTOS</td>
+              <td>{{ formatMoney(eriResumen.totalGastosActual) }}</td>
+              <td>{{ formatMoney(eriResumen.totalGastosAnt) }}</td>
             </tr>
             <tr>
               <td>OTROS INGRESOS</td>

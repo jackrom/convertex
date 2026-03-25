@@ -1,18 +1,4 @@
 <!-- src/views/reportes/ReportList.vue (CONVERTEX) -->
-<!-- ══════════════════════════════════════════════════════════════
-  CORRECCIONES APLICADAS:
-
-  🔴 FIX CRÍTICO — exportarTxt/exportarPdf/exportarXls:
-     Ahora verifican si el reportViewerStore tiene cambios
-     pendientes y hacen flush ANTES de solicitar la descarga
-     al backend.
-
-  🟡 FIX colspan: corregido de 4 → 5 (la tabla tiene 5 columnas).
-
-  🟡 LIMPIEZA: eliminadas variables ref no utilizadas
-     (loadingsTurboNotas, loadingsInformeSocietario, loadings,
-     indice, message, messageText, counter, loadingRow).
-═══════════════════════════════════════════════════════════════ -->
 <script setup>
 import { computed, onMounted, ref } from "vue"
 import { storeToRefs } from "pinia"
@@ -39,16 +25,7 @@ onMounted(async () => {
   if (!loaded.value) await reportStore.load({ force: true })
 })
 
-
-// ══════════════════════════════════════════════════════════════
-// 🔴 NUEVO HELPER: ensureFlush()
-//
-//    Verifica si el reportViewerStore tiene cambios pendientes
-//    para el reporte que se va a descargar. Si los tiene, fuerza
-//    un flush inmediato y espera un momento para que el backend
-//    procese los cambios antes de generar el archivo.
-// ══════════════════════════════════════════════════════════════
-const ensureFlush = async (reporteid) => {
+const ensureFlush = async reporteid => {
   const viewerStore = useReportViewerStore()
 
   if (
@@ -195,8 +172,8 @@ const editarReporte = rep => {
                     />
                     {{
                       (rep.tiporeporte || rep.periodo?.tiporeporte) === 'inicial' ? 'Inicial' :
-                        (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'Consolidado' :
-                          'Individual'
+                      (rep.tiporeporte || rep.periodo?.tiporeporte) === 'consolidado' ? 'Consolidado' :
+                      'Individual'
                     }}
                   </VChip>
                 </td>

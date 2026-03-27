@@ -1,0 +1,1 @@
+import{c as t,q as o,d as a,o as r}from"./index-Cy7sQUdv.js";const l={__name:"SoporteList",setup(s){return console.log("SOPORTE"),(n,e)=>(r(),t("p",null,[...e[0]||(e[0]=[o("Ir a ",-1),a("a",{href:"https://facilcontabilidad.net/"},"Soporte",-1)])]))}};export{l as default};

@@ -254,7 +254,7 @@ const sumEriBySufijos = codes => {
     const row = list.find(
       r => String(r.nombrecampo).toLowerCase() === String(name).toLowerCase())
 
-    total += toNumber(row?.valor);
+    total += toNumber(row?.valor)
   })
 
   return round2(total)

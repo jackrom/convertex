@@ -378,6 +378,18 @@ const PARENT_LENGTHS = [5, 7, 9, 11, 13]
 
 const PARENT_LENGTHS_EFE = [4, 6, 8, 10, 12, 14]
 
+const CROSS_GROUP_PARENTS = {
+  esf: {
+    "1": { showInGroup: "ACTIVOS CORRIENTES", childCodes: ["101", "102"] },
+    "2": { showInGroup: "PASIVOS CORRIENTES", childCodes: ["201", "202"] },
+  },
+}
+
+const CROSS_GROUP_CODES = {}
+for (const [plan, map] of Object.entries(CROSS_GROUP_PARENTS)) {
+  CROSS_GROUP_CODES[plan] = new Set(Object.keys(map))
+}
+
 // ---------------------------------------------
 // Agrupar por tablaorigen y calcular totales jerárquicos
 // ---------------------------------------------
@@ -429,7 +441,6 @@ const groups = computed(() => {
   }
 
   // Paso 2: Construir índice global de códigos reales (con dato real)
-  // para evitar crear sintéticos que ya existen en otro grupo
   const globalRealCodes = new Set()
 
   Object.values(groupedByTabla).forEach(g => {
@@ -457,9 +468,10 @@ const groups = computed(() => {
 
         if (group.rowsByCodigo[parentCode] || extraRows[parentCode]) continue
 
-        // ✅ Si ese código ya existe como campo real en cualquier grupo,
-        // no crear sintético — pertenece a otro grupo intencionalmente
         if (globalRealCodes.has(parentCode)) continue
+
+        // No crear padre virtual si es cross-grupo (se inyecta después)
+        if (CROSS_GROUP_CODES[tPlan]?.has(parentCode)) continue
 
         extraRows[parentCode] = {
           tipo: storeTipo.value,
@@ -479,11 +491,10 @@ const groups = computed(() => {
   })
 
   // Paso 4: Calcular totales jerárquicos y ordenar
-  return Object.values(groupedByTabla)
+  const result = Object.values(groupedByTabla)
     .map(group => {
       const rows = Object.values(group.rowsByCodigo)
 
-      // 4.1 Resetear flags de hijos
       for (const r of rows) {
         r.hasChildren = false
       }
@@ -495,7 +506,6 @@ const groups = computed(() => {
         return compareCodigo(a.codigo, b.codigo)
       })
 
-      // 4.2 Detectar quién es padre (tiene hijos por prefijo)
       for (const r of sortedByLengthDesc) {
         const code = String(r.codigo)
 
@@ -509,7 +519,6 @@ const groups = computed(() => {
         }
       }
 
-      // 4.3 Inicializar totales
       for (const r of rows) {
         if (r.hasChildren) {
           r.sumActual = 0
@@ -520,7 +529,6 @@ const groups = computed(() => {
         }
       }
 
-      // 4.4 Propagar sumas de abajo hacia arriba
       for (const r of sortedByLengthDesc) {
         const code = String(r.codigo)
 
@@ -535,7 +543,6 @@ const groups = computed(() => {
         }
       }
 
-      // 4.5 Ordenar grupos según GROUP_LABEL_ORDER
       group.orderIndex = getGroupOrderIndex(tPlan, group.label)
 
       const sortedRows = rows.sort((a, b) =>
@@ -550,6 +557,66 @@ const groups = computed(() => {
       }
     })
     .sort((a, b) => a.orderIndex - b.orderIndex)
+
+  // ══════════════════════════════════════════════════════════
+  // Paso 5: PADRES CROSS-GRUPO — inyección explícita.
+  //
+  // Códigos como "1" (ACTIVO) y "2" (PASIVO) tienen hijos
+  // en diferentes grupos. Se remueven de donde estén y se
+  // inyectan en el grupo correcto con la suma total.
+  // ══════════════════════════════════════════════════════════
+  const crossDefs = CROSS_GROUP_PARENTS[tPlan]
+  if (crossDefs) {
+    const globalSums = {}
+    for (const group of result) {
+      for (const r of group.rows) {
+        if (!globalSums[r.codigo]) {
+          globalSums[r.codigo] = { sumActual: 0, sumAnterior: 0 }
+        }
+        const val = r.hasChildren ? r.sumActual : roundTo(toNumber(r.actual?.valor), 2)
+        const valAnt = r.hasChildren ? r.sumAnterior : roundTo(toNumber(r.anterior?.valor), 2)
+
+        globalSums[r.codigo].sumActual = roundTo(globalSums[r.codigo].sumActual + val, 2)
+        globalSums[r.codigo].sumAnterior = roundTo(globalSums[r.codigo].sumAnterior + valAnt, 2)
+      }
+    }
+
+    for (const [parentCode, def] of Object.entries(crossDefs)) {
+      // 1) Remover el código existente de TODOS los grupos
+      for (const group of result) {
+        group.rows = group.rows.filter(r => r.codigo !== parentCode)
+      }
+
+      // 2) Sumar los hijos desde el índice global
+      let sumActual = 0
+      let sumAnterior = 0
+      for (const childCode of def.childCodes) {
+        const child = globalSums[childCode]
+        if (child) {
+          sumActual = roundTo(sumActual + child.sumActual, 2)
+          sumAnterior = roundTo(sumAnterior + child.sumAnterior, 2)
+        }
+      }
+
+      // 3) Inyectar en el grupo destino
+      const targetGroup = result.find(g => g.label === def.showInGroup)
+      if (!targetGroup) continue
+
+      targetGroup.rows.unshift({
+        tipo: storeTipo.value,
+        codigo: parentCode,
+        nombreCuenta: getNombreCuenta(tPlan, parentCode) || parentCode,
+        tablaorigen: targetGroup.rows[0]?.tablaorigen ?? def.showInGroup,
+        actual: null,
+        anterior: null,
+        sumActual,
+        sumAnterior,
+        hasChildren: true,
+      })
+    }
+  }
+
+  return result
 })
 
 

@@ -21,9 +21,20 @@ export default [
     to: 'reportes-ReportList',
   },
 
+  {
+    title: 'Tutoriales',
+    to: 'tutoriales-TutorialList',
+  },
+
+  {
+    title: 'Soporte',
+    to: 'soporte-SoporteList',
+  },
+
   // ─────────────────────────────────────────────
   // SECCIÓN PRINCIPAL: AUDITORÍA
   // ─────────────────────────────────────────────
+  /*
   {
     title: 'Auditoría',
     to: 'auditoria-AuditDashboard',
@@ -36,14 +47,17 @@ export default [
     title: 'Logs del Sistema',
     to: 'logs-LogsDashboard',
   },
-
+  */
   // ─────────────────────────────────────────────
   // SECCIÓN PRINCIPAL: PERFORMANCE
   // ─────────────────────────────────────────────
+  /*
   {
     title: 'Performance',
     to: 'performance-PerformanceDashboard',
   },
+
+   */
   {
     // antes: title: 'Recomendaciones'
     title: 'Recomendaciones',

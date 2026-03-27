@@ -38,6 +38,22 @@ export const routes = [
     },
   },
   {
+    path: '/tutoriales',
+    name: 'tutoriales-TutorialList',
+    component: () => import('@/views/tutoriales/TutorialesList.vue'),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/soporte',
+    name: 'soporte-SoporteList',
+    component: () => import('@/views/soporte/SoporteList.vue'),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
     path: '/auditoria',
     name: 'auditoria-AuditDashboard',
     component: () => import('@/views/auditoria/AuditDashboard.vue'),

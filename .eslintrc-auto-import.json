@@ -428,6 +428,8 @@
     "onEditorBlur": true,
     "onEditorDestroy": true,
     "onEditorFocus": true,
-    "onEditorInput": true
+    "onEditorInput": true,
+    "rucValidator": true,
+    "validarRucEcuador": true
   }
 }

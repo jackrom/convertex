@@ -101,5 +101,12 @@ export const useEmpresaStore = defineStore("empresas", {
         reportesStore.load?.({ force: true }),
       ])
     },
+
+    async update(id, payload) {
+      const api = useEmpresaService()
+
+      await api.put(`/v1/convertex/empresasconvertex/${id}`, payload)
+      await this.load({ force: true })
+    },
   },
 })

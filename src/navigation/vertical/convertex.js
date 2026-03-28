@@ -20,14 +20,14 @@ export default [
     title: 'Reportes',
     to: 'reportes-ReportList',
   },
-
+/*
   {
     title: 'Tutoriales',
     to: 'tutoriales-TutorialList',
   },
-
+*/
   {
-    title: 'Soporte',
+    title: 'Ayuda y Soporte',
     to: 'soporte-SoporteList',
   },
 

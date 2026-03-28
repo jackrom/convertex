@@ -40,7 +40,7 @@ export const routes = [
   {
     path: '/tutoriales',
     name: 'tutoriales-TutorialList',
-    component: () => import('@/views/tutoriales/TutorialesList.vue'),
+    component: () => import('@/views/soporte/TutorialesList.vue'),
     meta: {
       requiresAuth: true,
     },

@@ -1,20 +1,4 @@
 <!-- src/views/periodos/PeriodoList.vue -->
-<!--
-  ══════════════════════════════════════════════════════════════════════
-  Periodos — Convertex
-
-  Bugs corregidos del original:
-  1. v-else + v-for en el mismo <tr> — Vue 3 lo soporta pero es
-     ambiguo y puede fallar con slots. Separado en v-else + template.
-  2. No hay paginación — con muchos periodos la tabla se vuelve
-     ilegible. Agregada paginación.
-  3. No se recarga reportStore al duplicar — agregado.
-  4. isLoading basado en !periodoStore.loaded no distingue entre
-     "nunca cargó" y "cargando". Corregido con periodoStore.loading.
-  5. El filtro de empresa no existe — agregado.
-  6. Las fechas se muestran sin formato — agregado formatDate.
-  ══════════════════════════════════════════════════════════════════════
--->
 <script setup>
 import { onMounted, ref, computed, watch } from "vue"
 import { usePeriodoStore } from "@/@store/periodo.store"
@@ -90,7 +74,6 @@ const empresaNombre = (p) => p.empresa?.nombre || p.empresaid || "—"
 const periodos = computed(() => periodoStore.periodos ?? [])
 const isLoading = computed(() => periodoStore.loading ?? !periodoStore.loaded)
 
-// Unique empresas for filter dropdown
 const empresasOptions = computed(() => {
   const map = new Map()
   for (const p of periodos.value) {
@@ -111,17 +94,12 @@ const tipoOptions = [
 const filteredPeriodos = computed(() => {
   let items = periodos.value
 
-  // Filter by empresa
-  if (filterEmpresa.value) {
+  if (filterEmpresa.value)
     items = items.filter(p => p.empresaid === filterEmpresa.value)
-  }
 
-  // Filter by tipo
-  if (filterTipo.value) {
+  if (filterTipo.value)
     items = items.filter(p => derivarTipo(p) === filterTipo.value)
-  }
 
-  // Search
   const q = searchQuery.value.trim().toLowerCase()
   if (q) {
     items = items.filter(p =>
@@ -150,12 +128,10 @@ const paginationText = computed(() => {
   return `${first}–${last} de ${total}`
 })
 
-// Reset page when filters change
 watch([searchQuery, filterEmpresa, filterTipo], () => {
   currentPage.value = 1
 })
 
-// Stats
 const stats = computed(() => {
   const all = periodos.value
   return {
@@ -482,6 +458,9 @@ onMounted(async () => {
   --pl-fd: "Instrument Serif", "DM Serif Display", Georgia, serif;
   font-family: var(--pl-ff);
   color: var(--pl-navy);
+  /* ✅ FIX: permitir que la sección crezca con el contenido */
+  height: auto;
+  min-height: 0;
 }
 
 /* HEADER */
@@ -540,6 +519,9 @@ onMounted(async () => {
 .pl-section {
   background: white; border: 1px solid rgba(44,53,85,.05);
   border-radius: 12px; padding: 20px 24px; margin: 0 16px 20px;
+  /* ✅ FIX: sin altura fija, crece con el contenido */
+  min-height: 0;
+  height: auto;
 }
 
 .pl-toolbar {
@@ -553,7 +535,11 @@ onMounted(async () => {
 .pl-filter :deep(.v-field) { border-radius: 8px !important; font-size: 13px; }
 
 .pl-table-wrap {
-  border: 1px solid rgba(44,53,85,.05); border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(44,53,85,.05); border-radius: 8px;
+  /* ✅ FIX: overflow-x para scroll horizontal en móvil,
+     pero NO overflow-y hidden que cortaba las filas */
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 .pl-table thead th {
@@ -580,7 +566,6 @@ onMounted(async () => {
 .pl-table__loading {
   text-align: center; padding: 48px 16px !important;
   color: rgba(44,53,85,.4); font-size: 13px;
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
 }
 .pl-table__empty {
   text-align: center; padding: 48px 16px !important;

@@ -329,15 +329,14 @@ const stats = computed(() => ({
             <th>Periodo</th>
             <th>Tipo EEFF</th>
             <th>Fecha</th>
-            <th style="width: 148px;">Descargas</th>
-            <th style="width: 56px;" />
+            <th style="width: 200px;">Acciones</th>
           </tr>
           </thead>
 
           <tbody>
           <!-- Cargando -->
           <tr v-if="isLoading">
-            <td colspan="6" class="rl-table__loading">
+            <td colspan="5" class="rl-table__loading">
               <VProgressCircular indeterminate size="24" color="primary" />
               <span>Cargando reportes...</span>
             </td>
@@ -375,8 +374,8 @@ const stats = computed(() => ({
               <!-- Fecha -->
               <td class="rl-table__date">{{ formatDate(rep.createdat) }}</td>
 
-              <!-- Descargas -->
-              <td class="rl-table__downloads">
+              <!-- Descargas + Editar en una sola celda -->
+              <td class="rl-table__actions">
                 <VTooltip text="Descargar Excel" location="top">
                   <template #activator="{ props: tp }">
                     <VBtn
@@ -418,15 +417,15 @@ const stats = computed(() => ({
                     </VBtn>
                   </template>
                 </VTooltip>
-              </td>
 
-              <!-- Editar -->
-              <td class="rl-table__actions">
+                <!-- Separador visual -->
+                <span class="rl-table__divider" />
+
                 <VTooltip text="Abrir reporte" location="top">
                   <template #activator="{ props: tp }">
                     <VBtn
                       v-bind="tp"
-                      icon variant="text" size="small"
+                      icon variant="text" size="x-small"
                       @click="editarReporte(rep)"
                     >
                       <VIcon icon="tabler-edit" size="18" color="primary" />
@@ -439,7 +438,7 @@ const stats = computed(() => ({
 
           <!-- Sin resultados -->
           <tr v-else>
-            <td colspan="6" class="rl-table__empty">
+            <td colspan="5" class="rl-table__empty">
               <VIcon size="36" color="grey-lighten-1" class="mb-2">
                 {{ searchQuery || filterEmpresa || filterTipo ? 'tabler-search-off' : 'tabler-report-off' }}
               </VIcon>
@@ -638,12 +637,21 @@ const stats = computed(() => ({
   font-size: 12px; color: rgba(44,53,85,.4) !important;
 }
 
-.rl-table__downloads {
-  display: flex; align-items: center; gap: 2px;
+.rl-table__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  vertical-align: middle !important;
 }
 
-.rl-table__actions {
-  display: flex; gap: 2px; justify-content: flex-end;
+.rl-table__divider {
+  display: inline-block;
+  width: 1px;
+  height: 16px;
+  background: rgba(44,53,85,.12);
+  margin: 0 4px;
+  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 .rl-table__loading {

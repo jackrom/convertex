@@ -109,6 +109,7 @@ const puedeEliminar = computed(() => !limiteEliminacionesAlcanzado.value && !lic
 const filteredEmpresas = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
   if (!q) return empresasActivas.value
+
   return empresasActivas.value.filter(e =>
     (e.nombre ?? "").toLowerCase().includes(q) ||
     (e.ruc ?? "").toLowerCase().includes(q) ||
@@ -123,6 +124,7 @@ const totalPages = computed(() =>
 
 const paginatedEmpresas = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value
+
   return filteredEmpresas.value.slice(start, start + rowsPerPage.value)
 })
 
@@ -131,6 +133,7 @@ const paginationText = computed(() => {
   if (!total) return "Sin empresas"
   const first = (currentPage.value - 1) * rowsPerPage.value + 1
   const last = Math.min(currentPage.value * rowsPerPage.value, total)
+
   return `${first}–${last} de ${total}`
 })
 
@@ -142,7 +145,7 @@ onMounted(async () => {
   }
 })
 
-const confirmDelete = (empresa) => {
+const confirmDelete = empresa => {
   empresaToDelete.value = empresa
   deleteDialog.value = true
 }
@@ -169,12 +172,14 @@ const executeDelete = async () => {
 const licenseColor = computed(() => {
   if (licenciaVencida.value) return "error"
   if ((licenseInfo.value?.diasRestantes ?? 999) <= 30) return "warning"
+
   return "success"
 })
 
 const licenseIcon = computed(() => {
   if (licenciaVencida.value) return "tabler-alert-circle"
   if ((licenseInfo.value?.diasRestantes ?? 999) <= 30) return "tabler-alert-triangle"
+
   return "tabler-shield-check"
 })
 </script>
@@ -240,7 +245,7 @@ const licenseIcon = computed(() => {
         </div>
         <div class="el-stat__info">
           <div class="el-stat__value">{{ totalEliminadas }} / {{ MAX_ELIMINACIONES }}</div>
-          <div class="el-stat__label">Eliminaciones usadas</div>
+          <div class="el-stat__label">Empresas eliminadas</div>
         </div>
         <VProgressLinear
           :model-value="(totalEliminadas / MAX_ELIMINACIONES) * 100"

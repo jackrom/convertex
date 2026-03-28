@@ -30,8 +30,15 @@ const TIPOS_NO_DUPLICABLES = new Set(["inicial"])
 
 // ── Helpers ───────────────────────────────────────────────
 const derivarTipo = (p) => {
-  if (p.tiporeporte) return p.tiporeporte
+  // ✅ FIX: checar != null en vez de truthy para que "inicial" no
+  // se pierda si tiporeporte llega como string vacío o con espacios.
+  // También normalizar a lowercase por si el backend devuelve "Inicial".
+  const t = p.tiporeporte ?? p.periodo?.tiporeporte ?? null
+  if (t != null && String(t).trim() !== "") {
+    return String(t).toLowerCase().trim()
+  }
   if (p.esconsolidado) return "consolidado"
+
   return "individual"
 }
 
@@ -145,18 +152,39 @@ const stats = computed(() => {
 // ── Duplicar ──────────────────────────────────────────────
 const puedeDuplicar = (p) => {
   const tipo = derivarTipo(p)
+  // Iniciales nunca se pueden duplicar
   if (TIPOS_NO_DUPLICABLES.has(tipo)) return false
-  return !p.isDuplicated
+  // ✅ FIX: ignorar p.isDuplicated (el backend lo calcula sin distinguir
+  // por tipo, marcando como duplicado cualquier periodo del año+1 aunque
+  // sea de distinto tipo). Calculamos nosotros si ya existe año+1 del
+  // mismo tipo para esta empresa.
+  const anioSiguiente = Number(p.periodo) + 1
+  const yaExiste = periodos.value.some(
+    other =>
+      other.empresaid === p.empresaid &&
+      Number(other.periodo) === anioSiguiente &&
+      derivarTipo(other) === tipo,
+  )
+  return !yaExiste
 }
 
 const duplicarTooltip = (p) => {
   const tipo = derivarTipo(p)
   if (tipo === "inicial") return "Los periodos iniciales no se pueden duplicar"
-  if (p.isDuplicated) return `Ya existe el periodo ${Number(p.periodo) + 1}`
-  return `Duplicar a ${Number(p.periodo) + 1}`
+  const anioSiguiente = Number(p.periodo) + 1
+  const yaExiste = periodos.value.some(
+    other =>
+      other.empresaid === p.empresaid &&
+      Number(other.periodo) === anioSiguiente &&
+      derivarTipo(other) === tipo,
+  )
+  if (yaExiste) return `Ya existe un periodo ${tipo} para ${anioSiguiente}`
+  return `Duplicar a ${anioSiguiente}`
 }
 
 const pedirDuplicar = (p) => {
+  // ✅ FIX: guard explícito — nunca abrir el dialog si no se puede duplicar
+  if (!puedeDuplicar(p)) return
   targetPeriodo.value = p
   duplicateDialogOpen.value = true
 }
@@ -330,20 +358,18 @@ onMounted(async () => {
               <td class="pl-table__date">{{ formatDate(p.createdat) }}</td>
               <td class="pl-table__actions">
                 <!-- Duplicar -->
-                <VTooltip location="top">
+                <VTooltip location="top" :text="duplicarTooltip(p)">
                   <template #activator="{ props: tp }">
-                      <span v-bind="tp">
-                        <VBtn
-                          icon variant="text" size="small"
-                          :color="puedeDuplicar(p) ? 'primary' : 'default'"
-                          :disabled="!puedeDuplicar(p)"
-                          @click="pedirDuplicar(p)"
-                        >
-                          <VIcon icon="tabler-copy" size="18" />
-                        </VBtn>
-                      </span>
+                    <VBtn
+                      v-bind="tp"
+                      icon variant="text" size="small"
+                      :color="puedeDuplicar(p) ? 'primary' : 'default'"
+                      :disabled="!puedeDuplicar(p)"
+                      @click="pedirDuplicar(p)"
+                    >
+                      <VIcon icon="tabler-copy" size="18" />
+                    </VBtn>
                   </template>
-                  <span>{{ duplicarTooltip(p) }}</span>
                 </VTooltip>
 
                 <!-- Eliminar -->

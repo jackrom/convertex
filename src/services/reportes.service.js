@@ -153,12 +153,13 @@ export function useReportesService() {
     return resp
   }
 
-  // ==========================================
-  // 🔹 Crear REPORTE + todos los valores/bulk
-  //    periodoData = resultado de obtenerDatosReporte(...)
-  // ==========================================
+  // ============================================================
+  // PATCH para reportes.service.js
+  // Reemplazar ÚNICAMENTE la función createWithValues
+  // El resto del archivo queda exactamente igual
+  // ============================================================
   const createWithValues = async periodoData => {
-    // 1) Crear el reporte principal (usa create -> ya medido)
+    // 1) Crear el reporte principal (sin cambios)
     const resCreate = await create(periodoData.reporte)
 
     const body = resCreate ?? {}
@@ -176,31 +177,29 @@ export function useReportesService() {
 
     const meta = { reporteid, userid, empresaid, periodoid }
 
+    // ✅ FIX: en vez de Promise.all (40 POSTs simultáneos que saturan
+    // el rate limit), construir la lista de operaciones y ejecutarlas
+    // de forma SECUENCIAL con un pequeño delay entre cada una.
     const operations = []
 
     const pushOp = (endpoint, bloque) => {
       if (!bloque) return
-      operations.push(bulkPostAndCache(endpoint, bloque, meta))
+      operations.push({ endpoint, bloque })
     }
 
-    // ======================
-    // ESF (Estado de Situación Financiera)
-    // ======================
+    // ESF
     pushOp("esfvalues_convertex/bulk", periodoData.activoscorrientesconvertex)
     pushOp("esfvalues_convertex/bulk", periodoData.activosnocorrientesconvertex)
     pushOp("esfvalues_convertex/bulk", periodoData.pasivoscorrientesconvertex)
     pushOp("esfvalues_convertex/bulk", periodoData.pasivosnocorrientesconvertex)
     pushOp("esfvalues_convertex/bulk", periodoData.patrimonioconvertex)
-
     pushOp("esfvalues_convertex/bulk", periodoData.activoscorrientesconvertex_ant)
     pushOp("esfvalues_convertex/bulk", periodoData.activosnocorrientesconvertex_ant)
     pushOp("esfvalues_convertex/bulk", periodoData.pasivoscorrientesconvertex_ant)
     pushOp("esfvalues_convertex/bulk", periodoData.pasivosnocorrientesconvertex_ant)
     pushOp("esfvalues_convertex/bulk", periodoData.patrimonioconvertex_ant)
 
-    // ======================
-    // ERI (Estado de Resultados Integral)
-    // ======================
+    // ERI
     pushOp("erivalues_convertex/bulk", periodoData.ingresosconvertex)
     pushOp("erivalues_convertex/bulk", periodoData.costosconvertex)
     pushOp("erivalues_convertex/bulk", periodoData.otrosingresosconvertex)
@@ -212,7 +211,6 @@ export function useReportesService() {
     pushOp("erivalues_convertex/bulk", periodoData.operacionesdiscontinuadasconvertex)
     pushOp("erivalues_convertex/bulk", periodoData.otrosresultadosintegralconvertex)
     pushOp("erivalues_convertex/bulk", periodoData.resultadosparticipacioncontroladoraconvertex)
-
     pushOp("erivalues_convertex/bulk", periodoData.ingresosconvertex_ant)
     pushOp("erivalues_convertex/bulk", periodoData.costosconvertex_ant)
     pushOp("erivalues_convertex/bulk", periodoData.otrosingresosconvertex_ant)
@@ -225,25 +223,22 @@ export function useReportesService() {
     pushOp("erivalues_convertex/bulk", periodoData.otrosresultadosintegralconvertex_ant)
     pushOp("erivalues_convertex/bulk", periodoData.resultadosparticipacioncontroladoraconvertex_ant)
 
-    // ======================
-    // EFE (Flujo de Efectivo - método directo)
-    // ======================
+    // EFE
     pushOp("efemdvalues_convertex/bulk", periodoData.actividadesdeoperacionconvertex)
     pushOp("efemdvalues_convertex/bulk", periodoData.actividadesdeinversionconvertex)
     pushOp("efemdvalues_convertex/bulk", periodoData.actividadesdefinanciamientoconvertex)
     pushOp("efemdvalues_convertex/bulk", periodoData.conciliacionganancianetaconvertex)
 
-    // ======================
-    // ECP (Estado de Cambios en el Patrimonio)
-    // ======================
+    // ECP
     pushOp("ecpvalues_convertex/bulk", periodoData.ecpconvertex)
 
-    // 2) Ejecutar todos los POST + cache en paralelo
-    await Promise.all(operations)
+    // 2) ✅ Ejecutar secuencialmente — 1 POST a la vez, sin saturar el rate limit
+    for (const { endpoint, bloque } of operations) {
+      await bulkPostAndCache(endpoint, bloque, meta)
+    }
 
     console.log("row: ", row)
 
-    // Devolvemos la fila de reporte creada
     return row
   }
 

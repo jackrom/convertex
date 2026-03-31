@@ -1,3 +1,4 @@
+<!-- src/@layouts/components/VerticalNavLayout.vue -->
 <script setup>
 import { VerticalNav } from '@layouts/components'
 import { useLayoutConfigStore } from '@layouts/stores/config'

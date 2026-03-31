@@ -1,3 +1,4 @@
+// src/@layouts/components.js
 export { default as HorizontalNav } from './components/HorizontalNav.vue'
 export { default as HorizontalNavGroup } from './components/HorizontalNavGroup.vue'
 export { default as HorizontalNavLayout } from './components/HorizontalNavLayout.vue'

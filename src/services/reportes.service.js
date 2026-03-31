@@ -158,8 +158,8 @@ export function useReportesService() {
   // Reemplazar ÚNICAMENTE la función createWithValues
   // El resto del archivo queda exactamente igual
   // ============================================================
-  const createWithValues = async periodoData => {
-    // 1) Crear el reporte principal (sin cambios)
+  const createWithValues = async (periodoData, { skipBulk = false } = {}) => {
+    // 1) Crear cabecera del reporte (siempre — 1 sola request)
     const resCreate = await create(periodoData.reporte)
 
     const body = resCreate ?? {}
@@ -174,12 +174,75 @@ export function useReportesService() {
     const userid    = row.userid
     const empresaid = row.empresaid
     const periodoid = row.periodoid
+    const meta      = { reporteid, userid, empresaid, periodoid }
 
-    const meta = { reporteid, userid, empresaid, periodoid }
+    if (skipBulk) {
+      // ══════════════════════════════════════════════════════
+      // MODO ASYNC: 1 sola request fire & forget
+      // El backend procesa en background (Kafka o fallback)
+      // El usuario navega inmediatamente al viewer
+      // ══════════════════════════════════════════════════════
+      console.log('[createWithValues] skipBulk=true — 1 request a init-values')
 
-    // ✅ FIX: en vez de Promise.all (40 POSTs simultáneos que saturan
-    // el rate limit), construir la lista de operaciones y ejecutarlas
-    // de forma SECUENCIAL con un pequeño delay entre cada una.
+      await api.post(`/v1/convertex/reportesconvertex/${reporteid}/init-values`, {
+        esfBlocks: [
+          periodoData.activoscorrientesconvertex,
+          periodoData.activosnocorrientesconvertex,
+          periodoData.pasivoscorrientesconvertex,
+          periodoData.pasivosnocorrientesconvertex,
+          periodoData.patrimonioconvertex,
+          periodoData.activoscorrientesconvertex_ant,
+          periodoData.activosnocorrientesconvertex_ant,
+          periodoData.pasivoscorrientesconvertex_ant,
+          periodoData.pasivosnocorrientesconvertex_ant,
+          periodoData.patrimonioconvertex_ant,
+        ],
+        eriBlocks: [
+          periodoData.ingresosconvertex,
+          periodoData.costosconvertex,
+          periodoData.otrosingresosconvertex,
+          periodoData.gastosdeventasconvertex,
+          periodoData.gastosadministrativosconvertex,
+          periodoData.gastosfinancierosconvertex,
+          periodoData.otrosgastosconvertex,
+          periodoData.resultadosconvertex,
+          periodoData.operacionesdiscontinuadasconvertex,
+          periodoData.otrosresultadosintegralconvertex,
+          periodoData.resultadosparticipacioncontroladoraconvertex,
+          periodoData.ingresosconvertex_ant,
+          periodoData.costosconvertex_ant,
+          periodoData.otrosingresosconvertex_ant,
+          periodoData.gastosdeventasconvertex_ant,
+          periodoData.gastosadministrativosconvertex_ant,
+          periodoData.gastosfinancierosconvertex_ant,
+          periodoData.otrosgastosconvertex_ant,
+          periodoData.resultadosconvertex_ant,
+          periodoData.operacionesdiscontinuadasconvertex_ant,
+          periodoData.otrosresultadosintegralconvertex_ant,
+          periodoData.resultadosparticipacioncontroladoraconvertex_ant,
+        ],
+        efeBlocks: [
+          periodoData.actividadesdeoperacionconvertex,
+          periodoData.actividadesdeinversionconvertex,
+          periodoData.actividadesdefinanciamientoconvertex,
+          periodoData.conciliacionganancianetaconvertex,
+        ],
+        ecpBlocks: [
+          periodoData.ecpconvertex,
+        ],
+      }).catch(err => {
+        console.warn('[init-values] Error en background:', err?.message)
+      })
+
+      // Retornar inmediatamente — NO esperar al init-values
+      console.log('[createWithValues] init-values disparado en background')
+
+      return row
+    }
+
+    // ══════════════════════════════════════════════════════
+    // MODO LEGACY: secuencial (por si skipBulk=false)
+    // ══════════════════════════════════════════════════════
     const operations = []
 
     const pushOp = (endpoint, bloque) => {
@@ -232,12 +295,9 @@ export function useReportesService() {
     // ECP
     pushOp("ecpvalues_convertex/bulk", periodoData.ecpconvertex)
 
-    // 2) ✅ Ejecutar secuencialmente — 1 POST a la vez, sin saturar el rate limit
     for (const { endpoint, bloque } of operations) {
       await bulkPostAndCache(endpoint, bloque, meta)
     }
-
-    console.log("row: ", row)
 
     return row
   }

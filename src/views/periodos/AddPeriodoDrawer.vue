@@ -7,6 +7,7 @@ import { useReportesStore } from "@/@store/reportes.store"
 import { useRouter } from "vue-router"
 import { obtenerDatosReporte } from "@core/utils/reportes"
 import { useSessionUser } from "@/composables/useSessionUser"
+import { useReportReady } from '@/composables/useReportReady'
 
 const props = defineProps({
   isDrawerOpen: Boolean,
@@ -26,6 +27,7 @@ const drawer = computed({
 const periodoStore = usePeriodoStore()
 const empresaStore = useEmpresaStore()
 const reportesStore = useReportesStore()
+const { watchReport } = useReportReady()
 const router = useRouter()
 const { userId } = useSessionUser()
 
@@ -227,53 +229,46 @@ const onSubmit = async () => {
       tiporeporte: tipoSelect.value,
     }
 
-    // ✅ FIX: envolver add() con reintento para manejar 429
     const nuevoPeriodo = await withRetry(() => periodoStore.add(baseData))
 
-    // ✅ FIX: guard explícito antes de usar .id en el siguiente paso
     if (!nuevoPeriodo?.id) {
       errorMsg.value = "No se pudo crear el periodo. Intente nuevamente."
 
       return
     }
 
+    let rowCreado = null
+
     try {
-      // ✅ FIX: también envolver obtenerDatosReporte con reintento
-      const periodoData = await withRetry(() =>
-        obtenerDatosReporte(userId, nuevoPeriodo.id, baseData.empresaid)
-      )
+      const periodoData = await obtenerDatosReporte(userId, nuevoPeriodo.id, baseData.empresaid)
 
       periodoData.reporte.tiporeporte = baseData.tiporeporte
 
-      await withRetry(() => reportesStore.addReporteConvertex(periodoData))
+      // skipBulk=true → createWithValues dispara init-values internamente (fire & forget)
+      rowCreado = await reportesStore.addReporteConvertex(periodoData, { skipBulk: true })
+
     } catch (reporteErr) {
-      console.error("[PeriodoDrawer] Error creando reporte:", reporteErr)
-      errorMsg.value =
-        "El periodo se creó pero hubo un error generando el reporte. " +
-        "Puede regenerarlo desde la lista de reportes."
+      console.error('[PeriodoDrawer] Error creando reporte:', reporteErr)
+      errorMsg.value = 'El periodo se creó pero hubo un error generando el reporte.'
     }
 
-    emit("periodo-creado")
+    emit('periodo-creado')
     drawer.value = false
-    await router.push({ path: "/reportes" })
-  } catch (err) {
-    console.error("[PeriodoDrawer] Error en onSubmit:", err)
 
-    const status = err?.response?.status
-
-    if (status === 429) {
-      errorMsg.value =
-        "El servidor está procesando muchas solicitudes. Espere unos segundos e intente de nuevo."
-    } else if (status === 409) {
-      errorMsg.value = "Este periodo ya existe. Seleccione otro año o tipo."
-    } else if (status >= 500) {
-      errorMsg.value = "Error del servidor. Intente nuevamente en unos minutos."
+    const rid = rowCreado?.reporteid ?? rowCreado?.id
+    if (rid) {
+      await router.push({
+        path: '/reportes/reportviewer/ReportViewerPage',
+        query: { action: 'editar', reporteid: rid, new: '1' },
+      })
     } else {
-      errorMsg.value =
-        err?.response?.data?.message || "Error inesperado al crear el periodo."
+      await router.push({ path: '/reportes' })
     }
-  } finally {
-    guardando.value = false
+  } catch (reporteErr) {
+    console.error("[PeriodoDrawer] Error creando reporte:", reporteErr)
+    errorMsg.value =
+      "El periodo se creó pero hubo un error generando el reporte. " +
+      "Puede regenerarlo desde la lista de reportes."
   }
 }
 

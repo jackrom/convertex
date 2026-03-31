@@ -1,66 +1,53 @@
 export default [
-  // ─────────────────────────────────────────────
-  // SECCIÓN PRINCIPAL: EMPRESAS
-  // ─────────────────────────────────────────────
   {
     title: 'Empresas',
     to: 'empresas-EmpresaList',
+    icon: { icon: 'tabler-building' },
   },
-
-  // ─────────────────────────────────────────────
-  // SECCIÓN PRINCIPAL: PERÍODOS
-  // ─────────────────────────────────────────────
   {
     title: 'Períodos',
     to: 'periodos-PeriodoList',
+    icon: { icon: 'tabler-calendar-month' },
   },
-
-
   {
     title: 'Reportes',
     to: 'reportes-ReportList',
+    icon: { icon: 'tabler-report-analytics' },
   },
-/*
+  /*
   {
     title: 'Tutoriales',
     to: 'tutoriales-TutorialList',
+    icon: { icon: 'tabler-video' },
   },
-*/
+  */
   {
     title: 'Ayuda y Soporte',
     to: 'soporte-SoporteList',
+    icon: { icon: 'tabler-lifebuoy' },
   },
 
-  // ─────────────────────────────────────────────
-  // SECCIÓN PRINCIPAL: AUDITORÍA
-  // ─────────────────────────────────────────────
   /*
   {
     title: 'Auditoría',
     to: 'auditoria-AuditDashboard',
+    icon: { icon: 'tabler-shield-check' },
   },
-
-  // ─────────────────────────────────────────────
-  // SECCIÓN PRINCIPAL: LOGS DEL SISTEMA
-  // ─────────────────────────────────────────────
   {
     title: 'Logs del Sistema',
     to: 'logs-LogsDashboard',
+    icon: { icon: 'tabler-terminal-2' },
   },
-  */
-  // ─────────────────────────────────────────────
-  // SECCIÓN PRINCIPAL: PERFORMANCE
-  // ─────────────────────────────────────────────
-  /*
   {
     title: 'Performance',
     to: 'performance-PerformanceDashboard',
+    icon: { icon: 'tabler-chart-bar' },
   },
+  */
 
-   */
   {
-    // antes: title: 'Recomendaciones'
     title: 'Recomendaciones',
     to: 'home-Recomendaciones',
+    icon: { icon: 'tabler-bulb' },
   },
 ]

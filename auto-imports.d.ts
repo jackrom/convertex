@@ -343,6 +343,7 @@ declare global {
   const useProjection: typeof import('@vueuse/math')['useProjection']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
+  const useReportReady: typeof import('./src/composables/useReportReady.js')['useReportReady']
   const useReporteCache: typeof import('./src/composables/useReporteCache.js')['useReporteCache']
   const useReporteLogic: typeof import('./src/composables/useReporteLogic.js')['useReporteLogic']
   const useReporteTxtParser: typeof import('./src/composables/useReporteTxtParser.js')['useReporteTxtParser']
@@ -773,6 +774,7 @@ declare module 'vue' {
     readonly useProjection: UnwrapRef<typeof import('@vueuse/math')['useProjection']>
     readonly useRafFn: UnwrapRef<typeof import('@vueuse/core')['useRafFn']>
     readonly useRefHistory: UnwrapRef<typeof import('@vueuse/core')['useRefHistory']>
+    readonly useReportReady: UnwrapRef<typeof import('./src/composables/useReportReady.js')['useReportReady']>
     readonly useReporteCache: UnwrapRef<typeof import('./src/composables/useReporteCache.js')['useReporteCache']>
     readonly useReporteLogic: UnwrapRef<typeof import('./src/composables/useReporteLogic.js')['useReporteLogic']>
     readonly useReporteTxtParser: UnwrapRef<typeof import('./src/composables/useReporteTxtParser.js')['useReporteTxtParser']>

@@ -1,3 +1,4 @@
+<!-- src/layouts/components/DefaultLayoutWithVerticalNav.vue -->
 <script setup>
 import navItems from '@/navigation/vertical'
 import { themeConfig } from '@themeConfig'

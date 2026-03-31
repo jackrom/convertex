@@ -100,13 +100,13 @@ export const useReportesStore = defineStore("reportes", {
 
     // 🔹 Nuevo: delega en el servicio la creación completa
     // periodoData = resultado de obtenerDatosReporte(...)
-    async addReporteConvertex(periodoData) {
+    async addReporteConvertex(periodoData, { skipBulk = false } = {}) {
       const api = useReportesService()
       const cache = useCache()
 
       console.log('periodoData', periodoData)
 
-      const row = await api.createWithValues(periodoData)
+      const row = await api.createWithValues(periodoData, { skipBulk })
 
       // Refrescar lista de reportes
       await cache.invalidateReportes()
@@ -114,6 +114,12 @@ export const useReportesStore = defineStore("reportes", {
       await this.load()
 
       return row
+    },
+
+    async dispatchInitValues(reporteid, periodoData) {
+      const api = useReportesService()
+
+      return api.dispatchInitValues(reporteid, periodoData)
     },
   },
 })

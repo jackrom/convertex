@@ -1,3 +1,4 @@
+<!-- src/layouts/default.vue -->
 <script setup>
 import { useConfigStore } from '@core/stores/config'
 import { AppContentLayoutNav } from '@layouts/enums'

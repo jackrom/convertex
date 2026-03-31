@@ -27,3 +27,15 @@ const configStore = useConfigStore()
   </VLocaleProvider>
 </template>
 
+<style>
+.layout-page-content {
+  overflow-y: auto !important;
+  block-size: auto !important;
+  min-block-size: 100% !important;
+}
+.layout-page-content > * {
+  min-height: 100%;
+  height: auto !important;
+}
+</style>
+

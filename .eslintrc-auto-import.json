@@ -430,6 +430,7 @@
     "onEditorFocus": true,
     "onEditorInput": true,
     "rucValidator": true,
-    "validarRucEcuador": true
+    "validarRucEcuador": true,
+    "useReportReady": true
   }
 }

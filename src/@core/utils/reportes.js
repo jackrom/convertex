@@ -918,10 +918,6 @@ export const buildGastosFinancieros = (tipo, usuario, periodo, empresa, reporte)
 
 export const buildOtrosGastos = (tipo, usuario, periodo, empresa, reporte) => {
   let data =  {
-    eri_502:	0.00,
-    eri_50201:	0.00,
-    eri_50202:	0.00,
-    eri_50203:	0.00,
     eri_50204:	0.00,
     eri_5020401:	0.00,
     eri_5020402:	0.00,

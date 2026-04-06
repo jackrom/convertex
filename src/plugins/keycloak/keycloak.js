@@ -8,8 +8,8 @@ let refreshIntervalId = null
 
 const KEYCLOAK_CONFIG = {
   url: 'https://login.facilcontabilidad.org',
-  realm: 'ApiFC',
-  clientId: 'convertex-spa',
+  realm: 'fc',
+  clientId: 'convertex',
 }
 
 const createKeycloakInstance = () => {

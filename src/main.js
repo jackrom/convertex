@@ -9,8 +9,9 @@ import { router } from '@/plugins/1.router'
 // Styles
 import '@core/scss/template/index.scss'
 import '@styles/styles.scss'
+import { environment } from "@/utils/environments"
 
-const PUBLIC_REDIRECT = 'http://localhost:5173/not-authorized';
+const PUBLIC_REDIRECT = `${environment.baseUrl}/not-authorized`;
 
 (async () => {
   const authenticated = await initKeycloak('login-required')

@@ -3,4 +3,5 @@ export const environment = {
   // apiUrl: 'http://localhost:4001',
 
   apiUrl: 'https://apifc.dev.facilcontabilidad.org',
+  baseUrl: 'https://convertex.facilcontabilidad.org',
 }

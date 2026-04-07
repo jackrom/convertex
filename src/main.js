@@ -43,7 +43,7 @@ async function verificarEntitlements(authenticationUserStore) {
     const entResp = await authenticationUserStore.fetchEntitlements()
     const data = entResp?.data || {}
 
-    const ifluc = data.apps?.find(a => a.key === 'ifluc')
+    const ifluc = data.apps?.find(a => a.key === 'convertex')
 
     if (!ifluc || !ifluc.isActive) {
       if (kc) await kc.logout({ redirectUri: PUBLIC_REDIRECT })

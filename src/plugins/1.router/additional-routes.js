@@ -92,4 +92,14 @@ export const routes = [
       layoutWrapperClasses: 'layout-content-height-fixed',
     },
   },
+  {
+    path: '/not-authorized',
+    name: 'not-authorized',
+    component: () => import('@/views/misc/not-autorized.vue'),
+    meta: {
+      public: true,
+      layout: 'blank',
+      layoutWrapperClasses: 'layout-content-height-fixed',
+    },
+  },
 ]

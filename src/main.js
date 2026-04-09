@@ -43,7 +43,7 @@ async function verificarEntitlements(authenticationUserStore) {
     const entResp = await authenticationUserStore.fetchEntitlements()
     const data = entResp?.data || {}
 
-    console.warn('APPS: ', data.apps)
+    console.warn('APPS: ', data)
 
     const convertex = data.apps?.find(a => a.key === 'convertex')
 

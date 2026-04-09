@@ -43,11 +43,11 @@ async function verificarEntitlements(authenticationUserStore) {
     const entResp = await authenticationUserStore.fetchEntitlements()
     const data = entResp?.data || {}
 
-    console.warn('APPS: ', data)
+    console.warn('APPS: ', data.apps)
 
     const convertex = data.apps?.find(a => a.key === 'convertex')
 
-    /*
+
     if (!convertex || !convertex.isActive) {
       if (kc) await kc.logout({ redirectUri: PUBLIC_REDIRECT })
       else window.location.href = PUBLIC_REDIRECT
@@ -56,8 +56,6 @@ async function verificarEntitlements(authenticationUserStore) {
     }
 
     return true
-
-     */
 
   } catch (error) {
     if (error.code === 'ECONNABORTED' || error.message === 'Request aborted') {

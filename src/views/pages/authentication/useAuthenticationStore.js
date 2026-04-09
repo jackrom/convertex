@@ -23,6 +23,8 @@ export const useAuthenticationStore = defineStore('AuthenticationStore', {
       try {
         const { data } = await axios.get(`${environment.apiUrl}/v1/users/me`)
 
+        console.log('data', data)
+
         this.user = data.user
         this.abilities = data.abilities || []
 

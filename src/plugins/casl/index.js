@@ -1,4 +1,4 @@
-// src/plugins/casl/index.js
+// src/plugins/casl/index_oldest.js
 import { abilitiesPlugin } from '@casl/vue'
 import { ability } from './ability'
 

@@ -99,7 +99,69 @@ export const routes = [
     meta: {
       public: true,
       layout: 'blank',
-      layoutWrapperClasses: 'layout-content-height-fixed',
+    },
+  },
+  {
+    path: '/error-404',
+    name: 'error-404',
+    component: () => import('@/views/misc/error-404.vue'),
+    meta: {
+      public: true,
+      layout: 'blank',
+    },
+  },
+  {
+    path: '/error-500',
+    name: 'error-500',
+    component: () => import('@/views/misc/error-500.vue'),
+    meta: {
+      public: true,
+      layout: 'blank',
+    },
+  },
+  {
+    path: '/error-503',
+    name: 'error-503',
+    component: () => import('@/views/misc/error-503.vue'),
+    meta: {
+      public: true,
+      layout: 'blank',
+    },
+  },
+  {
+    path: '/error-401',
+    name: 'error-401',
+    component: () => import('@/views/misc/error-401.vue'),
+    meta: {
+      public: true,
+      layout: 'blank',
+    },
+  },
+  {
+    path: '/error-entitlements',
+    name: 'error-entitlements',
+    component: () => import('@/views/misc/error-entitlements.vue'),
+    meta: {
+      public: true,
+      layout: 'blank',
+    },
+  },
+  {
+    path: '/under-maintenance',
+    name: 'under-maintenance',
+    component: () => import('@/views/misc/under-maintenance.vue'),
+    meta: {
+      public: true,
+      layout: 'blank',
+    },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('@/views/misc/error-404.vue'),
+    meta: {
+      public: true,
+      layout: 'blank',
     },
   },
 ]

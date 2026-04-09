@@ -24,6 +24,9 @@ api.interceptors.request.use(async config => {
   }
 
   const token = kc?.token
+
+  console.log('kc', kc)
+
   if (token) {
     config.headers = config.headers || {}
     config.headers.Authorization = `Bearer ${token}`
@@ -43,6 +46,7 @@ api.interceptors.request.use(async config => {
 api.interceptors.response.use(
   response => response,
   async error => {
+
     const kc = getKeycloak?.()
 
     // -----------------------------

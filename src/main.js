@@ -43,9 +43,12 @@ async function verificarEntitlements(authenticationUserStore) {
     const entResp = await authenticationUserStore.fetchEntitlements()
     const data = entResp?.data || {}
 
-    const ifluc = data.apps?.find(a => a.key === 'convertex')
+    console.warn('APPS: ', data.apps)
 
-    if (!ifluc || !ifluc.isActive) {
+    const convertex = data.apps?.find(a => a.key === 'convertex')
+
+
+    if (!convertex || !convertex.isActive) {
       if (kc) await kc.logout({ redirectUri: PUBLIC_REDIRECT })
       else window.location.href = PUBLIC_REDIRECT
 
@@ -53,6 +56,7 @@ async function verificarEntitlements(authenticationUserStore) {
     }
 
     return true
+
   } catch (error) {
     if (error.code === 'ECONNABORTED' || error.message === 'Request aborted') {
       console.warn('Request inicial abortado/timeout:', error)
@@ -60,6 +64,7 @@ async function verificarEntitlements(authenticationUserStore) {
       return false
     }
 
+    /*
     if (error.response && [401, 403].includes(error.response.status)) {
 
       const kcInner = getKeycloak()
@@ -68,6 +73,8 @@ async function verificarEntitlements(authenticationUserStore) {
 
       return false
     }
+
+     */
 
     await router.replace({ name: 'error-entitlements', query: { reason: 'entitlements' } })
 

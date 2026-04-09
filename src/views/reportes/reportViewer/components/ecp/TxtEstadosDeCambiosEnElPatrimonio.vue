@@ -9172,6 +9172,7 @@ const hideColumn = prefix => {
               inputmode="numeric"
               density="compact"
               variant="outlined"
+              disabled
               hide-details
               :model-value="draft['ecp_990210_301'] ?? (store.values.ecp['ecp_990210_301']?.valor ?? '')"
               @update:model-value="val => onType('ecp_990210_301', val, 'ecp')"
@@ -9191,6 +9192,7 @@ const hideColumn = prefix => {
               inputmode="numeric"
               density="compact"
               variant="outlined"
+              disabled
               hide-details
               :model-value="draft['ecp_990210_302'] ?? (store.values.ecp['ecp_990210_302']?.valor ?? '')"
               @update:model-value="val => onType('ecp_990210_302', val, 'ecp')"
@@ -9211,6 +9213,7 @@ const hideColumn = prefix => {
               inputmode="numeric"
               density="compact"
               variant="outlined"
+              disabled
               hide-details
               :model-value="draft['ecp_990210_303'] ?? (store.values.ecp['ecp_990210_303']?.valor ?? '')"
               @update:model-value="val => onType('ecp_990210_303', val, 'ecp')"
@@ -9240,6 +9243,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30401'] ?? (store.values.ecp['ecp_990210_30401']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30401', val, 'ecp')"
@@ -9264,6 +9268,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30402'] ?? (store.values.ecp['ecp_990210_30402']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30402', val, 'ecp')"
@@ -9296,6 +9301,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30501'] ?? (store.values.ecp['ecp_990210_30501']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30501', val, 'ecp')"
@@ -9320,6 +9326,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30502'] ?? (store.values.ecp['ecp_990210_30502']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30502', val, 'ecp')"
@@ -9344,6 +9351,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30503'] ?? (store.values.ecp['ecp_990210_30503']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30503', val, 'ecp')"
@@ -9368,6 +9376,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30504'] ?? (store.values.ecp['ecp_990210_30504']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30504', val, 'ecp')"
@@ -9400,6 +9409,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30601'] ?? (store.values.ecp['ecp_990210_30601']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30601', val, 'ecp')"
@@ -9424,6 +9434,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30602'] ?? (store.values.ecp['ecp_990210_30602']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30602', val, 'ecp')"
@@ -9448,6 +9459,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30603'] ?? (store.values.ecp['ecp_990210_30603']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30603', val, 'ecp')"
@@ -9472,6 +9484,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30604'] ?? (store.values.ecp['ecp_990210_30604']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30604', val, 'ecp')"
@@ -9496,6 +9509,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30605'] ?? (store.values.ecp['ecp_990210_30605']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30605', val, 'ecp')"
@@ -9520,6 +9534,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30606'] ?? (store.values.ecp['ecp_990210_30606']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30606', val, 'ecp')"
@@ -9544,6 +9559,7 @@ const hideColumn = prefix => {
                     inputmode="numeric"
                     density="compact"
                     variant="outlined"
+                    disabled
                     hide-details
                     :model-value="draft['ecp_990210_30607'] ?? (store.values.ecp['ecp_990210_30607']?.valor ?? '')"
                     @update:model-value="val => onType('ecp_990210_30607', val, 'ecp')"
@@ -9645,6 +9661,7 @@ const hideColumn = prefix => {
                 inputmode="numeric"
                 density="compact"
                 variant="outlined"
+                disabled
                 hide-details
                 :model-value="draft['ecp_990210_31'] ?? (store.values.ecp['ecp_990210_31']?.valor ?? '')"
                 @update:model-value="val => onType('ecp_990210_31', val, 'ecp')"

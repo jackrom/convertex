@@ -1,4 +1,4 @@
-// src/plugins/1.router/index.js
+// src/plugins/1.router/index_oldest.js
 import { setupLayouts } from 'virtual:meta-layouts'
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { redirects, routes } from './additional-routes'

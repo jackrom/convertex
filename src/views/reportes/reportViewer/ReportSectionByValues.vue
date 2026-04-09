@@ -506,6 +506,9 @@ const groups = computed(() => {
         return compareCodigo(a.codigo, b.codigo)
       })
 
+      // Códigos de subtotales que deben mostrarse sombreados (como filas resumen)
+      const SUMMARY_CODES = new Set(['9820'])
+
       for (const r of sortedByLengthDesc) {
         const code = String(r.codigo)
 
@@ -517,6 +520,11 @@ const groups = computed(() => {
             break
           }
         }
+      }
+
+      // Marcar códigos de subtotal para estilo sombreado (sin afectar cálculos)
+      for (const r of rows) {
+        r.isSummaryRow = SUMMARY_CODES.has(String(r.codigo))
       }
 
       for (const r of rows) {
@@ -1839,8 +1847,8 @@ const onInput = (group, row, which, rawValue) => {
                 v-for="row in group.rows"
                 :key="row.codigo"
                 :class="{
-                  'rv-row-parent': row.hasChildren,
-                  'rv-row-leaf': !row.hasChildren,
+                  'rv-row-parent': row.hasChildren || row.isSummaryRow,
+                  'rv-row-leaf': !row.hasChildren && !row.isSummaryRow,
                 }"
               >
                 <td>{{ row.nombreCuenta || row.codigo }}</td>

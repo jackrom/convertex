@@ -1,4 +1,4 @@
-// src/plugins/vuetify/index.js
+// src/plugins/vuetify/index_oldest.js
 import { deepMerge } from '@antfu/utils'
 import { useI18n } from 'vue-i18n'
 import { createVuetify } from 'vuetify'

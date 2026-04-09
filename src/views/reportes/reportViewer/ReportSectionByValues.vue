@@ -1703,6 +1703,8 @@ const efeEsfCuadre = computed(() => {
 
   const v9507 = getEfe("efe_md_9507")
 
+  const v9501 = getEfe("efe_md_9501")
+
   const esf10101 = roundTo(
     getEsf("esf_1010101") + getEsf("esf_1010102") + getEsf("esf_1010103"),
     2,
@@ -1713,6 +1715,8 @@ const efeEsfCuadre = computed(() => {
   // ✅ Para Conciliación
   const v9820 = getEfe("efe_md_9820")
 
+  const v0000 = v9820 - v9501
+
   return {
     v9507,
     esf10101,
@@ -1721,6 +1725,7 @@ const efeEsfCuadre = computed(() => {
     // Conciliación
     v9820,
     conciliacionCuadra: v9820 === 0,
+    v0000,
   }
 })
 
@@ -1948,7 +1953,7 @@ const onInput = (group, row, which, rawValue) => {
                       hide-details
                       class="ma-0 pa-0 rv-readonly"
                       readonly
-                      :model-value="efeEsfCuadre.v9820"
+                      :model-value="efeEsfCuadre.v0000"
                     />
                   </td>
                 </tr>

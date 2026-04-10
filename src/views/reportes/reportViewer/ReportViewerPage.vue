@@ -36,6 +36,7 @@ const { safeT } = useSafeI18n("global")
 const currentTab = ref("esf")
 const showFloatingBtns = ref(false)
 let headerObserver = null
+let _mounted = true
 
 const hasPendingChanges = computed(() => store.hasPendingChanges)
 const pendingChangesCount = computed(() => store.pendingChangesCount)
@@ -200,17 +201,26 @@ onMounted(async () => {
   // Observer para detectar cuando las tabs salen del viewport
   await nextTick()
 
-  const tabsEl = document.querySelector('.cv-tabs-bar')
-  if (tabsEl) {
-    headerObserver = new IntersectionObserver(
-      ([entry]) => { showFloatingBtns.value = !entry.isIntersecting },
-      { threshold: 0 },
-    )
-    headerObserver.observe(tabsEl)
+  // Intentar encontrar el elemento con un pequeño retry por si el DOM tarda
+  const findAndObserve = () => {
+    const tabsEl = document.querySelector('.cv-tabs-bar')
+    if (tabsEl) {
+      headerObserver = new IntersectionObserver(
+        ([entry]) => { showFloatingBtns.value = !entry.isIntersecting },
+        { threshold: 0 },
+      )
+      headerObserver.observe(tabsEl)
+      console.log('[ReportViewer] IntersectionObserver registrado en .cv-tabs-bar')
+    } else {
+      console.warn('[ReportViewer] .cv-tabs-bar no encontrado, reintentando...')
+      if (_mounted) setTimeout(findAndObserve, 300)
+    }
   }
+  findAndObserve()
 })
 
 onBeforeUnmount(async () => {
+  _mounted = false
   window.removeEventListener('beforeunload', handleBeforeUnload)
   if (headerObserver) headerObserver.disconnect()
   stop()  // ← detener polling

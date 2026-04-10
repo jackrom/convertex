@@ -70,11 +70,13 @@ const exportarTxt = async rep => {
   try {
     await ensureFlush(rep.reporteid)
     const tipos = ["esf", "eri", "efe", "ecp"]
-    await Promise.all(
-      tipos.map(tipo =>
-        reportesService.downloadTxt(rep.reporteid, { tipo, forceRefresh: true }),
-      ),
-    )
+    // Descargas secuenciales: los navegadores bloquean múltiples descargas
+    // programáticas simultáneas (a.click()). Un pequeño delay entre cada una
+    // asegura que el navegador procese cada descarga antes de la siguiente.
+    for (const tipo of tipos) {
+      await reportesService.downloadTxt(rep.reporteid, { tipo, forceRefresh: true })
+      await new Promise(r => setTimeout(r, 300))
+    }
   } catch (err) {
     console.error("Error descargando TXT SRI:", err)
   } finally {

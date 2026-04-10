@@ -507,7 +507,7 @@ const groups = computed(() => {
       })
 
       // Códigos de subtotales que deben mostrarse sombreados (como filas resumen)
-      const SUMMARY_CODES = new Set(['9820'])
+      const SUMMARY_CODES = new Set(['9709', '9710', '9820'])
 
       for (const r of sortedByLengthDesc) {
         const code = String(r.codigo)
@@ -1404,23 +1404,24 @@ const recomputeEriFormulas = () => {
 
 }
 
+const findByName = (list, name) =>
+  list.find(r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase())
+
+const getFrom = (list, name) => {
+  const row = findByName(list, name)
+
+  return row ? roundTo(toNumber(row.valor), 2) : 0
+}
+
 const recomputeEfeFormulas = () => {
   if (planTipo.value !== "efe") return
 
+  // ✅ Leer listas frescas del store en cada ejecución (reactivo)
   const efeList = efeStoreValues.value ?? []
   const eriList = eriStoreValues.value ?? []
   const esfList = esfStoreValues.value ?? []
 
   if (!eriList.length) return
-
-  const findByName = (list, name) =>
-    list.find(r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase())
-
-  const getFrom = (list, name) => {
-    const row = findByName(list, name)
-
-    return row ? roundTo(toNumber(row.valor), 2) : 0
-  }
 
   const setIfChanged = (nombrecampo, numericVal) => {
     const targetRow = findByName(efeList, nombrecampo)
@@ -1554,6 +1555,10 @@ const recomputeEfeFormulas = () => {
 
   const v98 = roundTo(v9801 + v9802 + v9803 + v9804 + v9805 + v9806 + v9807 + v9808 + v9809 + v9810, 2)
 
+  console.log('v96', v96)
+  console.log('v97', v97)
+  console.log('v98', v98)
+
   const v9820 = roundTo(v96 + v9701 + v9702 + v9703 + v9704 + v9705 + v9706 + v9707 + v9708 + v9709 + v9710 + v9711 + v9801 + v9802 + v9803 + v9804 + v9805 + v9806 + v9807 + v9808 + v9809 + v9810, 2)
 
   setIfChanged("efe_md_96", v96)
@@ -1667,6 +1672,28 @@ if (props.tipo === "efe") {
       pickValue(efeStoreValues, "efe_md_9505"),
       pickValue(efeStoreValues, "efe_md_9506"),
       pickValue(efeStoreValues, "efe_md_9507"),
+      // 97xx y 98xx para recalcular 9820
+      pickValue(efeStoreValues, "efe_md_9701"),
+      pickValue(efeStoreValues, "efe_md_9702"),
+      pickValue(efeStoreValues, "efe_md_9703"),
+      pickValue(efeStoreValues, "efe_md_9704"),
+      pickValue(efeStoreValues, "efe_md_9705"),
+      pickValue(efeStoreValues, "efe_md_9706"),
+      pickValue(efeStoreValues, "efe_md_9707"),
+      pickValue(efeStoreValues, "efe_md_9708"),
+      pickValue(efeStoreValues, "efe_md_9709"),
+      pickValue(efeStoreValues, "efe_md_9710"),
+      pickValue(efeStoreValues, "efe_md_9711"),
+      pickValue(efeStoreValues, "efe_md_9801"),
+      pickValue(efeStoreValues, "efe_md_9802"),
+      pickValue(efeStoreValues, "efe_md_9803"),
+      pickValue(efeStoreValues, "efe_md_9804"),
+      pickValue(efeStoreValues, "efe_md_9805"),
+      pickValue(efeStoreValues, "efe_md_9806"),
+      pickValue(efeStoreValues, "efe_md_9807"),
+      pickValue(efeStoreValues, "efe_md_9808"),
+      pickValue(efeStoreValues, "efe_md_9809"),
+      pickValue(efeStoreValues, "efe_md_9810"),
     ].join("|")
   })
 
@@ -1712,10 +1739,40 @@ const efeEsfCuadre = computed(() => {
 
   const diferencia = roundTo(v9507 - esf10101, 2)
 
+  const eriList = eriStoreValues.value ?? []
+  const v96 = getFrom(eriList, "eri_600")
+
+  const v9701 = getFrom(efeList, "efe_md_9701")
+  const v9702 = getFrom(efeList, "efe_md_9702")
+  const v9703 = getFrom(efeList, "efe_md_9703")
+  const v9704 = getFrom(efeList, "efe_md_9704")
+  const v9705 = getFrom(efeList, "efe_md_9705")
+  const v9706 = getFrom(efeList, "efe_md_9706")
+  const v9707 = getFrom(efeList, "efe_md_9707")
+  const v9708 = getFrom(efeList, "efe_md_9708")
+  const v9709 = getFrom(efeList, "efe_md_9709")
+  const v9710 = getFrom(efeList, "efe_md_9710")
+  const v9711 = getFrom(efeList, "efe_md_9711")
+
+  const v9801 = getFrom(efeList, "efe_md_9801")
+  const v9802 = getFrom(efeList, "efe_md_9802")
+  const v9803 = getFrom(efeList, "efe_md_9803")
+  const v9804 = getFrom(efeList, "efe_md_9804")
+  const v9805 = getFrom(efeList, "efe_md_9805")
+  const v9806 = getFrom(efeList, "efe_md_9806")
+  const v9807 = getFrom(efeList, "efe_md_9807")
+  const v9808 = getFrom(efeList, "efe_md_9808")
+  const v9809 = getFrom(efeList, "efe_md_9809")
+  const v9810 = getFrom(efeList, "efe_md_9810")
+
   // ✅ Para Conciliación
-  const v9820 = getEfe("efe_md_9820")
+  const v9820 = roundTo(v96 + v9701 + v9702 + v9703 + v9704 + v9705 + v9706 + v9707 + v9708 + v9709 + v9710 + v9711 + v9801 + v9802 + v9803 + v9804 + v9805 + v9806 + v9807 + v9808 + v9809 + v9810, 2)
 
   const v0000 = v9820 - v9501
+
+  console.log('v0000', v0000)
+  console.log('v9820', v9820)
+  console.log('v9501: ', v9501)
 
   return {
     v9507,
@@ -1724,7 +1781,7 @@ const efeEsfCuadre = computed(() => {
     cuadra: diferencia === 0,
     // Conciliación
     v9820,
-    conciliacionCuadra: v9820 === 0,
+    conciliacionCuadra: v0000 === 0,
     v0000,
   }
 })
@@ -1938,10 +1995,10 @@ const onInput = (group, row, which, rawValue) => {
                 <tr
                   class="rv-row-extra"
                   :style="{
-        backgroundColor: efeEsfCuadre.conciliacionCuadra
-          ? 'rgba(76, 175, 80, 0.2)'
-          : 'rgba(244, 67, 54, 0.2)',
-      }"
+                    backgroundColor: efeEsfCuadre.conciliacionCuadra
+                      ? 'rgba(76, 175, 80, 0.2)'
+                      : 'rgba(244, 67, 54, 0.2)',
+                  }"
                 >
                   <td>DIFERENCIA POR CUADRAR</td>
                   <td></td>
@@ -2059,4 +2116,4 @@ const onInput = (group, row, which, rawValue) => {
 .rv-row-extra td:first-child {
   border-left: 3px solid #2c3555;
 }
-</style>
+</style>

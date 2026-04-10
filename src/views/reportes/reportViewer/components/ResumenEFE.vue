@@ -30,8 +30,6 @@ const efeStoreValues = computed(
   () => store.current?.values?.efemdvalues ?? [],
 )
 
-const efeList = efeStoreValues.value ?? []
-
 const findByName = (list, name) =>
   list.find(r => String(r?.nombrecampo).toLowerCase() === name.toLowerCase())
 
@@ -173,37 +171,32 @@ const v9507 = computed(() => get(efeMap, "efe_md_9507"))
 
 const v96   = computed(() => get(eriMap, "eri_600"))
 
-const v9701 = getFrom(efeList, "efe_md_9701")
-const v9702 = getFrom(efeList, "efe_md_9702")
-const v9703 = getFrom(efeList, "efe_md_9703")
-const v9704 = getFrom(efeList, "efe_md_9704")
-const v9705 = getFrom(efeList, "efe_md_9705")
-const v9706 = getFrom(efeList, "efe_md_9706")
-const v9707 = getFrom(efeList, "efe_md_9707")
-const v9708 = getFrom(efeList, "efe_md_9708")
-const v9709 = getFrom(efeList, "efe_md_9709")
-const v9710 = getFrom(efeList, "efe_md_9710")
-const v9711 = getFrom(efeList, "efe_md_9711")
+const v97v = computed(() => {
+  const list = efeStoreValues.value ?? []
+  return roundTo(
+    getFrom(list, "efe_md_9701") + getFrom(list, "efe_md_9702") +
+    getFrom(list, "efe_md_9703") + getFrom(list, "efe_md_9704") +
+    getFrom(list, "efe_md_9705") + getFrom(list, "efe_md_9706") +
+    getFrom(list, "efe_md_9707") + getFrom(list, "efe_md_9708") +
+    getFrom(list, "efe_md_9709") + getFrom(list, "efe_md_9710") +
+    getFrom(list, "efe_md_9711"),
+    2,
+  )
+})
 
-const v97v = roundTo(v9701 + v9702 + v9703 + v9704 + v9705 + v9706 + v9707 + v9708 + v9709 + v9710 + v9711, 2)
+const v98v = computed(() => {
+  const list = efeStoreValues.value ?? []
+  return roundTo(
+    getFrom(list, "efe_md_9801") + getFrom(list, "efe_md_9802") +
+    getFrom(list, "efe_md_9803") + getFrom(list, "efe_md_9804") +
+    getFrom(list, "efe_md_9805") + getFrom(list, "efe_md_9806") +
+    getFrom(list, "efe_md_9807") + getFrom(list, "efe_md_9808") +
+    getFrom(list, "efe_md_9809") + getFrom(list, "efe_md_9810"),
+    2,
+  )
+})
 
-const v9801 = getFrom(efeList, "efe_md_9801")
-const v9802 = getFrom(efeList, "efe_md_9802")
-const v9803 = getFrom(efeList, "efe_md_9803")
-const v9804 = getFrom(efeList, "efe_md_9804")
-const v9805 = getFrom(efeList, "efe_md_9805")
-const v9806 = getFrom(efeList, "efe_md_9806")
-const v9807 = getFrom(efeList, "efe_md_9807")
-const v9808 = getFrom(efeList, "efe_md_9808")
-const v9809 = getFrom(efeList, "efe_md_9809")
-const v9810 = getFrom(efeList, "efe_md_9810")
-
-const v98v = roundTo(v9801 + v9802 + v9803 + v9804 + v9805 + v9806 + v9807 + v9808 + v9809 + v9810, 2)
-
-// const v97v  = computed(() => efeNodeSum("97"))
-// const v98v  = computed(() => efeNodeSum("98"))
-
-const v9820 = computed(() => round2(v96.value + v97v + v98v))
+const v9820 = computed(() => round2(v96.value + v97v.value + v98v.value))
 
 // ✅ AJUSTA a tu ESF real (efectivo y equivalentes)
 const esfCashInicial = [

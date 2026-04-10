@@ -321,17 +321,27 @@ export function useReportesService() {
     reporteid,
     { tipo = "esf", forceRefresh = false } = {},
   ) => {
+    console.log(`[downloadTxt] Solicitando TXT tipo="${tipo}" reporte=${reporteid}...`)
     const response = await trackApi(
       "GET /v1/convertex/reportesconvertex/:reporteid/txt",
       () =>
         api.get(`/v1/convertex/reportesconvertex/${reporteid}/txt`, {
           params: {
-            tipo, // esf | eri | ecp | efe  (el backend normaliza "efe" → "efemd")
-            ...(forceRefresh ? { forceRefresh: "1" } : {}), // zod acepta "1"/"0" o "true"/"false"
+            tipo,
+            ...(forceRefresh ? { forceRefresh: "1" } : {}),
           },
           responseType: "blob",
         }),
     )
+
+    console.log(`[downloadTxt] Respuesta recibida tipo="${tipo}":`, {
+      status: response.status,
+      dataType: typeof response.data,
+      isBlob: response.data instanceof Blob,
+      dataSize: response.data?.size ?? response.data?.length ?? "?",
+      contentType: response.headers["content-type"],
+      contentDisposition: response.headers["content-disposition"],
+    })
 
     // Intentar recuperar el nombre de archivo desde el header
     const disposition = response.headers["content-disposition"] || ""
@@ -346,6 +356,8 @@ export function useReportesService() {
       type: "text/plain;charset=utf-8",
     })
 
+    console.log(`[downloadTxt] Blob creado: size=${blob.size}, fileName="${fileName}"`)
+
     return { blob, fileName }
   }
 
@@ -355,15 +367,26 @@ export function useReportesService() {
   ) => {
     const { blob, fileName } = await getTxtFile(reporteid, options)
 
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement("a")
+    if (blob.size === 0) {
+      console.warn(`[downloadTxt] ⚠ Blob vacío para tipo="${options.tipo}", no se descarga.`)
+      return
+    }
 
+    const url = window.URL.createObjectURL(blob)
+    console.log(`[downloadTxt] Iniciando descarga: "${fileName}" (${blob.size} bytes)`)
+
+    const a = document.createElement("a")
     a.href = url
     a.download = fileName
+    a.style.display = "none"
     document.body.appendChild(a)
     a.click()
+
+    // Dar tiempo al navegador para iniciar la descarga antes de limpiar
+    await new Promise(r => setTimeout(r, 500))
     a.remove()
     window.URL.revokeObjectURL(url)
+    console.log(`[downloadTxt] ✅ Descarga disparada: "${fileName}"`)
   }
 
   // ================================

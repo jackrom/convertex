@@ -513,7 +513,7 @@ const getCuadre = rep => {
                   </template>
                 </VTooltip>
 
-                <VTooltip text="Descargar TXT (SRI)" location="top">
+                <VTooltip text="Descargar TXT (Supercias)" location="top">
                   <template #activator="{ props: tp }">
                     <VBtn
                       v-bind="tp"

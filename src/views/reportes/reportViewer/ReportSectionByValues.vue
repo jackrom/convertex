@@ -522,9 +522,12 @@ const groups = computed(() => {
         }
       }
 
-      // Marcar códigos de subtotal para estilo sombreado (sin afectar cálculos)
+      // Marcar códigos de subtotal: estilo sombreado + comportamiento padre (readonly)
       for (const r of rows) {
         r.isSummaryRow = SUMMARY_CODES.has(String(r.codigo))
+        if (r.isSummaryRow) {
+          r.hasChildren = true
+        }
       }
 
       for (const r of rows) {
@@ -715,6 +718,8 @@ const FORCE_FIELD_VALUE = new Set(
     "efe_md_9505",
     "efe_md_9506",
     "efe_md_9507",
+    "efe_md_9709",
+    "efe_md_9710",
     "efe_md_9820",
     "efe_md_98",
     "efe_md_97",
@@ -2116,4 +2121,4 @@ const onInput = (group, row, which, rawValue) => {
 .rv-row-extra td:first-child {
   border-left: 3px solid #2c3555;
 }
-</style>
+</style>

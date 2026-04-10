@@ -1,6 +1,6 @@
 <!-- src/views/reportes/ReportList.vue -->
 <script setup>
-import { computed, onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch, watchEffect } from "vue"
 import { storeToRefs } from "pinia"
 import { useReportesStore } from "@/@store/reportes.store"
 import { useRouter } from "vue-router"
@@ -10,6 +10,7 @@ import { useReportViewerStore } from "@/@store/reportViewer.store"
 const router = useRouter()
 const reportStore = useReportesStore()
 const reportesService = useReportesService()
+const viewerStore = useReportViewerStore()
 
 const { reportes, loaded } = storeToRefs(reportStore)
 const isLoading = computed(() => !reportStore.loaded)
@@ -206,6 +207,110 @@ const stats = computed(() => ({
   consolidado: reportes.value.filter(r => derivarTipo(r) === "consolidado").length,
   inicial:     reportes.value.filter(r => derivarTipo(r) === "inicial").length,
 }))
+
+// ══════════════════════════════════════════════
+// Indicador de cuadre (igual que ifluc)
+// ══════════════════════════════════════════════
+const cuadreMap = ref({}) // { [reporteid]: true | false | null }
+
+// Normalizar valores de la API (arrays) a diccionarios (por nombrecampo)
+const normalizeValuesFromList = rawValues => {
+  const norm = (arr) =>
+    (arr || []).reduce((acc, r) => {
+      if (r?.nombrecampo) acc[r.nombrecampo] = r
+      return acc
+    }, {})
+
+  return {
+    esf:   norm(rawValues?.esfvalues),
+    eri:   norm(rawValues?.erivalues),
+    ecp:   norm(rawValues?.ecpvalues),
+    efemd: norm(rawValues?.efemdvalues),
+  }
+}
+
+// Verificar si un bucket tiene al menos un valor distinto de cero
+const hasNonZeroValues = bucket => {
+  for (const key in bucket) {
+    const v = Number(bucket[key]?.valor)
+    if (Number.isFinite(v) && v !== 0) return true
+  }
+  return false
+}
+
+// Verificar si un reporte tiene datos reales (no todos en cero)
+const hasAnyData = vals => {
+  return hasNonZeroValues(vals.esf) ||
+    hasNonZeroValues(vals.eri) ||
+    hasNonZeroValues(vals.ecp) ||
+    hasNonZeroValues(vals.efemd)
+}
+
+const calcularCuadreFromValues = rawValues => {
+  if (!rawValues?.esfvalues?.length) return null
+  const vals = normalizeValuesFromList(rawValues)
+
+  // Si todas las celdas están en cero → "Pendiente" (no cuadrado)
+  if (!hasAnyData(vals)) return null
+
+  try {
+    return (
+      viewerStore.calculateEsfCuadre(vals) === 1 &&
+      viewerStore.calculateEriCuadre(vals) === 1 &&
+      viewerStore.calculateEcpCuadre(vals) === 1 &&
+      viewerStore.calculateEfeCuadre(vals) === 1
+    )
+  } catch {
+    return null
+  }
+}
+
+// Calcular cuadre para todos los reportes cuando se cargan
+watch(reportes, reps => {
+  for (const rep of reps) {
+    const id = rep.reporteid
+    if (id == null) continue
+    cuadreMap.value[id] = calcularCuadreFromValues(rep.values)
+  }
+}, { immediate: true })
+
+// Si el viewer tiene un reporte cargado con datos reales, actualizar en tiempo real
+watchEffect(() => {
+  if (viewerStore.reporte?.reporteid && viewerStore.values) {
+    const id = viewerStore.reporte.reporteid
+    // Solo calcular si el viewer tiene datos reales (no todos en cero)
+    if (!hasAnyData(viewerStore.values)) {
+      cuadreMap.value[id] = null
+      return
+    }
+    cuadreMap.value[id] = (
+      viewerStore.calculateEsfCuadre() === 1 &&
+      viewerStore.calculateEriCuadre() === 1 &&
+      viewerStore.calculateEcpCuadre() === 1 &&
+      viewerStore.calculateEfeCuadre() === 1
+    )
+  }
+})
+
+const getCuadre = rep => {
+  const id = rep.reporteid
+
+  // Si el viewer tiene este reporte cargado con datos → tiempo real
+  if (viewerStore.reporte?.reporteid === id && viewerStore.values) {
+    if (!hasAnyData(viewerStore.values)) return null
+    return (
+      viewerStore.calculateEsfCuadre() === 1 &&
+      viewerStore.calculateEriCuadre() === 1 &&
+      viewerStore.calculateEcpCuadre() === 1 &&
+      viewerStore.calculateEfeCuadre() === 1
+    )
+  }
+
+  // Del mapa local (calculado desde los values del listado)
+  if (typeof cuadreMap.value[id] !== 'undefined') return cuadreMap.value[id]
+
+  return null
+}
 </script>
 
 <template>
@@ -329,6 +434,7 @@ const stats = computed(() => ({
             <th>Periodo</th>
             <th>Tipo EEFF</th>
             <th>Fecha</th>
+            <th class="rl-th--estado">Estado</th>
             <th style="width: 200px;">Acciones</th>
           </tr>
           </thead>
@@ -336,7 +442,7 @@ const stats = computed(() => ({
           <tbody>
           <!-- Cargando -->
           <tr v-if="isLoading">
-            <td colspan="5" class="rl-table__loading">
+            <td colspan="6" class="rl-table__loading">
               <VProgressCircular indeterminate size="24" color="primary" />
               <span>Cargando reportes...</span>
             </td>
@@ -373,6 +479,21 @@ const stats = computed(() => ({
 
               <!-- Fecha -->
               <td class="rl-table__date">{{ formatDate(rep.createdat) }}</td>
+
+              <!-- Estado cuadre -->
+              <td class="rl-table__estado">
+                <span
+                  class="rl-estado-chip"
+                  :class="getCuadre(rep) === true ? 'rl-estado-chip--ok' : getCuadre(rep) === false ? 'rl-estado-chip--err' : 'rl-estado-chip--unk'"
+                >
+                  <VIcon
+                    :icon="getCuadre(rep) === true ? 'tabler-circle-check-filled' : getCuadre(rep) === false ? 'tabler-alert-circle' : 'tabler-circle-dashed'"
+                    size="13"
+                    class="mr-1"
+                  />
+                  {{ getCuadre(rep) === true ? 'Cuadrado' : getCuadre(rep) === false ? 'Sin cuadrar' : 'Pendiente' }}
+                </span>
+              </td>
 
               <!-- Descargas + Editar en una sola celda -->
               <td class="rl-table__actions">
@@ -438,7 +559,7 @@ const stats = computed(() => ({
 
           <!-- Sin resultados -->
           <tr v-else>
-            <td colspan="5" class="rl-table__empty">
+            <td colspan="6" class="rl-table__empty">
               <VIcon size="36" color="grey-lighten-1" class="mb-2">
                 {{ searchQuery || filterEmpresa || filterTipo ? 'tabler-search-off' : 'tabler-report-off' }}
               </VIcon>
@@ -680,6 +801,41 @@ const stats = computed(() => ({
 
 .rl-pagination__text {
   font-size: 12px; color: rgba(44,53,85,.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ESTADO CUADRE
+   ═══════════════════════════════════════════════════════════════ */
+.rl-th--estado { white-space: nowrap; width: 120px; }
+
+.rl-table__estado { white-space: nowrap; }
+
+.rl-estado-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rl-estado-chip--ok {
+  background: rgba(45,184,75,.1);
+  color: #1a6b2e;
+  border: 1px solid rgba(45,184,75,.25);
+}
+
+.rl-estado-chip--err {
+  background: rgba(198,40,40,.07);
+  color: #b91c1c;
+  border: 1px solid rgba(198,40,40,.2);
+}
+
+.rl-estado-chip--unk {
+  background: rgba(148,163,184,.1);
+  color: #64748b;
+  border: 1px solid rgba(148,163,184,.2);
 }
 
 /* ═══════════════════════════════════════════════════════════════

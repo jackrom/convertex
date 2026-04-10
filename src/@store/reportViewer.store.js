@@ -164,7 +164,9 @@ export const useReportViewerStore = defineStore("reportViewer", {
   },
 
   actions: {
-    calculateEsfCuadre() {
+    calculateEsfCuadre(valuesOverride) {
+      const vals = valuesOverride ?? this.values
+
       const canon = s =>
         String(s ?? "")
           .trim()
@@ -177,7 +179,7 @@ export const useReportViewerStore = defineStore("reportViewer", {
         return Number.isFinite(n) ? n : 0
       }
 
-      const esfDict = this.values?.esf ?? {}
+      const esfDict = vals?.esf ?? {}
       const rows = Object.values(esfDict)
 
       const parseCodigo = nombrecampo => {
@@ -253,9 +255,10 @@ export const useReportViewerStore = defineStore("reportViewer", {
       return (diffAct === 0 && diffAnt === 0) ? 1 : 0
     },
 
-    calculateEriCuadre() {
-      const eriList = Object.values(this.values?.eri ?? [])
-      const esfList = Object.values(this.values?.esf ?? [])
+    calculateEriCuadre(valuesOverride) {
+      const vals = valuesOverride ?? this.values
+      const eriList = Object.values(vals?.eri ?? [])
+      const esfList = Object.values(vals?.esf ?? [])
 
       const eq = (a, b) => roundTo((Number(a) || 0) - (Number(b) || 0), 2) === 0
 
@@ -508,10 +511,11 @@ export const useReportViewerStore = defineStore("reportViewer", {
       return (diferenciaActual === 0) ? 1 : 0
     },
 
-    calculateEfeCuadre() {
-      const efemd = this.values?.efemd ?? {}
-      const eri = this.values?.eri ?? {}
-      const esf = this.values?.esf ?? {}
+    calculateEfeCuadre(valuesOverride) {
+      const vals = valuesOverride ?? this.values
+      const efemd = vals?.efemd ?? {}
+      const eri = vals?.eri ?? {}
+      const esf = vals?.esf ?? {}
 
       const g = (bucket, name) => {
         const n = Number(bucket[String(name).toLowerCase()]?.valor)
@@ -573,9 +577,10 @@ export const useReportViewerStore = defineStore("reportViewer", {
       return (cuadre1 && cuadre2) ? 1 : 0
     },
 
-    calculateEcpCuadre() {
-      const esfList = Object.values(this.values?.esf ?? {})
-      const ecpList = Object.values(this.values?.ecp ?? {})
+    calculateEcpCuadre(valuesOverride) {
+      const vals = valuesOverride ?? this.values
+      const esfList = Object.values(vals?.esf ?? {})
+      const ecpList = Object.values(vals?.ecp ?? {})
 
       const esfIndex = buildIndexByNombrecampo(esfList)
       const ecpIndex = buildIndexByNombrecampo(ecpList)

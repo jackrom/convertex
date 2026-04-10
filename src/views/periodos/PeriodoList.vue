@@ -172,17 +172,20 @@ const duplicarTooltip = (p) => {
   const tipo = derivarTipo(p)
   if (tipo === "inicial") return "Los periodos iniciales no se pueden duplicar"
   const anioSiguiente = Number(p.periodo) + 1
+
   const yaExiste = periodos.value.some(
     other =>
       other.empresaid === p.empresaid &&
       Number(other.periodo) === anioSiguiente &&
       derivarTipo(other) === tipo,
   )
+
   if (yaExiste) return `Ya existe un periodo ${tipo} para ${anioSiguiente}`
+
   return `Duplicar a ${anioSiguiente}`
 }
 
-const pedirDuplicar = (p) => {
+const pedirDuplicar = p => {
   // ✅ FIX: guard explícito — nunca abrir el dialog si no se puede duplicar
   if (!puedeDuplicar(p)) return
   targetPeriodo.value = p
@@ -203,7 +206,7 @@ const confirmarDuplicar = async () => {
 }
 
 // ── Eliminar ──────────────────────────────────────────────
-const pedirEliminar = (p) => {
+const pedirEliminar = p => {
   targetPeriodo.value = p
   deleteDialogOpen.value = true
 }

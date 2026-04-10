@@ -146,8 +146,8 @@ export const usePeriodoStore = defineStore("periodos", {
 
       const origenTipo = derivarTipo(origen)
 
-      // Solo consolidado puede duplicarse
-      if (origenTipo !== "consolidado") {
+      // "inicial" nunca se puede duplicar (alineado con PeriodoList.vue)
+      if (origenTipo === "inicial") {
         console.warn("[periodos.store] duplicate: tipo no duplicable:", origenTipo)
 
         return null

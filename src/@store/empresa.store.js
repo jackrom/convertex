@@ -104,8 +104,11 @@ export const useEmpresaStore = defineStore("empresas", {
 
     async update(id, payload) {
       const api = useEmpresaService()
+      const cache = useCache()
 
-      await api.put(`/v1/convertex/empresasconvertex/${id}`, payload)
+      await api.update(id, payload)
+      await cache.invalidateEmpresas()
+      this.loaded = false
       await this.load({ force: true })
     },
   },

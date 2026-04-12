@@ -69,6 +69,16 @@ export function useEmpresaService() {
     },
 
     // ==============================================================
+    // ACTUALIZAR EMPRESA
+    // ==============================================================
+    async update(id, payload) {
+      return trackApi(
+        "PUT /v1/convertex/empresasconvertex/:id",
+        () => api.put(`/v1/convertex/empresasconvertex/${id}`, { empresa: payload }),
+      )
+    },
+
+    // ==============================================================
     // ELIMINAR EMPRESA (CASCADE)
     // ==============================================================
     async delete(id) {

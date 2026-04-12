@@ -345,7 +345,7 @@ export function useReportesService() {
 
     // Intentar recuperar el nombre de archivo desde el header
     const disposition = response.headers["content-disposition"] || ""
-    let fileName = `reporte_${tipo}_${reporteid}.txt`
+    let fileName = `Reporte_${reporteid}_${tipo.toUpperCase()}.txt`
 
     const match = /filename="?([^"]+)"?/.exec(disposition)
     if (match?.[1]) {
@@ -413,8 +413,8 @@ export function useReportesService() {
     // Intentar recuperar el nombre de archivo desde el header
     const disposition = response.headers["content-disposition"] || ""
     let fileName = tipo
-      ? `reporte_${tipo}_${reporteid}.pdf`
-      : `reporte_completo_${reporteid}.zip`
+      ? `Reporte_${reporteid}_${tipo.toUpperCase()}.pdf`
+      : `Reporte_${reporteid}_REPORTES.zip`
 
     const match = /filename="?([^"]+)"?/.exec(disposition)
     if (match?.[1]) {
@@ -467,7 +467,7 @@ export function useReportesService() {
 
     // Leer el nombre de archivo desde content-disposition
     const disposition = response.headers["content-disposition"] || ""
-    let fileName = `reporte_${reporteid}.xlsx`
+    let fileName = `Reporte_${reporteid}_EEFF.xlsx`
 
     const match = /filename="?([^"]+)"?/.exec(disposition)
     if (match?.[1]) {

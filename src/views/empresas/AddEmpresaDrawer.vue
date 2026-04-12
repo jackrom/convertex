@@ -33,6 +33,7 @@ const emptyForm = () => ({
   ruc: "",
   email: "",
   gerente: "",
+  contador: "",
   direccion: "",
   telefono: "",
   ciudad: "",
@@ -52,6 +53,7 @@ watch(
         ruc: emp.ruc ?? "",
         email: emp.email ?? "",
         gerente: emp.gerente ?? "",
+        contador: emp.contador ?? "",
         direccion: emp.direccion ?? "",
         telefono: emp.telefono ?? "",
         ciudad: emp.ciudad ?? "",
@@ -323,6 +325,15 @@ const provincias = [
             density="comfortable"
             prepend-inner-icon="tabler-user"
             :rules="[requiredValidator]"
+            class="ed-field"
+          />
+
+          <VTextField
+            v-model="form.contador"
+            label="Contador"
+            variant="outlined"
+            density="comfortable"
+            prepend-inner-icon="tabler-calculator"
             class="ed-field"
           />
 

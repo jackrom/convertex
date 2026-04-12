@@ -26,6 +26,7 @@ const nombre = ref('')
 const ruc = ref('')
 const email = ref('')
 const gerente = ref('')
+const contador = ref('')
 const direccion = ref('')
 const telefono = ref('')
 const ciudad = ref('')
@@ -55,6 +56,7 @@ const onSubmit = () => {
       ruc: ruc.value,
       email: email.value,
       gerente: gerente.value,
+      contador: contador.value,
       direccion: direccion.value,
       telefono: telefono.value,
       ciudad: ciudad.value,
@@ -158,6 +160,14 @@ const handleDrawerModelValueUpdate = val => {
                   v-model="gerente"
                   :rules="[requiredValidator]"
                   label="Gerente"
+                />
+              </VCol>
+
+              <!-- 👉 Contador -->
+              <VCol cols="12">
+                <VTextField
+                  v-model="contador"
+                  label="Contador"
                 />
               </VCol>
 

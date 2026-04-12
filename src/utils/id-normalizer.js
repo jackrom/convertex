@@ -5,6 +5,7 @@ export function normalizeEmpresa(raw) {
     ruc: raw.ruc ?? "",
     email: raw.email ?? "",
     gerente: raw.gerente ?? "",
+    contador: raw.contador ?? "",
     direccion: raw.direccion ?? "",
     telefono: raw.telefono ?? "",
     ciudad: raw.ciudad ?? "",

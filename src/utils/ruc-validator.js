@@ -11,12 +11,17 @@
 //    - 9: Sociedad privada (módulo 11)
 // 4. Los 3 últimos dígitos deben ser "001"
 // 5. Validación de dígito verificador según algoritmo SRI
+//
+// NOTA: Desde 2020, el SRI emite RUCs para S.A.S. y otros tipos
+// nuevos de empresa cuyo dígito verificador no siempre coincide
+// con el algoritmo clásico de módulo 11. Por eso la validación
+// del dígito verificador es una ADVERTENCIA, no un bloqueo.
 // ══════════════════════════════════════════════════════════════
 
 /**
  * Valida el formato y algoritmo de un RUC ecuatoriano.
  * @param {string} ruc
- * @returns {{ valid: boolean, error?: string }}
+ * @returns {{ valid: boolean, warning?: string, error?: string }}
  */
 export function validarRucEcuador(ruc) {
   if (!ruc) return { valid: false, error: "El RUC es requerido" }
@@ -48,30 +53,29 @@ export function validarRucEcuador(ruc) {
     return { valid: false, error: "Los 3 últimos dígitos deben ser 001" }
   }
 
-  // 6. Validación del dígito verificador
+  // 6. Validación del dígito verificador (NO bloqueante)
   const digits = cleaned.split("").map(Number)
+  let checkDigitOk = true
 
   try {
     if (tercerDigito >= 0 && tercerDigito <= 5) {
-      // Persona natural → módulo 10
-      if (!validarModulo10(digits)) {
-        return { valid: false, error: "El dígito verificador no es válido (persona natural)" }
-      }
+      checkDigitOk = validarModulo10(digits)
     } else if (tercerDigito === 6) {
-      // Entidad pública → módulo 11 (coeficientes públicos)
-      if (!validarModulo11Publico(digits)) {
-        return { valid: false, error: "El dígito verificador no es válido (entidad pública)" }
-      }
+      checkDigitOk = validarModulo11Publico(digits)
     } else if (tercerDigito === 9) {
-      // Sociedad privada → módulo 11 (coeficientes privados)
-      if (!validarModulo11Privado(digits)) {
-        return { valid: false, error: "El dígito verificador no es válido (sociedad privada)" }
-      }
-    } else {
-      return { valid: false, error: "El tercer dígito no es válido (debe ser 0-6 o 9)" }
+      checkDigitOk = validarModulo11Privado(digits)
     }
+    // Para tercerDigito 7, 8: no hay algoritmo estándar, se acepta
   } catch {
-    return { valid: false, error: "Error al validar el dígito verificador" }
+    checkDigitOk = false
+  }
+
+  // RUC válido estructuralmente — advertencia si el dígito verificador no coincide
+  if (!checkDigitOk) {
+    return {
+      valid: true,
+      warning: "RUC aceptado. El dígito verificador no coincide con el algoritmo estándar, verifique con el SRI.",
+    }
   }
 
   return { valid: true }
@@ -79,8 +83,6 @@ export function validarRucEcuador(ruc) {
 
 /**
  * Módulo 10 — Persona natural (cédula)
- * Coeficientes: [2, 1, 2, 1, 2, 1, 2, 1, 2]
- * Dígito verificador: posición 9 (índice 9)
  */
 function validarModulo10(digits) {
   const coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]
@@ -100,8 +102,6 @@ function validarModulo10(digits) {
 
 /**
  * Módulo 11 — Entidad pública
- * Coeficientes: [3, 2, 7, 6, 5, 4, 3, 2]
- * Dígito verificador: posición 8 (índice 8)
  */
 function validarModulo11Publico(digits) {
   const coeficientes = [3, 2, 7, 6, 5, 4, 3, 2]
@@ -119,8 +119,6 @@ function validarModulo11Publico(digits) {
 
 /**
  * Módulo 11 — Sociedad privada
- * Coeficientes: [4, 3, 2, 7, 6, 5, 4, 3, 2]
- * Dígito verificador: posición 9 (índice 9)
  */
 function validarModulo11Privado(digits) {
   const coeficientes = [4, 3, 2, 7, 6, 5, 4, 3, 2]
@@ -142,8 +140,20 @@ function validarModulo11Privado(digits) {
  * @returns {true | string}
  */
 export const rucValidator = value => {
-  if (!value) return true // requiredValidator handles empty
+  if (!value) return true
   const result = validarRucEcuador(value)
 
-  return result.valid || result.error
+  if (!result.valid) return result.error
+  // Advertencia no bloquea el formulario
+  return true
+}
+
+/**
+ * Validador que retorna el warning (para mostrarlo en UI)
+ * @param {string} value
+ * @returns {{ valid: boolean, warning?: string, error?: string }}
+ */
+export const rucValidatorFull = value => {
+  if (!value) return { valid: false, error: "El RUC es requerido" }
+  return validarRucEcuador(value)
 }

@@ -93,11 +93,14 @@ const rucRules = computed(() => {
   ]
 })
 
-const rucAlgorithmValidator = value => {
-  if (!value) return true
-  const result = validarRucEcuador(value)
+const rucWarning = ref("")
 
-  return result.valid || result.error
+const rucAlgorithmValidator = value => {
+  if (!value) { rucWarning.value = ""; return true }
+  const result = validarRucEcuador(value)
+  rucWarning.value = result.warning || ""
+  if (!result.valid) return result.error
+  return true
 }
 
 // Check duplicate RUC on blur (only in create mode)
@@ -294,9 +297,13 @@ const provincias = [
               maxlength="13"
               counter
             />
-            <div v-if="!isEditMode && form.ruc?.length === 13 && !rucError && !rucChecking" class="ed-ruc-ok">
+            <div v-if="!isEditMode && form.ruc?.length === 13 && !rucError && !rucChecking && !rucWarning" class="ed-ruc-ok">
               <VIcon size="16" color="success">tabler-check</VIcon>
               <span>RUC válido</span>
+            </div>
+            <div v-else-if="!isEditMode && form.ruc?.length === 13 && !rucError && !rucChecking && rucWarning" class="ed-ruc-ok" style="color: #e67e22">
+              <VIcon size="16" color="#e67e22">tabler-alert-triangle</VIcon>
+              <span>RUC aceptado (verificar con SRI)</span>
             </div>
           </div>
 

@@ -172,6 +172,7 @@ declare global {
   const resolveVuetifyTheme: typeof import('./src/@core/utils/vuetify.js')['resolveVuetifyTheme']
   const rgbaToHex: typeof import('./src/@core/utils/colorConverter.js')['rgbaToHex']
   const rucValidator: typeof import('./src/utils/ruc-validator.js')['rucValidator']
+  const rucValidatorFull: typeof import('./src/utils/ruc-validator.js')['rucValidatorFull']
   const setActivePinia: typeof import('pinia')['setActivePinia']
   const setMapStoreSuffix: typeof import('pinia')['setMapStoreSuffix']
   const shallowReactive: typeof import('vue')['shallowReactive']
@@ -603,6 +604,7 @@ declare module 'vue' {
     readonly resolveVuetifyTheme: UnwrapRef<typeof import('./src/@core/utils/vuetify.js')['resolveVuetifyTheme']>
     readonly rgbaToHex: UnwrapRef<typeof import('./src/@core/utils/colorConverter.js')['rgbaToHex']>
     readonly rucValidator: UnwrapRef<typeof import('./src/utils/ruc-validator.js')['rucValidator']>
+    readonly rucValidatorFull: UnwrapRef<typeof import('./src/utils/ruc-validator.js')['rucValidatorFull']>
     readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
     readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>

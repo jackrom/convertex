@@ -4,6 +4,7 @@ import { onMounted, ref, computed } from "vue"
 import { useEmpresaStore } from "@/@store/empresa.store"
 import { useEmpresasDeletedStore } from "@/@store/empresasDeleted.store"
 import AddEmpresaDrawer from "./AddEmpresaDrawer.vue"
+import { kcHasRole } from "@/plugins/keycloak/keycloak"
 
 const store = useEmpresaStore()
 const deletedStore = useEmpresasDeletedStore()
@@ -102,8 +103,11 @@ const bloqueado = computed(() =>
   licenciaVencida.value,
 )
 
-const puedeCrear = computed(() => !limiteEmpresasAlcanzado.value && !licenciaVencida.value)
+const puedeCrear    = computed(() => !limiteEmpresasAlcanzado.value && !licenciaVencida.value)
 const puedeEliminar = computed(() => !limiteEliminacionesAlcanzado.value && !licenciaVencida.value)
+
+// Rol Keycloak requerido para eliminar empresas
+const tieneRolEliminarEmpresa = computed(() => kcHasRole('empresa:eliminar'))
 
 // ── Filtered + paginated ──────────────────────────────────
 const filteredEmpresas = computed(() => {
@@ -339,6 +343,7 @@ const licenseIcon = computed(() => {
                 <VIcon icon="tabler-pencil" size="18" color="primary" />
               </VBtn>
               <VBtn
+                v-if="tieneRolEliminarEmpresa"
                 icon variant="text" size="small"
                 :disabled="!puedeEliminar || bloqueado"
                 @click="confirmDelete(e)"

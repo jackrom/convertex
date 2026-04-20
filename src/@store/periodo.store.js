@@ -195,38 +195,69 @@ export const usePeriodoStore = defineStore("periodos", {
 
         periodoData.reporte.tiporeporte = origenTipo
 
-        // 3) Buscar el reporte del período origen y sus values
+        // 3) Obtener los values del período origen para copiarlos como _ant
+        //    Usamos getValuesByEmpresaPeriodo (by-period) en lugar de getValues(reporteid)
+        //    para evitar el 412 que lanza el endpoint /:reporteid/values cuando el reporte
+        //    origen no tiene todos los campos de modelo requeridos por esa validación.
         let prevValuesPerTipo = null
 
         try {
-          const lookupBody = await reportesService.getByEmpresaPeriodo({
-            empresaid: origen.empresaid,
-            periodoid: origen.id,
-          })
+          const valuesBody = await reportesService.getValuesByEmpresaPeriodo(
+            origen.empresaid,
+            origen.id,
+          )
 
-          const reporteAnterior =
-            lookupBody?.data ??
-            lookupBody?.reporte ??
-            lookupBody ??
-            null
+          const allValues = valuesBody?.data ?? {}
 
-          const prevReporteId = reporteAnterior?.reporteid
-
-          if (prevReporteId) {
-            const valuesBody = await reportesService.getValues(prevReporteId)
-            const allValues = valuesBody?.data ?? {}
-
-            prevValuesPerTipo = {
-              esf: allValues.esfvalues ?? allValues.esf ?? [],
-              eri: allValues.erivalues ?? allValues.eri ?? [],
-              ecp: allValues.ecpvalues ?? allValues.ecp ?? [],
-              efemd: allValues.efemdvalues ?? allValues.efemd ?? [],
-            }
-          } else {
-            console.warn("[periodos.store] duplicate: el período origen no tiene reporte asociado")
+          prevValuesPerTipo = {
+            esf:   allValues.esfvalues   ?? allValues.esf   ?? [],
+            eri:   allValues.erivalues   ?? allValues.eri   ?? [],
+            ecp:   allValues.ecpvalues   ?? allValues.ecp   ?? [],
+            efemd: allValues.efemdvalues ?? allValues.efemd ?? [],
           }
+
+          console.log("[periodos.store] duplicate: values del período origen obtenidos", {
+            esf:   prevValuesPerTipo.esf.length,
+            eri:   prevValuesPerTipo.eri.length,
+            ecp:   prevValuesPerTipo.ecp.length,
+            efemd: prevValuesPerTipo.efemd.length,
+          })
         } catch (err) {
-          console.warn("[periodos.store] duplicate: error al leer values del período anterior", err)
+          console.warn("[periodos.store] duplicate: error al leer values del período anterior (by-period)", err)
+
+          // Fallback: intentar por reporteid (puede fallar en algunos casos legacy)
+          try {
+            const lookupBody = await reportesService.getByEmpresaPeriodo({
+              empresaid: origen.empresaid,
+              periodoid: origen.id,
+            })
+
+            const reporteAnterior =
+              lookupBody?.data ??
+              lookupBody?.reporte ??
+              lookupBody ??
+              null
+
+            const prevReporteId = reporteAnterior?.reporteid
+
+            if (prevReporteId) {
+              const valuesBody = await reportesService.getValues(prevReporteId)
+              const allValues  = valuesBody?.data ?? {}
+
+              prevValuesPerTipo = {
+                esf:   allValues.esfvalues   ?? allValues.esf   ?? [],
+                eri:   allValues.erivalues   ?? allValues.eri   ?? [],
+                ecp:   allValues.ecpvalues   ?? allValues.ecp   ?? [],
+                efemd: allValues.efemdvalues ?? allValues.efemd ?? [],
+              }
+
+              console.log("[periodos.store] duplicate: values obtenidos por fallback (reporteid)", prevReporteId)
+            } else {
+              console.warn("[periodos.store] duplicate: el período origen no tiene reporte asociado")
+            }
+          } catch (err2) {
+            console.warn("[periodos.store] duplicate: fallback por reporteid también falló", err2)
+          }
         }
 
         // 4) Copiar los valores del período anterior a los bloques *_ant del nuevo período

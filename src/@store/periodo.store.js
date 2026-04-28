@@ -283,8 +283,12 @@ export const usePeriodoStore = defineStore("periodos", {
             if (!block || typeof block !== "object") return
             Object.keys(block).forEach(key => {
               if (!key.startsWith(prefix)) return
-              if (Object.prototype.hasOwnProperty.call(dict, key)) {
-                block[key] = dict[key]
+              // Los bloques _ant tienen sufijo '_ant' en cada clave (ej. esf_1_ant),
+              // pero el dict del periodo origen usa las claves sin sufijo (ej. esf_1).
+              // Quitamos '_ant' para hacer el lookup correcto.
+              const baseKey = key.endsWith("_ant") ? key.slice(0, -4) : key
+              if (Object.prototype.hasOwnProperty.call(dict, baseKey)) {
+                block[key] = dict[baseKey]
               }
             })
           }

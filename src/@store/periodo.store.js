@@ -205,21 +205,24 @@ export const usePeriodoStore = defineStore("periodos", {
           const valuesBody = await reportesService.getValuesByEmpresaPeriodo(
             origen.empresaid,
             origen.id,
+            { limit: 1000 },
           )
+
+          console.log('valuesBody', valuesBody)
 
           const allValues = valuesBody?.data ?? {}
 
           prevValuesPerTipo = {
-            esf:   allValues.esfvalues   ?? allValues.esf   ?? [],
-            eri:   allValues.erivalues   ?? allValues.eri   ?? [],
-            ecp:   allValues.ecpvalues   ?? allValues.ecp   ?? [],
+            esf: allValues.esfvalues   ?? allValues.esf   ?? [],
+            eri: allValues.erivalues   ?? allValues.eri   ?? [],
+            ecp: allValues.ecpvalues   ?? allValues.ecp   ?? [],
             efemd: allValues.efemdvalues ?? allValues.efemd ?? [],
           }
 
           console.log("[periodos.store] duplicate: values del período origen obtenidos", {
-            esf:   prevValuesPerTipo.esf.length,
-            eri:   prevValuesPerTipo.eri.length,
-            ecp:   prevValuesPerTipo.ecp.length,
+            esf: prevValuesPerTipo.esf.length,
+            eri: prevValuesPerTipo.eri.length,
+            ecp: prevValuesPerTipo.ecp.length,
             efemd: prevValuesPerTipo.efemd.length,
           })
         } catch (err) {
@@ -245,9 +248,9 @@ export const usePeriodoStore = defineStore("periodos", {
               const allValues  = valuesBody?.data ?? {}
 
               prevValuesPerTipo = {
-                esf:   allValues.esfvalues   ?? allValues.esf   ?? [],
-                eri:   allValues.erivalues   ?? allValues.eri   ?? [],
-                ecp:   allValues.ecpvalues   ?? allValues.ecp   ?? [],
+                esf: allValues.esfvalues   ?? allValues.esf   ?? [],
+                eri: allValues.erivalues   ?? allValues.eri   ?? [],
+                ecp: allValues.ecpvalues   ?? allValues.ecp   ?? [],
                 efemd: allValues.efemdvalues ?? allValues.efemd ?? [],
               }
 
@@ -268,7 +271,8 @@ export const usePeriodoStore = defineStore("periodos", {
               if (!row) continue
               const nombre = row.nombrecampo
               if (!nombre) continue
-              if (row.valor == null) continue
+              // ✅ Eliminamos el check de 'row.valor == null' para incluir todos los campos
+              // existentes en el periodo origen, incluso si están vacíos.
               dict[nombre] = row.valor
             }
 
@@ -278,6 +282,7 @@ export const usePeriodoStore = defineStore("periodos", {
           const prevEsf = mapByNombreCampo(prevValuesPerTipo.esf)
           const prevEri = mapByNombreCampo(prevValuesPerTipo.eri)
           const prevEcp = mapByNombreCampo(prevValuesPerTipo.ecp)
+          const prevEfe = mapByNombreCampo(prevValuesPerTipo.efemd)
 
           const patchBlock = (block, dict, prefix) => {
             if (!block || typeof block !== "object") return
@@ -312,6 +317,28 @@ export const usePeriodoStore = defineStore("periodos", {
           patchBlock(periodoData.operacionesdiscontinuadasconvertex_ant, prevEri, "eri_")
           patchBlock(periodoData.otrosresultadosintegralconvertex_ant, prevEri, "eri_")
           patchBlock(periodoData.resultadosparticipacioncontroladoraconvertex_ant, prevEri, "eri_")
+
+          // ECP – período anterior
+          // El ECP no tiene subbloques _ant en la estructura devuelta por obtenerDatosReporte,
+          // pero el usuario reporta que no se pasan sus valores.
+          // Revisamos si existe ecpconvertex_ant o si se debe parchar ecpconvertex.
+          if (periodoData.ecpconvertex) {
+            patchBlock(periodoData.ecpconvertex, prevEcp, "ecp_")
+          }
+
+          // EFEMD – período anterior
+          if (periodoData.actividadesdeoperacionconvertex) {
+            patchBlock(periodoData.actividadesdeoperacionconvertex, prevEfe, "efe_")
+          }
+          if (periodoData.actividadesdeinversionconvertex) {
+            patchBlock(periodoData.actividadesdeinversionconvertex, prevEfe, "efe_")
+          }
+          if (periodoData.actividadesdefinanciamientoconvertex) {
+            patchBlock(periodoData.actividadesdefinanciamientoconvertex, prevEfe, "efe_")
+          }
+          if (periodoData.conciliacionganancianetaconvertex) {
+            patchBlock(periodoData.conciliacionganancianetaconvertex, prevEfe, "efe_")
+          }
         }
 
         // 5) Crear el reporte + values del nuevo período

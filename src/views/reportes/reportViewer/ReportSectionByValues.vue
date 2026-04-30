@@ -1560,10 +1560,6 @@ const recomputeEfeFormulas = () => {
 
   const v98 = roundTo(v9801 + v9802 + v9803 + v9804 + v9805 + v9806 + v9807 + v9808 + v9809 + v9810, 2)
 
-  console.log('v96', v96)
-  console.log('v97', v97)
-  console.log('v98', v98)
-
   const v9820 = roundTo(v96 + v9701 + v9702 + v9703 + v9704 + v9705 + v9706 + v9707 + v9708 + v9709 + v9710 + v9711 + v9801 + v9802 + v9803 + v9804 + v9805 + v9806 + v9807 + v9808 + v9809 + v9810, 2)
 
   setIfChanged("efe_md_96", v96)
@@ -1774,10 +1770,6 @@ const efeEsfCuadre = computed(() => {
   const v9820 = roundTo(v96 + v9701 + v9702 + v9703 + v9704 + v9705 + v9706 + v9707 + v9708 + v9709 + v9710 + v9711 + v9801 + v9802 + v9803 + v9804 + v9805 + v9806 + v9807 + v9808 + v9809 + v9810, 2)
 
   const v0000 = v9820 - v9501
-
-  console.log('v0000', v0000)
-  console.log('v9820', v9820)
-  console.log('v9501: ', v9501)
 
   return {
     v9507,

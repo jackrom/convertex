@@ -25,7 +25,7 @@ api.interceptors.request.use(async config => {
 
   const token = kc?.token
 
-  console.log('kc', kc)
+  // console.log('kc', kc)
 
   if (token) {
     config.headers = config.headers || {}

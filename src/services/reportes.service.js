@@ -159,32 +159,25 @@ export function useReportesService() {
   // El resto del archivo queda exactamente igual
   // ============================================================
   const createWithValues = async (periodoData, { skipBulk = false } = {}) => {
-    // 1) Crear cabecera del reporte (siempre — 1 sola request)
-    const resCreate = await create(periodoData.reporte)
+    console.log('[createWithValues] periodoData:', periodoData)
 
+    // 1) Crear cabecera del reporte en BD (siempre — 1 sola request)
+    const resCreate = await create(periodoData.reporte)
     const body = resCreate ?? {}
 
     const row =
-      body?.data?.reporte ||
-      body?.data ||
-      body?.reporte ||
-      body
+      body?.data?.reporte || body?.data || body?.reporte || body
 
-    const reporteid = Number(row.reporteid)
+    const reporteid = row.reporteid
     const userid    = row.userid
     const empresaid = row.empresaid
     const periodoid = row.periodoid
     const meta      = { reporteid, userid, empresaid, periodoid }
 
     if (skipBulk) {
-      // ══════════════════════════════════════════════════════
-      // MODO ASYNC: 1 sola request fire & forget
-      // El backend procesa en background (Kafka o fallback)
+      // ✅ Fire & forget — dispara init-values SIN bloquear
       // El usuario navega inmediatamente al viewer
-      // ══════════════════════════════════════════════════════
-      console.log('[createWithValues] skipBulk=true — 1 request a init-values')
-
-      await api.post(`/v1/convertex/reportesconvertex/${reporteid}/init-values`, {
+      api.post(`/v1/convertex/reportesconvertex/${reporteid}/init-values`, {
         esfBlocks: [
           periodoData.activoscorrientesconvertex,
           periodoData.activosnocorrientesconvertex,
@@ -221,33 +214,52 @@ export function useReportesService() {
           periodoData.otrosresultadosintegralconvertex_ant,
           periodoData.resultadosparticipacioncontroladoraconvertex_ant,
         ],
+        movBlocks: [
+          periodoData.movperdidasacumuladascuentasincobrablesydeterioroconvertex,
+          periodoData.movperdidasacumuladasvalornetorealizacionconvertex,
+          periodoData.movpropiedadesplantasyequiposconvertex,
+          periodoData.movpropiedadesdeinversionconvertex,
+          periodoData.movintangiblesconvertex,
+          periodoData.movactivosbiologicosconvertex,
+          periodoData.movimpuestosdiferidosconvertex,
+          periodoData.movjubilacionpatronalconvertex,
+          periodoData.movdeshaucioconvertex,
+          periodoData.movactivosfinancieroslargoplazoconvertex,
+          periodoData.movotrosconvertex,
+          periodoData.movperdidasacumuladascuentasincobrablesydeterioroconvertex_ant,
+          periodoData.movperdidasacumuladasvalornetorealizacionconvertex_ant,
+          periodoData.movpropiedadesplantasyequiposconvertex_ant,
+          periodoData.movpropiedadesdeinversionconvertex_ant,
+          periodoData.movintangiblesconvertex_ant,
+          periodoData.movactivosbiologicosconvertex_ant,
+          periodoData.movimpuestosdiferidosconvertex_ant,
+          periodoData.movjubilacionpatronalconvertex_ant,
+          periodoData.movdeshaucioconvertex_ant,
+          periodoData.movactivosfinancieroslargoplazoconvertex_ant,
+          periodoData.movotrosconvertex_ant,
+        ],
         efeBlocks: [
           periodoData.actividadesdeoperacionconvertex,
           periodoData.actividadesdeinversionconvertex,
           periodoData.actividadesdefinanciamientoconvertex,
           periodoData.conciliacionganancianetaconvertex,
         ],
-        ecpBlocks: [
-          periodoData.ecpconvertex,
-        ],
-      }).catch(err => {
-        console.warn('[init-values] Error en background:', err?.message)
-      })
+        ecpBlocks: [periodoData.ecpconvertex],
+      }).catch(err => console.warn('[init-values] Error disparando background:', err))
 
-      // Retornar inmediatamente — NO esperar al init-values
-      console.log('[createWithValues] init-values disparado en background')
+      console.log('[createWithValues] init-values disparado en background — retornando inmediatamente')
 
-      return row
+      return row  // ← retorna SIN esperar el init-values
     }
 
-    // ══════════════════════════════════════════════════════
-    // MODO LEGACY: secuencial (por si skipBulk=false)
-    // ══════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════
+    // MODO DUPLICACIÓN: chunks de 5 (comportamiento existente)
+    // ══════════════════════════════════════════════════════════
     const operations = []
 
     const pushOp = (endpoint, bloque) => {
       if (!bloque) return
-      operations.push({ endpoint, bloque })
+      operations.push(bulkPostAndCache(endpoint, bloque, meta))
     }
 
     // ESF
@@ -261,7 +273,6 @@ export function useReportesService() {
     pushOp("esfvalues_convertex/bulk", periodoData.pasivoscorrientesconvertex_ant)
     pushOp("esfvalues_convertex/bulk", periodoData.pasivosnocorrientesconvertex_ant)
     pushOp("esfvalues_convertex/bulk", periodoData.patrimonioconvertex_ant)
-
     // ERI
     pushOp("erivalues_convertex/bulk", periodoData.ingresosconvertex)
     pushOp("erivalues_convertex/bulk", periodoData.costosconvertex)
@@ -285,24 +296,48 @@ export function useReportesService() {
     pushOp("erivalues_convertex/bulk", periodoData.operacionesdiscontinuadasconvertex_ant)
     pushOp("erivalues_convertex/bulk", periodoData.otrosresultadosintegralconvertex_ant)
     pushOp("erivalues_convertex/bulk", periodoData.resultadosparticipacioncontroladoraconvertex_ant)
-
+    // MOV
+    pushOp("movvalues_convertex/bulk", periodoData.movperdidasacumuladascuentasincobrablesydeterioroconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movperdidasacumuladasvalornetorealizacionconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movpropiedadesplantasyequiposconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movpropiedadesdeinversionconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movintangiblesconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movactivosbiologicosconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movimpuestosdiferidosconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movjubilacionpatronalconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movdeshaucioconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movactivosfinancieroslargoplazoconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movotrosconvertex)
+    pushOp("movvalues_convertex/bulk", periodoData.movperdidasacumuladascuentasincobrablesydeterioroconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movperdidasacumuladasvalornetorealizacionconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movpropiedadesplantasyequiposconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movpropiedadesdeinversionconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movintangiblesconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movactivosbiologicosconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movimpuestosdiferidosconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movjubilacionpatronalconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movdeshaucioconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movactivosfinancieroslargoplazoconvertex_ant)
+    pushOp("movvalues_convertex/bulk", periodoData.movotrosconvertex_ant)
     // EFE
     pushOp("efemdvalues_convertex/bulk", periodoData.actividadesdeoperacionconvertex)
     pushOp("efemdvalues_convertex/bulk", periodoData.actividadesdeinversionconvertex)
     pushOp("efemdvalues_convertex/bulk", periodoData.actividadesdefinanciamientoconvertex)
     pushOp("efemdvalues_convertex/bulk", periodoData.conciliacionganancianetaconvertex)
-
     // ECP
     pushOp("ecpvalues_convertex/bulk", periodoData.ecpconvertex)
 
-    for (const { endpoint, bloque } of operations) {
-      await bulkPostAndCache(endpoint, bloque, meta)
+    const CHUNK_SIZE = 5
+    for (let i = 0; i < operations.length; i += CHUNK_SIZE) {
+      await Promise.all(operations.slice(i, i + CHUNK_SIZE))
     }
 
     return row
   }
 
   const getValuesByEmpresaPeriodo = async (empresaid, periodoid, params = {}) => {
+    console.log('params:', params)
+
     const response = await trackApi(
       "GET /v1/convertex/reportesconvertex/by-period/:empresaid/:periodoid/values",
       () => api.get(

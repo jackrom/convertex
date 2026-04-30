@@ -5,125 +5,112 @@ import { usePeriodoStore } from "@/@store/periodo.store"
 import { useEmpresaStore } from "@/@store/empresa.store"
 import { useReportesStore } from "@/@store/reportes.store"
 import AddPeriodoDrawer from "./AddPeriodoDrawer.vue"
+import { useRouter } from "vue-router"
+import { useReportReady } from '@/composables/useReportReady'
 
 const periodoStore = usePeriodoStore()
 const empresaStore = useEmpresaStore()
-const reportStore = useReportesStore()
+const reportStore  = useReportesStore()
+const { watchReport } = useReportReady()
 
 const isDrawerOpen = ref(false)
 
-// Search, filter & pagination
-const searchQuery = ref("")
+const searchQuery  = ref("")
 const filterEmpresa = ref(null)
-const filterTipo = ref(null)
-const currentPage = ref(1)
-const rowsPerPage = ref(10)
+const filterTipo   = ref(null)
+const currentPage  = ref(1)
+const rowsPerPage  = ref(10)
 
-// Dialogs
-const deleteDialogOpen = ref(false)
+const deleteDialogOpen    = ref(false)
 const duplicateDialogOpen = ref(false)
-const targetPeriodo = ref(null)
-const deleting = ref(false)
-const duplicating = ref(false)
+const targetPeriodo       = ref(null)
+const deleting            = ref(false)
+const duplicating         = ref(false)
+const router = useRouter()
+
 
 const TIPOS_NO_DUPLICABLES = new Set(["inicial"])
 
-// ── Helpers ───────────────────────────────────────────────
-const derivarTipo = (p) => {
-  // ✅ FIX: checar != null en vez de truthy para que "inicial" no
-  // se pierda si tiporeporte llega como string vacío o con espacios.
-  // También normalizar a lowercase por si el backend devuelve "Inicial".
+// ── Helpers ────────────────────────────────────────────────
+const derivarTipo = p => {
   const t = p.tiporeporte ?? p.periodo?.tiporeporte ?? null
-  if (t != null && String(t).trim() !== "") {
-    return String(t).toLowerCase().trim()
-  }
+  if (t != null && String(t).trim() !== "") return String(t).toLowerCase().trim()
   if (p.esconsolidado) return "consolidado"
 
   return "individual"
 }
 
-const tipoLabel = (p) => {
+const tipoLabel = p => {
   const t = derivarTipo(p)
   if (t === "inicial") return "Inicial"
   if (t === "consolidado") return "Consolidado"
+
   return "Individual"
 }
 
-const tipoColor = (p) => {
+const tipoColor = p => {
   const t = derivarTipo(p)
   if (t === "inicial") return "info"
   if (t === "consolidado") return "warning"
+
   return "success"
 }
 
-const tipoIcon = (p) => {
+const tipoIcon = p => {
   const t = derivarTipo(p)
   if (t === "inicial") return "tabler-calendar-check"
   if (t === "consolidado") return "tabler-building-bank"
+
   return "tabler-user"
 }
 
-const formatDate = (raw) => {
+const formatDate = raw => {
   if (!raw) return "—"
   try {
-    const d = new Date(raw)
-    return d.toLocaleDateString("es-EC", {
-      day: "2-digit", month: "2-digit", year: "numeric",
-    })
-  } catch {
-    return String(raw).substring(0, 10)
-  }
+    return new Date(raw).toLocaleDateString("es-EC", { day: "2-digit", month: "2-digit", year: "numeric" })
+  } catch { return String(raw).substring(0, 10) }
 }
 
-const empresaNombre = (p) => p.empresa?.nombre || p.empresaid || "—"
+const empresaNombre = p => p.empresa?.nombre || p.empresaid || "—"
 
-// ── Computed ──────────────────────────────────────────────
-const periodos = computed(() => periodoStore.periodos ?? [])
+// ── Computed ───────────────────────────────────────────────
+const periodos  = computed(() => periodoStore.periodos ?? [])
 const isLoading = computed(() => periodoStore.loading ?? !periodoStore.loaded)
 
 const empresasOptions = computed(() => {
   const map = new Map()
   for (const p of periodos.value) {
-    const name = empresaNombre(p)
     const id = p.empresaid
-    if (id && !map.has(id)) map.set(id, { title: name, value: id })
+    if (id && !map.has(id)) map.set(id, { title: empresaNombre(p), value: id })
   }
+
   return Array.from(map.values())
 })
 
 const tipoOptions = [
-  { title: "Todos", value: null },
-  { title: "Individual", value: "individual" },
+  { title: "Todos",       value: null          },
+  { title: "Individual",  value: "individual"  },
   { title: "Consolidado", value: "consolidado" },
-  { title: "Inicial", value: "inicial" },
+  { title: "Inicial",     value: "inicial"     },
 ]
 
 const filteredPeriodos = computed(() => {
   let items = periodos.value
-
-  if (filterEmpresa.value)
-    items = items.filter(p => p.empresaid === filterEmpresa.value)
-
-  if (filterTipo.value)
-    items = items.filter(p => derivarTipo(p) === filterTipo.value)
-
+  if (filterEmpresa.value) items = items.filter(p => p.empresaid === filterEmpresa.value)
+  if (filterTipo.value)    items = items.filter(p => derivarTipo(p) === filterTipo.value)
   const q = searchQuery.value.trim().toLowerCase()
-  if (q) {
-    items = items.filter(p =>
-      empresaNombre(p).toLowerCase().includes(q) ||
-      String(p.periodo).includes(q),
-    )
-  }
+  if (q) items = items.filter(p =>
+    empresaNombre(p).toLowerCase().includes(q) || String(p.periodo).includes(q))
 
   return items
 })
 
 const totalPages = computed(() =>
-  Math.max(1, Math.ceil(filteredPeriodos.value.length / rowsPerPage.value)),
-)
+  Math.max(1, Math.ceil(filteredPeriodos.value.length / rowsPerPage.value)))
 
 const paginatedPeriodos = computed(() => {
   const start = (currentPage.value - 1) * rowsPerPage.value
+
   return filteredPeriodos.value.slice(start, start + rowsPerPage.value)
 })
 
@@ -131,16 +118,23 @@ const paginationText = computed(() => {
   const total = filteredPeriodos.value.length
   if (!total) return "Sin periodos"
   const first = (currentPage.value - 1) * rowsPerPage.value + 1
-  const last = Math.min(currentPage.value * rowsPerPage.value, total)
+  const last  = Math.min(currentPage.value * rowsPerPage.value, total)
+
   return `${first}–${last} de ${total}`
 })
 
-watch([searchQuery, filterEmpresa, filterTipo], () => {
-  currentPage.value = 1
-})
+watch([searchQuery, filterEmpresa, filterTipo], () => { currentPage.value = 1 })
+
+// Stat cards ↔ filtro tipo
+const activeStatFilter = ref(null)
+
+watch(activeStatFilter, val => { filterTipo.value = val })
+
+watch(filterTipo, val => { if (val !== activeStatFilter.value) activeStatFilter.value = null })
 
 const stats = computed(() => {
   const all = periodos.value
+
   return {
     total: all.length,
     individual: all.filter(p => derivarTipo(p) === "individual").length,
@@ -150,43 +144,28 @@ const stats = computed(() => {
 })
 
 // ── Duplicar ──────────────────────────────────────────────
-const puedeDuplicar = (p) => {
-  const tipo = derivarTipo(p)
-  // Iniciales nunca se pueden duplicar
-  if (TIPOS_NO_DUPLICABLES.has(tipo)) return false
-  // ✅ FIX: ignorar p.isDuplicated (el backend lo calcula sin distinguir
-  // por tipo, marcando como duplicado cualquier periodo del año+1 aunque
-  // sea de distinto tipo). Calculamos nosotros si ya existe año+1 del
-  // mismo tipo para esta empresa.
-  const anioSiguiente = Number(p.periodo) + 1
-  const yaExiste = periodos.value.some(
-    other =>
-      other.empresaid === p.empresaid &&
-      Number(other.periodo) === anioSiguiente &&
-      derivarTipo(other) === tipo,
-  )
-  return !yaExiste
+const puedeDuplicar = p => {
+  if (TIPOS_NO_DUPLICABLES.has(derivarTipo(p))) return false
+  const anioSig = Number(p.periodo) + 1
+
+  return !periodos.value.some(o =>
+    o.empresaid === p.empresaid &&
+    Number(o.periodo) === anioSig &&
+    derivarTipo(o) === derivarTipo(p))
 }
 
-const duplicarTooltip = (p) => {
+const duplicarTooltip = p => {
   const tipo = derivarTipo(p)
   if (tipo === "inicial") return "Los periodos iniciales no se pueden duplicar"
-  const anioSiguiente = Number(p.periodo) + 1
+  const anioSig = Number(p.periodo) + 1
 
-  const yaExiste = periodos.value.some(
-    other =>
-      other.empresaid === p.empresaid &&
-      Number(other.periodo) === anioSiguiente &&
-      derivarTipo(other) === tipo,
-  )
+  const yaExiste = periodos.value.some(o =>
+    o.empresaid === p.empresaid && Number(o.periodo) === anioSig && derivarTipo(o) === tipo)
 
-  if (yaExiste) return `Ya existe un periodo ${tipo} para ${anioSiguiente}`
-
-  return `Duplicar a ${anioSiguiente}`
+  return yaExiste ? `Ya existe un periodo ${tipo} para ${anioSig}` : `Duplicar a ${anioSig}`
 }
 
 const pedirDuplicar = p => {
-  // ✅ FIX: guard explícito — nunca abrir el dialog si no se puede duplicar
   if (!puedeDuplicar(p)) return
   targetPeriodo.value = p
   duplicateDialogOpen.value = true
@@ -196,8 +175,17 @@ const confirmarDuplicar = async () => {
   if (!targetPeriodo.value) return
   duplicating.value = true
   try {
-    await periodoStore.duplicate(targetPeriodo.value.id)
-    await reportStore.load({ force: true })
+    const nuevoPeriodo = await periodoStore.duplicate(targetPeriodo.value.id)
+
+    if (nuevoPeriodo) {
+      // Recargar lista de reportes
+      await reportStore.load({ force: true })
+
+      // Navegar a la lista de reportes
+      await router.push({ path: '/reportes' })
+    }
+  } catch (err) {
+    console.error('[PeriodoList] Error duplicando:', err)
   } finally {
     duplicating.value = false
     duplicateDialogOpen.value = false
@@ -206,10 +194,7 @@ const confirmarDuplicar = async () => {
 }
 
 // ── Eliminar ──────────────────────────────────────────────
-const pedirEliminar = p => {
-  targetPeriodo.value = p
-  deleteDialogOpen.value = true
-}
+const pedirEliminar = p => { targetPeriodo.value = p; deleteDialogOpen.value = true }
 
 const confirmarEliminar = async () => {
   if (!targetPeriodo.value) return
@@ -224,10 +209,10 @@ const confirmarEliminar = async () => {
   }
 }
 
-// ── Mount ─────────────────────────────────────────────────
 onMounted(async () => {
   if (!empresaStore.loaded) await empresaStore.load({ force: true })
-  if (!periodoStore.loaded) await periodoStore.load({ force: true })
+  // Siempre forzar recarga de periodos para evitar cache desactualizado
+  await periodoStore.load({ force: true })
 })
 </script>
 

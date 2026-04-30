@@ -53,10 +53,7 @@ export function usePeriodoDuplicacion({ periodo, todosLosPeriodos }) {
    */
   const puedeDuplicar = computed(() => {
     // Periodos iniciales NUNCA se pueden duplicar
-    if (esInicial.value) return false
-
-    // Periodos de flujo sí se pueden duplicar
-    return true
+    return !(esInicial.value)
   })
 
   /**

@@ -51,7 +51,7 @@ const onCancel = () => {
 }
 
 const buscarReporteConDataParaDuplicar = (periodo, index) => {
-  reportesListStore.fetchReporteIflucByPeriodoActual(periodo.id).then(async res => {
+  reportesListStore.fetchReporteconvertexByPeriodoActual(periodo.id).then(async res => {
     console.log('res.data', res.data)
     await duplicarReporteTxt(res.data, periodo, index)
   })
@@ -59,8 +59,8 @@ const buscarReporteConDataParaDuplicar = (periodo, index) => {
 
 const duplicarReporteTxt = async (res, periodo, index) => {
   console.log('res: ', res)
-  let user, activoscorrientesifluc, activosnocorrientesifluc, pasivoscorrientesifluc, pasivosnocorrientesifluc, patrimonioifluc, costosifluc, ingresosifluc, otrosingresosifluc, gastosdeventasifluc, gastosadministrativosifluc, gastosfinancierosifluc, otrosgastosifluc, resultadosifluc, operacionesdiscontinuadasifluc, otrosresultadosintegralifluc, resultadosparticipacioncontroladoraifluc, actividadesdeoperacionifluc, actividadesdeinversionifluc, actividadesdefinanciamientoifluc, conciliacionganancianetaifluc, ecpifluc, reporteid
-  let activoscorrientesifluc_ant, activosnocorrientesifluc_ant, pasivoscorrientesifluc_ant, pasivosnocorrientesifluc_ant, patrimonioifluc_ant, costosifluc_ant, ingresosifluc_ant, otrosingresosifluc_ant, gastosdeventasifluc_ant, gastosadministrativosifluc_ant, gastosfinancierosifluc_ant, otrosgastosifluc_ant, resultadosifluc_ant, operacionesdiscontinuadasifluc_ant, otrosresultadosintegralifluc_ant, resultadosparticipacioncontroladoraifluc_ant, actividadesdeoperacionifluc_ant, actividadesdeinversionifluc_ant, actividadesdefinanciamientoifluc_ant, conciliacionganancianetaifluc_ant
+  let user, activoscorrientesconvertex, activosnocorrientesconvertex, pasivoscorrientesconvertex, pasivosnocorrientesconvertex, patrimonioconvertex, costosconvertex, ingresosconvertex, otrosingresosconvertex, gastosdeventasconvertex, gastosadministrativosconvertex, gastosfinancierosconvertex, otrosgastosconvertex, resultadosconvertex, operacionesdiscontinuadasconvertex, otrosresultadosintegralconvertex, resultadosparticipacioncontroladoraconvertex, actividadesdeoperacionconvertex, actividadesdeinversionconvertex, actividadesdefinanciamientoconvertex, conciliacionganancianetaconvertex, ecpconvertex, reporteid
+  let activoscorrientesconvertex_ant, activosnocorrientesconvertex_ant, pasivoscorrientesconvertex_ant, pasivosnocorrientesconvertex_ant, patrimonioconvertex_ant, costosconvertex_ant, ingresosconvertex_ant, otrosingresosconvertex_ant, gastosdeventasconvertex_ant, gastosadministrativosconvertex_ant, gastosfinancierosconvertex_ant, otrosgastosconvertex_ant, resultadosconvertex_ant, operacionesdiscontinuadasconvertex_ant, otrosresultadosintegralconvertex_ant, resultadosparticipacioncontroladoraconvertex_ant, actividadesdeoperacionconvertex_ant, actividadesdeinversionconvertex_ant, actividadesdefinanciamientoconvertex_ant, conciliacionganancianetaconvertex_ant
   let movperdidasacumuladascuentasincobrablesydeterioro, movperdidasacumuladasvalornetorealizacion, movpropiedadesplantasyequipos, movpropiedadesdeinversion, movintangibles, movactivosbiologicos, movimpuestosdiferidos, movjubilacionpatronal, deshaucio, activosfinancieroslargoplazo, otros
   let movperdidasacumuladascuentasincobrablesydeterioro_ant, movperdidasacumuladasvalornetorealizacion_ant, movpropiedadesplantasyequipos_ant, movpropiedadesdeinversion_ant, movintangibles_ant, movactivosbiologicos_ant, movimpuestosdiferidos_ant, movjubilacionpatronal_ant, deshaucio_ant, activosfinancieroslargoplazo_ant, otros_ant
 
@@ -70,13 +70,13 @@ const duplicarReporteTxt = async (res, periodo, index) => {
     userId: user.id,
     periodoId: periodo.nuevoPeriodoId,
     empresaId: periodo.empresaId,
-    nombre_reporte: 'ifluc',
+    nombre_reporte: 'convertex',
   }
 
   // PERIODO ACTUAL
 
   // ACTIVOS CORRIENTES
-  activoscorrientesifluc = {
+  activoscorrientesconvertex = {
     esf_1: 0.00,
     esf_101: 0.00,
     esf_10101: 0.00,
@@ -239,13 +239,13 @@ const duplicarReporteTxt = async (res, periodo, index) => {
     esf_10107: 0.00,
     esf_10108: 0.00,
   }
-  activoscorrientesifluc.userId = user.id
-  activoscorrientesifluc.periodoId = reporte.periodoId
-  activoscorrientesifluc.empresaId = reporte.empresaId
-  activoscorrientesifluc.reporteId = ''
+  activoscorrientesconvertex.userId = user.id
+  activoscorrientesconvertex.periodoId = reporte.periodoId
+  activoscorrientesconvertex.empresaId = reporte.empresaId
+  activoscorrientesconvertex.reporteId = ''
 
   // ACTIVOS NO CORRIENTES
-  activosnocorrientesifluc = {
+  activosnocorrientesconvertex = {
     esf_102:	0.00,
     esf_10201:	0.00,
     esf_1020101:	0.00,
@@ -322,13 +322,13 @@ const duplicarReporteTxt = async (res, periodo, index) => {
     esf_1021003:	0.00,
     esf_1021004:	0.00,
   }
-  activosnocorrientesifluc.userId = user.id
-  activosnocorrientesifluc.periodoId = reporte.periodoId
-  activosnocorrientesifluc.empresaId = reporte.empresaId
-  activosnocorrientesifluc.reporteId = ''
+  activosnocorrientesconvertex.userId = user.id
+  activosnocorrientesconvertex.periodoId = reporte.periodoId
+  activosnocorrientesconvertex.empresaId = reporte.empresaId
+  activosnocorrientesconvertex.reporteId = ''
 
   // PASIVOS CORRIENTES
-  pasivoscorrientesifluc = {
+  pasivoscorrientesconvertex = {
     esf_2:	0.00,
     esf_201:	0.00,
     esf_20101:	0.00,
@@ -2165,27 +2165,27 @@ const duplicarReporteTxt = async (res, periodo, index) => {
 
   const reportetxt = {
     reporte,
-    activoscorrientesifluc,
-    activosnocorrientesifluc,
-    pasivoscorrientesifluc,
-    pasivosnocorrientesifluc,
-    patrimonioifluc,
-    costosifluc,
-    ingresosifluc,
-    otrosingresosifluc,
-    gastosdeventasifluc,
-    gastosadministrativosifluc,
-    gastosfinancierosifluc,
-    otrosgastosifluc,
-    resultadosifluc,
-    operacionesdiscontinuadasifluc,
-    otrosresultadosintegralifluc,
-    resultadosparticipacioncontroladoraifluc,
-    actividadesdeoperacionifluc,
-    actividadesdeinversionifluc,
-    actividadesdefinanciamientoifluc,
-    conciliacionganancianetaifluc,
-    ecpifluc,
+    activoscorrientesconvertex,
+    activosnocorrientesconvertex,
+    pasivoscorrientesconvertex,
+    pasivosnocorrientesconvertex,
+    patrimonioconvertex,
+    costosconvertex,
+    ingresosconvertex,
+    otrosingresosconvertex,
+    gastosdeventasconvertex,
+    gastosadministrativosconvertex,
+    gastosfinancierosconvertex,
+    otrosgastosconvertex,
+    resultadosconvertex,
+    operacionesdiscontinuadasconvertex,
+    otrosresultadosintegralconvertex,
+    resultadosparticipacioncontroladoraconvertex,
+    actividadesdeoperacionconvertex,
+    actividadesdeinversionconvertex,
+    actividadesdefinanciamientoconvertex,
+    conciliacionganancianetaconvertex,
+    ecpconvertex,
     movperdidasacumuladascuentasincobrablesydeterioro,
     movperdidasacumuladasvalornetorealizacion,
     movpropiedadesplantasyequipos,
@@ -2197,26 +2197,26 @@ const duplicarReporteTxt = async (res, periodo, index) => {
     deshaucio,
     activosfinancieroslargoplazo,
     otros,
-    activoscorrientesifluc_ant,
-    activosnocorrientesifluc_ant,
-    pasivoscorrientesifluc_ant,
-    pasivosnocorrientesifluc_ant,
-    patrimonioifluc_ant,
-    costosifluc_ant,
-    ingresosifluc_ant,
-    otrosingresosifluc_ant,
-    gastosdeventasifluc_ant,
-    gastosadministrativosifluc_ant,
-    gastosfinancierosifluc_ant,
-    otrosgastosifluc_ant,
-    resultadosifluc_ant,
-    operacionesdiscontinuadasifluc_ant,
-    otrosresultadosintegralifluc_ant,
-    resultadosparticipacioncontroladoraifluc_ant,
-    actividadesdeoperacionifluc_ant,
-    actividadesdeinversionifluc_ant,
-    actividadesdefinanciamientoifluc_ant,
-    conciliacionganancianetaifluc_ant,
+    activoscorrientesconvertex_ant,
+    activosnocorrientesconvertex_ant,
+    pasivoscorrientesconvertex_ant,
+    pasivosnocorrientesconvertex_ant,
+    patrimonioconvertex_ant,
+    costosconvertex_ant,
+    ingresosconvertex_ant,
+    otrosingresosconvertex_ant,
+    gastosdeventasconvertex_ant,
+    gastosadministrativosconvertex_ant,
+    gastosfinancierosconvertex_ant,
+    otrosgastosconvertex_ant,
+    resultadosconvertex_ant,
+    operacionesdiscontinuadasconvertex_ant,
+    otrosresultadosintegralconvertex_ant,
+    resultadosparticipacioncontroladoraconvertex_ant,
+    actividadesdeoperacionconvertex_ant,
+    actividadesdeinversionconvertex_ant,
+    actividadesdefinanciamientoconvertex_ant,
+    conciliacionganancianetaconvertex_ant,
     movperdidasacumuladascuentasincobrablesydeterioro_ant,
     movperdidasacumuladasvalornetorealizacion_ant,
     movpropiedadesplantasyequipos_ant,
@@ -2235,7 +2235,7 @@ const duplicarReporteTxt = async (res, periodo, index) => {
 }
 
 const addNewReporte = (reporteData, index) => {
-  reportesListStore.addReporteSupercias(reporteData)
+  reportesListStore.addReporteConvertex(reporteData)
     .then(res => {
       localStorage.clear()
       loading.value[index] = false
@@ -2249,6 +2249,8 @@ const addNewReporte = (reporteData, index) => {
 
 const convertirAFlotantes = objeto => {
   const nuevoObjeto = {}
+
+  if (!objeto) return nuevoObjeto
 
   Object.keys(objeto).forEach(key => {
     const nuevaClave = `${key}_ant`

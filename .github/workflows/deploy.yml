@@ -1,0 +1,107 @@
+# .github/workflows/deploy.yml
+#
+# CI/CD para newConvertex (SPA Vue 3 + Vite + pnpm → nginx). Patrón replicado
+# de newIfluc/iFluc al ServidorFC: build → tarball → SSH :1350 → release atómico
+# con symlink `current` → smoke test. nginx sirve /opt/convertex/current.
+#
+# ── Secrets (Settings → Secrets and variables → Actions) ──
+#   PROD_SSH_HOST (186.4.239.141) · PROD_SSH_USER (govoomy) · PROD_SSH_KEY
+#   · PROD_SMOKE_URL (https://convertex.facilcontabilidad.org/)
+#
+# ── Prep servidor (una vez) ──
+#   sudo mkdir -p /opt/convertex/{releases,tmp}
+#   sudo chown -R govoomy:govoomy /opt/convertex
+#   # repuntar nginx (convertex.conf) root → /opt/convertex/current + reload
+
+name: Deploy newConvertex to production
+
+on:
+  push:
+    branches: [features/1.1.0]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-convertex
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install deps
+        run: pnpm install --no-frozen-lockfile
+      - name: Build (vite build)
+        run: pnpm run build
+      - name: Verify build output
+        run: |
+          if [ ! -f dist/index.html ]; then
+            echo "::error::Build output missing — dist/index.html no encontrado"
+            exit 1
+          fi
+          du -sh dist
+      - name: Pack release
+        run: tar -czf release.tgz -C dist .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: convertex-release
+          path: release.tgz
+          retention-days: 5
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: convertex-release
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.PROD_SSH_KEY }}" | tr -d '\r' > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if ! ssh-keygen -l -f ~/.ssh/deploy_key > /dev/null 2>&1; then
+            echo "::error::PROD_SSH_KEY malformada (no se puede parsear como clave SSH)"
+            exit 1
+          fi
+          ssh-keyscan -p 1350 -H "${{ secrets.PROD_SSH_HOST }}" >> ~/.ssh/known_hosts
+      - name: Upload release tarball
+        run: |
+          scp \
+            -i ~/.ssh/deploy_key -P 1350 \
+            -o IdentitiesOnly=yes -o PreferredAuthentications=publickey -o StrictHostKeyChecking=no \
+            release.tgz \
+            "${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }}:/opt/convertex/tmp/release.tgz"
+      - name: Deploy atomic release
+        run: |
+          ssh -i ~/.ssh/deploy_key -p 1350 \
+            -o IdentitiesOnly=yes -o PreferredAuthentications=publickey -o StrictHostKeyChecking=no \
+            "${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SSH_HOST }}" <<'EOF'
+            set -euo pipefail
+            DEPLOY_PATH="/opt/convertex"
+            cd "$DEPLOY_PATH"
+            RELEASE_ID="$(date +%Y%m%d-%H%M%S)"
+            echo "▶ Release ID: $RELEASE_ID"
+            mkdir -p "releases/$RELEASE_ID"
+            tar -xzf "$DEPLOY_PATH/tmp/release.tgz" -C "releases/$RELEASE_ID"
+            ln -sfn "releases/$RELEASE_ID" current
+            cd releases && ls -t | tail -n +6 | xargs -r rm -rf
+            rm -f "$DEPLOY_PATH/tmp/release.tgz"
+            echo "✅ Release $RELEASE_ID desplegado"
+          EOF
+      - name: Smoke test
+        run: |
+          URL="${{ secrets.PROD_SMOKE_URL }}"
+          if [ -z "$URL" ]; then echo "⚠ PROD_SMOKE_URL no configurado — smoke test omitido."; exit 0; fi
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$URL")
+          if [ "$STATUS" != "200" ]; then echo "::error::Smoke test falló — $URL → HTTP $STATUS"; exit 1; fi
+          echo "✅ $URL → HTTP 200"
